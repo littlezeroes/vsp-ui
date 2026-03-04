@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>POLARIS - Offering Status</title>
+  <script src="https://cdn.tailwindcss.com/4"></script>
+  <link rel="stylesheet" href="../../styles.css">
+  <script src="../../data.js"></script>
+  <script src="../../components.js"></script>
+</head>
+<body class="phone-screen">
+<div class="phone">
+
+  <!-- Sub-page header -->
+  <div class="sub-header">
+    <a href="campaign-details.html" class="btn-circle proto-link">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+    </a>
+    <span class="sub-header-title">Offering Status</span>
+  </div>
+
+  <!-- Success Celebration Banner -->
+  <div class="section fade-in">
+    <div style="background:var(--green-light); border-radius:var(--r16); padding:24px; text-align:center">
+      <div style="width:72px; height:72px; border-radius:50%; background:var(--green); display:flex; align-items:center; justify-content:center; margin:0 auto 16px">
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <div style="font-size:18px; font-weight:700; color:var(--text); margin-bottom:8px">Commitment Confirmed!</div>
+      <p style="font-size:13px; color:var(--text-2); line-height:1.5">Your investment commitment has been successfully submitted. You will be notified when allocation results are available.</p>
+    </div>
+  </div>
+
+  <!-- Campaign Header Card (green gradient) -->
+  <div style="margin-top:0" class="fade-in" style="animation-delay:0.05s">
+    <div class="wallet">
+      <div class="wallet-glow wallet-glow-1"></div>
+      <div class="wallet-glow wallet-glow-2"></div>
+      <div style="font-size:15px; font-weight:700; position:relative; z-index:1" id="headerProjectName"></div>
+      <div style="display:flex; justify-content:space-between; margin-top:16px; position:relative; z-index:1">
+        <div>
+          <p style="font-size:12px; opacity:0.8">Raised</p>
+          <p style="font-size:22px; font-weight:700; margin-top:4px" id="raisedAmount"></p>
+        </div>
+        <div style="text-align:right">
+          <p style="font-size:12px; opacity:0.8">Remaining</p>
+          <p style="font-size:22px; font-weight:700; margin-top:4px" id="daysRemaining"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Timeline Card -->
+  <div class="section fade-in" style="animation-delay:0.05s">
+    <div class="card card-pad">
+      <div class="card-body">
+        <div style="font-size:15px; font-weight:700; color:var(--text); margin-bottom:20px">Progress</div>
+        <div id="timeline"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Your Commitment Card -->
+  <div class="section fade-in" style="animation-delay:0.1s">
+    <div class="card card-pad">
+      <div class="card-body">
+        <div style="font-size:15px; font-weight:700; color:var(--text); margin-bottom:12px">Your Commitment</div>
+        <div class="info-row">
+          <span class="info-label">Amount</span>
+          <span class="info-value">50.000.000 VND</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Commitment Date</span>
+          <span class="info-value">02/04/2025</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">VPay Hold</span>
+          <span class="info-value"><span class="badge badge-success">CONFIRMED</span></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Campaign Stats -->
+  <div class="stats-row fade-in" style="animation-delay:0.15s">
+    <div class="stat-box">
+      <div class="stat-value" id="commitmentCount"></div>
+      <div class="stat-label">Commitments</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-value" id="fundingPct"></div>
+      <div class="stat-label">Subscription Rate</div>
+    </div>
+  </div>
+
+  <!-- Portfolio CTA -->
+  <div style="padding:24px var(--pad) 0 var(--pad); animation-delay:0.2s" class="fade-in">
+    <a href="../oset/portfolio.html" class="btn-primary proto-link" style="margin-bottom:12px">
+      View My Portfolio
+    </a>
+    <a href="../oset/allocation-result.html" class="btn-secondary btn-disabled proto-link" style="pointer-events:none; opacity:0.5">
+      View Allocation Result
+    </a>
+    <p style="font-size:11px; color:var(--text-3); text-align:center; margin-top:8px">Available after allocation</p>
+  </div>
+
+  <div class="bottom-space"></div>
+</div>
+
+<script>
+  const campaign = CAMPAIGNS.find(c => c.status === 'OPEN') || CAMPAIGNS[0];
+  const project = PROJECTS.find(p => p.id === campaign.projectId) || PROJECTS[0];
+
+  // Populate header
+  document.getElementById('headerProjectName').textContent = project.name;
+  document.getElementById('raisedAmount').textContent = formatVNDShortEN(campaign.raisedAmount);
+  const daysRemaining = Math.max(0, Math.ceil((new Date(campaign.endDate) - new Date()) / (1000 * 60 * 60 * 24)));
+  document.getElementById('daysRemaining').textContent = daysRemaining + ' days';
+
+  // Populate stats
+  document.getElementById('commitmentCount').textContent = campaign.commitmentCount;
+  document.getElementById('fundingPct').textContent = Math.round((campaign.raisedAmount / campaign.targetAmount) * 100) + '%';
+
+  // Timeline
+  const TIMELINE_STEPS = [
+    { label: 'Join Whitelist', sublabel: 'Completed', status: 'done', date: '01/04/2025' },
+    { label: 'Investment Commitment', sublabel: 'Completed', status: 'done', date: '02/04/2025' },
+    { label: 'Awaiting Allocation Results', sublabel: 'Processing', status: 'current', date: '' },
+    { label: 'Settlement & Allocation', sublabel: 'Upcoming', status: 'upcoming', date: '' },
+    { label: 'Token Minting Complete', sublabel: 'Upcoming', status: 'upcoming', date: '' },
+  ];
+
+  function renderTimeline() {
+    return TIMELINE_STEPS.map(function(step, idx) {
+      const isLast = idx === TIMELINE_STEPS.length - 1;
+      let iconHtml, lineColor, labelStyle;
+
+      if (step.status === 'done') {
+        iconHtml = `<div style="width:32px; height:32px; border-radius:50%; background:var(--green); display:flex; align-items:center; justify-content:center; flex-shrink:0">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>`;
+        lineColor = 'var(--green)';
+        labelStyle = 'font-size:14px; font-weight:600; color:var(--text)';
+      } else if (step.status === 'current') {
+        iconHtml = `<div style="width:32px; height:32px; border-radius:50%; background:var(--info); display:flex; align-items:center; justify-content:center; flex-shrink:0">
+          <div class="spinner" style="width:16px; height:16px; border-width:2px; border-color:rgba(255,255,255,0.3); border-top-color:white"></div>
+        </div>`;
+        lineColor = '#E5E7EB';
+        labelStyle = 'font-size:14px; font-weight:600; color:var(--info)';
+      } else {
+        iconHtml = `<div style="width:32px; height:32px; border-radius:50%; background:#E5E7EB; display:flex; align-items:center; justify-content:center; flex-shrink:0">
+          <div style="width:8px; height:8px; border-radius:50%; background:var(--text-3)"></div>
+        </div>`;
+        lineColor = '#E5E7EB';
+        labelStyle = 'font-size:14px; color:var(--text-3)';
+      }
+
+      const lineHtml = !isLast
+        ? `<div style="position:absolute; left:15px; top:32px; width:2px; height:calc(100% - 32px); background:${lineColor}"></div>`
+        : '';
+
+      return `
+        <div style="position:relative; display:flex; gap:12px; padding-bottom:${isLast ? '0' : '24px'}">
+          ${lineHtml}
+          ${iconHtml}
+          <div style="flex:1; padding-top:4px">
+            <p style="${labelStyle}">${step.label}</p>
+            <p style="font-size:12px; color:var(--text-2); margin-top:2px">${step.sublabel}${step.date ? ' -- ' + step.date : ''}</p>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  document.getElementById('timeline').innerHTML = renderTimeline();
+</script>
+
+</body>
+</html>

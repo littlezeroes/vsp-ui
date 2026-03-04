@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>First Principles — RWA Investment Platform</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --bg: #0b0f1a;
+    --surface: #111827;
+    --border: #1e293b;
+    --border2: #283044;
+    --accent: #818cf8;
+    --accent-soft: rgba(129,140,248,0.08);
+    --danger: #ef4444;
+    --danger-soft: rgba(239,68,68,0.07);
+    --text: #e2e8f0;
+    --text2: #94a3b8;
+    --text3: #64748b;
+    --text4: #475569;
+    --dim: #334155;
+  }
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.55;
+    padding: 40px 24px;
+  }
+  .poster { max-width: 1200px; margin: 0 auto; }
+
+  /* ── HEADER ── */
+  .header { text-align: center; margin-bottom: 48px; }
+  .header .tag {
+    font-size: 11px; font-weight: 600; letter-spacing: 2.5px;
+    text-transform: uppercase; color: var(--text3); margin-bottom: 14px;
+  }
+  .header h1 { font-size: 36px; font-weight: 900; color: #fff; margin-bottom: 10px; letter-spacing: -0.5px; }
+  .header .subtitle { font-size: 15px; color: var(--text2); max-width: 600px; margin: 0 auto; }
+
+  /* ── BRIEF CONTEXT ── */
+  .context-row {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+    margin-bottom: 44px;
+  }
+  @media (max-width: 700px) { .context-row { grid-template-columns: 1fr; } }
+  .context-box {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 14px; padding: 28px 28px;
+  }
+  .context-box .cb-label {
+    font-size: 13px; font-weight: 700; letter-spacing: 2px;
+    text-transform: uppercase; color: #fff; margin-bottom: 14px;
+  }
+  .context-box .cb-quote {
+    font-size: 22px; font-weight: 600; color: #fff; line-height: 1.65;
+  }
+  .context-box .cb-quote em { color: var(--accent); font-style: normal; font-weight: 800; }
+  .context-box .cb-sub { font-size: 16px; color: #c8d4e8; margin-top: 12px; line-height: 1.6; }
+  .gap-def-grid {
+    display: grid; grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px; margin-top: 18px;
+  }
+  .gap-def {
+    padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border);
+  }
+  .gap-def.trust { background: rgba(129,140,248,0.08); border-color: rgba(129,140,248,0.25); }
+  .gap-def.know  { background: rgba(251,191,36,0.07);  border-color: rgba(251,191,36,0.25); }
+  .gap-def.behav { background: rgba(74,222,128,0.05);  border-color: rgba(74,222,128,0.2); }
+  .gap-def-label {
+    font-size: 11px; font-weight: 700; letter-spacing: 1px;
+    text-transform: uppercase; margin-bottom: 5px;
+  }
+  .gap-def.trust .gap-def-label { color: #818cf8; }
+  .gap-def.know  .gap-def-label { color: #fbbf24; }
+  .gap-def.behav .gap-def-label { color: #4ade80; }
+  .gap-def-desc { font-size: 12px; color: #c8d4e8; line-height: 1.55; }
+
+  /* ── PERSONA ── */
+  .persona {
+    text-align: center; margin-bottom: 32px;
+    font-size: 12px; color: var(--text3);
+  }
+  .persona strong { color: var(--text2); font-weight: 600; }
+
+  /* ── SECTION LABEL ── */
+  .jm-label {
+    font-size: 16px; font-weight: 800; letter-spacing: 1px;
+    text-transform: uppercase; color: #fff; margin-bottom: 18px;
+  }
+
+  /* ── VERTICAL JOURNEY ── */
+  .journey-v { position: relative; margin-bottom: 44px; }
+
+  .journey-v::before {
+    content: '';
+    position: absolute;
+    left: 27px; top: 0; bottom: 0;
+    width: 2px;
+    background: var(--border2);
+  }
+
+  /* Phase card */
+  .phase-card {
+    position: relative;
+    margin-left: 62px;
+    margin-bottom: 24px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 24px 26px;
+  }
+
+  .phase-card::before {
+    content: '';
+    position: absolute;
+    left: -43px; top: 28px;
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    background: var(--border2);
+    border: 3px solid var(--bg);
+  }
+  .phase-card.active::before {
+    background: var(--danger);
+    box-shadow: 0 0 0 4px rgba(239,68,68,0.15);
+  }
+
+  /* Phase header */
+  .pc-header {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 20px;
+  }
+  .pc-name { font-size: 20px; font-weight: 800; color: #fff; }
+  .pc-priority {
+    font-size: 10px; font-weight: 600; padding: 3px 10px;
+    border-radius: 4px; border: 1px solid var(--border);
+    color: var(--text3); margin-left: auto;
+  }
+  .pc-priority.p1 { border-color: rgba(239,68,68,0.4); color: var(--danger); background: rgba(239,68,68,0.06); }
+
+  /* Row label */
+  .pc-row-label {
+    font-size: 10px; font-weight: 700; letter-spacing: 1.5px;
+    text-transform: uppercase; color: var(--text3);
+    margin-bottom: 8px;
+  }
+
+  /* Full-width row */
+  .pc-full-row { margin-bottom: 18px; }
+
+  /* Trust row — right below steps, styled distinctly */
+  .pc-trust-row {
+    background: rgba(74,222,128,0.05);
+    border: 1px solid rgba(74,222,128,0.15);
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-bottom: 18px;
+  }
+  .pc-trust-row .pc-row-label { color: #4ade80; }
+
+  /* 2-col emotion grid */
+  .pc-emo-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 18px;
+  }
+  .pc-emo-col {
+    padding: 16px 18px;
+  }
+  .pc-emo-col.good { border-right: 1px solid var(--border); }
+  .pc-emo-col.bad { background: rgba(239,68,68,0.03); }
+  .pc-emo-col .pc-row-label.good-label { color: #818cf8; }
+  .pc-emo-col .pc-row-label.bad-label { color: #ff6b6b; }
+
+  /* Design row — 2 col */
+  .pc-design-row {
+    border-top: 1px solid var(--border);
+    padding-top: 16px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+  }
+  .pc-design-row > .design-label { grid-column: 1 / -1; margin-bottom: 12px; }
+  .design-col-do {
+    padding-right: 20px;
+    border-right: 1px solid var(--border);
+  }
+  .design-col-ex {
+    padding-left: 20px;
+  }
+  .design-col-header {
+    font-size: 10px; font-weight: 700; letter-spacing: 1.5px;
+    text-transform: uppercase; margin-bottom: 12px;
+  }
+  .design-col-header.avoid { color: #ff6b6b; }
+  .design-col-header.do { color: #4ade80; }
+
+  /* Design items */
+  .di-item {
+    margin-bottom: 10px;
+    display: flex; gap: 8px; align-items: flex-start;
+  }
+  .di-num {
+    font-size: 11px; font-weight: 700; flex-shrink: 0;
+    width: 18px; padding-top: 2px;
+  }
+  .di-num.avoid { color: #ff6b6b; }
+  .di-num.do { color: #4ade80; }
+  .di-body { font-size: 13px; line-height: 1.55; }
+  .di-title { color: #fff; font-weight: 600; }
+  .di-reason { color: #94a3b8; font-size: 12px; margin-top: 2px; }
+  .di-gap {
+    display: inline-block; font-size: 9px; font-weight: 700;
+    letter-spacing: 1px; padding: 1px 6px; border-radius: 3px;
+    margin-left: 6px; vertical-align: middle;
+    text-transform: uppercase;
+  }
+  .di-gap.trust { background: rgba(129,140,248,0.12); color: #818cf8; border: 1px solid rgba(129,140,248,0.25); }
+  .di-gap.know { background: rgba(251,191,36,0.1); color: #fbbf24; border: 1px solid rgba(251,191,36,0.25); }
+  .di-gap.behav { background: rgba(74,222,128,0.08); color: #4ade80; border: 1px solid rgba(74,222,128,0.2); }
+
+  /* old grid — keep for compat */
+  .pc-grid { display: contents; }
+
+  /* Shared micro styles */
+  .thought { font-style: italic; font-size: 14px; color: #fff; margin-bottom: 4px; }
+  .emo-tag {
+    display: inline-block; font-size: 12px; font-weight: 600;
+    padding: 4px 12px; border-radius: 4px; margin: 2px 3px;
+    background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.15);
+    color: #fff;
+  }
+  .emo-tag.neg { border-color: rgba(239,68,68,0.4); color: #ff6b6b; background: rgba(239,68,68,0.08); }
+  .trust-item { font-size: 14px; color: #4ade80; margin-bottom: 5px; display: flex; gap: 6px; align-items: flex-start; }
+  .trust-item::before { content: '✅'; font-size: 13px; flex-shrink: 0; }
+  .touchpoint { font-size: 14px; color: #fff; line-height: 1.7; }
+  .aw-line { font-size: 13px; color: #fff; }
+  .pc-row-label { color: #94a3b8; }
+
+  /* Emotion mini bar (horizontal indicator) */
+  .emo-bar {
+    height: 3px; border-radius: 2px; margin-top: 6px;
+    background: var(--border);
+    position: relative;
+  }
+  .emo-bar-fill {
+    height: 100%; border-radius: 2px;
+    position: absolute; left: 0; top: 0;
+  }
+
+  /* ── BOTTOM ROW: Trust equation + Principles compact ── */
+  .bottom-row {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+    margin-bottom: 36px;
+  }
+  @media (max-width: 700px) { .bottom-row { grid-template-columns: 1fr; } }
+  .bottom-box {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 14px; padding: 24px 26px;
+  }
+  .bottom-box .bb-label {
+    font-size: 11px; font-weight: 700; letter-spacing: 2px;
+    text-transform: uppercase; color: var(--text3); margin-bottom: 14px;
+  }
+  .trust-eq {
+    font-size: 18px; font-weight: 700; color: #fff;
+    margin-bottom: 10px;
+  }
+  .trust-eq .op { color: var(--text3); }
+  .trust-eq-desc { font-size: 13px; color: var(--text2); line-height: 1.7; }
+
+  .principle-list { list-style: none; }
+  .principle-list li {
+    font-size: 14px; color: var(--text2); padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+    display: flex; gap: 10px;
+    line-height: 1.5;
+  }
+  .principle-list li:last-child { border-bottom: none; }
+  .principle-list .pl-num {
+    font-size: 11px; font-weight: 700; color: var(--text3);
+    width: 20px; flex-shrink: 0; text-align: right; padding-top: 1px;
+  }
+
+  /* ── JARGON STRIP ── */
+  .jargon-strip {
+    display: flex; gap: 10px; flex-wrap: wrap;
+    margin-bottom: 36px;
+  }
+  .jargon-chip {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 8px; padding: 10px 16px;
+    font-size: 13px;
+  }
+  .jargon-chip .jc-from { color: var(--text3); text-decoration: line-through; }
+  .jargon-chip .jc-to { color: var(--text2); margin-left: 8px; }
+
+  /* ── GAP ANALYSIS ROW ── */
+  .pc-gap-row {
+    border-top: 1px solid var(--border);
+    padding-top: 14px;
+    margin-top: 16px;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  .pc-gap-row > .gap-row-label {
+    grid-column: 1 / -1;
+    font-size: 10px; font-weight: 700; letter-spacing: 1.5px;
+    text-transform: uppercase; color: var(--text3);
+    margin-bottom: 4px;
+  }
+  .gap-item {
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+  }
+  .gap-item.trust { background: rgba(129,140,248,0.06); border-color: rgba(129,140,248,0.2); }
+  .gap-item.know  { background: rgba(251,191,36,0.06);  border-color: rgba(251,191,36,0.2); }
+  .gap-item.behav { background: rgba(74,222,128,0.04);  border-color: rgba(74,222,128,0.15); }
+  .gap-type {
+    font-size: 10px; font-weight: 700; letter-spacing: 1px;
+    text-transform: uppercase; margin-bottom: 5px;
+  }
+  .gap-item.trust .gap-type { color: #818cf8; }
+  .gap-item.know  .gap-type  { color: #fbbf24; }
+  .gap-item.behav .gap-type  { color: #4ade80; }
+  .gap-why { font-size: 12px; color: var(--text2); line-height: 1.55; }
+
+  /* ── SUCCESS METRIC ROW ── */
+  .pc-metric-row {
+    background: rgba(255,255,255,0.02);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 16px;
+  }
+  .pc-metric-row .pc-row-label { color: #64748b; margin-bottom: 10px; }
+  .metric-section { margin-bottom: 10px; }
+  .metric-section:last-child { margin-bottom: 0; }
+  .metric-section-label {
+    font-size: 10px; font-weight: 700; letter-spacing: 1px;
+    text-transform: uppercase; color: var(--text4);
+    margin-bottom: 6px;
+  }
+  .metric-items { display: flex; flex-wrap: wrap; gap: 6px; }
+  .metric-chip {
+    font-size: 12px; font-weight: 500;
+    padding: 5px 12px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border2);
+    border-radius: 6px;
+    color: var(--text2);
+    line-height: 1.4;
+  }
+  .metric-chip strong { color: #fff; font-weight: 600; }
+
+  /* ── FOOTER ── */
+  .footer {
+    text-align: center; padding-top: 20px;
+    border-top: 1px solid var(--border);
+    font-size: 11px; color: var(--text3);
+  }
+</style>
+</head>
+<body>
+<div class="poster">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="tag">Polaris &middot; First Principles</div>
+    <h1>RWA Investment Platform — User Journey Map</h1>
+    <p class="subtitle">Trần Mai Linh, 29, PM, HCMC — lần đầu đầu tư BĐS token hóa</p>
+  </div>
+
+  <!-- CONTEXT: 2 boxes -->
+  <div class="context-row">
+    <div class="context-box">
+      <div class="cb-label">Câu hỏi cốt lõi</div>
+      <div class="cb-quote">"Làm sao để user <em>tự tin</em> đặt tiền thật vào thứ họ chưa từng nghe, trên platform chưa có track record?"</div>
+      <div class="gap-def-grid">
+        <div class="gap-def trust">
+          <div class="gap-def-label">Trust gap</div>
+          <div class="gap-def-desc">Platform mới, không có track record — chưa đủ legitimacy để nhận tiền thật</div>
+        </div>
+        <div class="gap-def know">
+          <div class="gap-def-label">Knowledge gap</div>
+          <div class="gap-def-desc">Khái niệm mới hoàn toàn — user không đủ hiểu để ra quyết định có cơ sở</div>
+        </div>
+        <div class="gap-def behav">
+          <div class="gap-def-label">Behavior gap</div>
+          <div class="gap-def-desc">Không có reference behavior — đầu tư tài sản vô hình qua app là hành vi chưa từng làm</div>
+        </div>
+      </div>
+    </div>
+    <div class="context-box">
+      <div class="cb-label">Design direction</div>
+      <div class="cb-quote">"Build <em>informed confidence</em>, not FOMO-driven conversion"</div>
+      <div class="cb-sub">User hiểu cái họ mua → <strong style="color:#fff">giữ lâu, đầu tư thêm, giới thiệu người khác.</strong><br>User không hiểu → rút tiền, phàn nàn, trust collapse.</div>
+    </div>
+  </div>
+
+  <!-- GAP ANALYSIS — COMMON -->
+  <div style="margin-bottom: 44px;">
+    <div class="jm-label" style="margin-bottom: 14px;">Tại sao 3 gap này tồn tại?</div>
+    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px;">
+      <div class="gap-item trust" style="padding: 18px 20px;">
+        <div class="gap-type" style="font-size: 12px; margin-bottom: 8px;">Trust gap</div>
+        <div class="gap-why" style="font-size: 13px; line-height: 1.65;">
+          Platform mới + tiền thật + data nhạy cảm (CCCD) — user phải tin trước khi thấy giá trị.
+        </div>
+      </div>
+      <div class="gap-item know" style="padding: 18px 20px;">
+        <div class="gap-type" style="font-size: 12px; margin-bottom: 8px;">Knowledge gap</div>
+        <div class="gap-why" style="font-size: 13px; line-height: 1.65;">
+          Token hóa BĐS là paradigm mới. Jargon tài chính + blockchain — không có reference để so sánh.
+        </div>
+      </div>
+      <div class="gap-item behav" style="padding: 18px 20px;">
+        <div class="gap-type" style="font-size: 12px; margin-bottom: 8px;">Behavior gap</div>
+        <div class="gap-why" style="font-size: 13px; line-height: 1.65;">
+          Mua sắm online ≠ đầu tư. Commit tiền thật vào tài sản vô hình = rào cản tâm lý lớn nhất.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- JOURNEY MAP — VERTICAL -->
+  <div class="jm-label">User Journey Map</div>
+  <div class="journey-v">
+
+    <!-- ─── DISC ─── -->
+    <div class="phase-card">
+      <div class="pc-header">
+        <span class="pc-name">App Discovery</span>
+        <span class="pc-priority">P2 &middot; Entry hook</span>
+      </div>
+      <div class="pc-full-row">
+        <div class="pc-row-label">Các bước</div>
+        <div class="touchpoint">Mở app → Onboarding ≤ 3 màn (skip được) → Browse tự do → Đọc tài sản</div>
+      </div>
+      <div class="pc-trust-row">
+        <div class="pc-row-label">Mục tiêu</div>
+        <div class="trust-item">Onboarding = value pitch, không phải tutorial. Xong là browse ngay — không chặn đăng ký.</div>
+      </div>
+      <div class="pc-emo-grid">
+        <div class="pc-emo-col good">
+          <div class="pc-row-label good-label">💭 User nghĩ</div>
+          <div class="thought">"Ủa đầu tư BĐS từ 1 triệu được à?"</div>
+          <div style="margin-top:10px;">
+            <span class="emo-tag">Tò mò</span>
+            <span class="emo-tag">Hứng khởi</span>
+          </div>
+        </div>
+        <div class="pc-emo-col bad">
+          <div class="pc-row-label bad-label">🚨 Rủi ro</div>
+          <div class="thought">"Quá tốt để là thật — lừa đảo không?"</div>
+          <div style="margin-top:10px;">
+            <span class="emo-tag neg">Nghi ngờ</span>
+            <span class="emo-tag neg">Lo lắng</span>
+          </div>
+        </div>
+      </div>
+      <div class="pc-design-row">
+        <div class="design-label pc-row-label">Design solution</div>
+        <div class="design-col-do">
+          <div class="design-col-header do">✅ Cần làm</div>
+          <div class="di-item"><span class="di-num do">1</span><div class="di-body"><div class="di-title">Onboarding 3 màn, skip được <span class="di-gap know">Knowledge</span> <span class="di-gap trust">Trust</span></div><div class="di-reason">Màn 1: value hook số thật · Màn 2: how it works 1 câu · Màn 3: brand + licensed + số investor thật</div></div></div>
+          <div class="di-item"><span class="di-num do">2</span><div class="di-body"><div class="di-title">Browse tự do — không cần đăng ký <span class="di-gap behav">Behavior</span></div><div class="di-reason">Xem dự án, giá, lợi nhuận kỳ vọng trước. Intent cao → mới hỏi commitment.</div></div></div>
+          <div class="di-item"><span class="di-num do">3</span><div class="di-body"><div class="di-title">Trust anchor bằng số thật <span class="di-gap trust">Trust</span></div><div class="di-reason">Chỉ show social proof khi có số thực — số ảo phản tác dụng.</div></div></div>
+        </div>
+        <div class="design-col-ex">
+          <div class="design-col-header avoid">✕ Nên tránh</div>
+          <div class="di-item"><span class="di-num avoid">1</span><div class="di-body"><div class="di-title">Onboarding &gt; 3 màn / không skip được</div><div class="di-reason">User skip hết → 3 gap vẫn nguyên</div></div></div>
+          <div class="di-item"><span class="di-num avoid">2</span><div class="di-body"><div class="di-title">Bắt đăng ký ngay sau onboarding</div><div class="di-reason">User cảm giác bị dẫn vào bẫy → drop</div></div></div>
+          <div class="di-item"><span class="di-num avoid">3</span><div class="di-body"><div class="di-title">Giải thích blockchain / kỹ thuật</div><div class="di-reason">User cần lợi ích, không cần cơ chế — mất người ngay màn 1</div></div></div>
+        </div>
+      </div>
+      <div class="pc-metric-row">
+        <div class="pc-row-label">Success Metrics — Maze</div>
+        <div class="metric-section">
+          <div class="metric-items">
+            <div class="metric-chip"><strong>Task completion</strong> xem 1 dự án không đăng ký</div>
+            <div class="metric-chip"><strong>Comprehension</strong> "Platform này bán gì?"</div>
+            <div class="metric-chip"><strong>Misclick rate</strong> CTA đầu trang</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── ONBO ─── -->
+    <div class="phase-card active">
+      <div class="pc-header">
+        <span class="pc-name">Đăng ký &amp; KYC</span>
+        <span class="pc-priority p1">P1 &middot; Gate chính</span>
+      </div>
+      <div class="pc-full-row">
+        <div class="pc-row-label">Các bước</div>
+        <div class="touchpoint">Browse → Calculator → [Click "Đầu tư"] → KYC L2 gate → CCCD + liveness → Unlock tài khoản</div>
+      </div>
+      <div class="pc-trust-row">
+        <div class="pc-row-label">Mục tiêu</div>
+        <div class="trust-item">KYC gate xuất hiện tại điểm intent — user đã thấy giá trị trước khi bị chặn. Frame = "Mở khóa", không phải "Xác minh".</div>
+      </div>
+      <div class="pc-emo-grid">
+        <div class="pc-emo-col good">
+          <div class="pc-row-label good-label">💭 User nghĩ</div>
+          <div class="thought">"Để tôi tính xem đầu tư bao nhiêu hợp lý"</div>
+          <div style="margin-top:10px;">
+            <span class="emo-tag">Tính toán</span>
+            <span class="emo-tag">Cân nhắc</span>
+          </div>
+        </div>
+        <div class="pc-emo-col bad">
+          <div class="pc-row-label bad-label">🚨 Rủi ro</div>
+          <div class="thought">"Sao phải chụp CCCD? Thông tin đi đâu?"</div>
+          <div style="margin-top:10px;">
+            <span class="emo-tag neg">Hoang mang</span>
+            <span class="emo-tag neg">Mất tin tưởng</span>
+          </div>
+        </div>
+      </div>
+      <div class="pc-design-row">
+        <div class="design-label pc-row-label">Design solution</div>
+        <div class="design-col-do">
+          <div class="design-col-header do">✅ Cần làm</div>
+          <div class="di-item"><span class="di-num do">1</span><div class="di-body"><div class="di-title">Gate sau khi user đã có intent <span class="di-gap behav">Behavior</span></div><div class="di-reason">Click "Đầu tư" → KYC xuất hiện — motivation cao nhất, không drop</div></div></div>
+          <div class="di-item"><span class="di-num do">2</span><div class="di-body"><div class="di-title">Progress rõ ràng + "85% duyệt tự động" <span class="di-gap trust">Trust</span></div><div class="di-reason">1/3 → 2/3 → 3/3 · Không phải blocker, là cửa unlock</div></div></div>
+          <div class="di-item"><span class="di-num do">3</span><div class="di-body"><div class="di-title">Inline tooltip cho jargon <span class="di-gap know">Knowledge</span></div><div class="di-reason">"Escrow ⓘ" = "Ngân hàng giữ tiền, không vào tay chủ đầu tư"</div></div></div>
+        </div>
+        <div class="design-col-ex">
+          <div class="design-col-header avoid">✕ Nên tránh</div>
+          <div class="di-item"><span class="di-num avoid">1</span><div class="di-body"><div class="di-title">Gate KYC ngay khi mở module</div><div class="di-reason">Chưa thấy giá trị → không có lý do làm KYC 5 phút → drop</div></div></div>
+          <div class="di-item"><span class="di-num avoid">2</span><div class="di-body"><div class="di-title">Màn chờ không có timeline</div><div class="di-reason">30 giây AI mà không có progress → user nghĩ app lỗi → back</div></div></div>
+          <div class="di-item"><span class="di-num avoid">3</span><div class="di-body"><div class="di-title">SPV, Escrow hiển thị không giải thích</div><div class="di-reason">Comprehension anxiety → không dám ký</div></div></div>
+        </div>
+      </div>
+      <div style="margin-top:14px; padding:10px 14px; background:rgba(251,191,36,0.07); border:1px solid rgba(251,191,36,0.2); border-radius:6px; font-size:12px; color:#fbbf24; line-height:1.6;">
+        ⚖️ Khuyến nghị UX — quyết định cuối thuộc Legal/Compliance.
+      </div>
+      <div class="pc-metric-row">
+        <div class="pc-row-label">Success Metrics — Maze</div>
+        <div class="metric-section">
+          <div class="metric-items">
+            <div class="metric-chip"><strong>Task completion</strong> KYC flow</div>
+            <div class="metric-chip"><strong>Time on task</strong> từng bước</div>
+            <div class="metric-chip"><strong>Comprehension</strong> "Escrow là gì?"</div>
+            <div class="metric-chip"><strong>Misclick rate</strong> trong form</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── TOKO ─── -->
+    <div class="phase-card">
+      <div class="pc-header">
+        <span class="pc-name">Tham gia Token Offering</span>
+        <span class="pc-priority">P2 &middot; Điểm căng thẳng cao nhất</span>
+      </div>
+      <div class="pc-full-row">
+        <div class="pc-row-label">Các bước</div>
+        <div class="touchpoint">Đăng ký → Chọn số tiền → Xác nhận thanh toán</div>
+      </div>
+      <div class="pc-trust-row">
+        <div class="pc-row-label">Mục tiêu</div>
+        <div class="trust-item">Quyết định có cơ sở — không phải FOMO. Rủi ro và điều kiện lock phải rõ trước khi confirm.</div>
+      </div>
+      <div class="pc-emo-grid">
+        <div class="pc-emo-col good">
+          <div class="pc-row-label good-label">💭 User nghĩ</div>
+          <div class="thought">"5 triệu → 650k/năm, 1,200 người đã vào rồi"</div>
+          <div style="margin-top:10px;">
+            <span class="emo-tag">Tự tin</span>
+            <span class="emo-tag">Quyết tâm</span>
+          </div>
+        </div>
+        <div class="pc-emo-col bad">
+          <div class="pc-row-label bad-label">🚨 Rủi ro</div>
+          <div class="thought">"Bao nhiêu là đủ? Đổi ý có lấy tiền lại không?"</div>
+          <div style="margin-top:10px;">
+            <span class="emo-tag neg">FOMO</span>
+            <span class="emo-tag neg">Do dự</span>
+          </div>
+        </div>
+      </div>
+      <div class="pc-design-row">
+        <div class="design-label pc-row-label">Design solution</div>
+        <div class="design-col-do">
+          <div class="design-col-header do">✅ Cần làm</div>
+          <div class="di-item"><span class="di-num do">1</span><div class="di-body"><div class="di-title">Simulator trước khi commit <span class="di-gap know">Knowledge</span></div><div class="di-reason">Nhập số tiền → hiện ngay "500 token · 650k/năm · lock 90 ngày"</div></div></div>
+          <div class="di-item"><span class="di-num do">2</span><div class="di-body"><div class="di-title">Rủi ro + điều kiện lock trước confirm <span class="di-gap trust">Trust</span></div><div class="di-reason">Nói rõ trước mặt — không giấu trong T&C</div></div></div>
+          <div class="di-item"><span class="di-num do">3</span><div class="di-body"><div class="di-title">Social proof realtime <span class="di-gap trust">Trust</span></div><div class="di-reason">"1,247 nhà đầu tư · 80% · Còn 2 ngày" — số thật, có progress bar</div></div></div>
+        </div>
+        <div class="design-col-ex">
+          <div class="design-col-header avoid">✕ Nên tránh</div>
+          <div class="di-item"><span class="di-num avoid">1</span><div class="di-body"><div class="di-title">Chỉ có nút "Đầu tư ngay"</div><div class="di-reason">Không context → user đoán số → regret sau commit</div></div></div>
+          <div class="di-item"><span class="di-num avoid">2</span><div class="di-body"><div class="di-title">Countdown timer</div><div class="di-reason">FOMO → quyết định thiếu cơ sở → churn khi tỉnh táo</div></div></div>
+          <div class="di-item"><span class="di-num avoid">3</span><div class="di-body"><div class="di-title">Giấu rủi ro trong T&C</div><div class="di-reason">Ký mà không hiểu → phàn nàn → trust collapse</div></div></div>
+        </div>
+      </div>
+      <div class="pc-metric-row">
+        <div class="pc-row-label">Success Metrics — Maze</div>
+        <div class="metric-section">
+          <div class="metric-items">
+            <div class="metric-chip"><strong>Task completion</strong> commit 5 triệu</div>
+            <div class="metric-chip"><strong>Confidence score</strong> 1–5 sau khi chọn số tiền</div>
+            <div class="metric-chip"><strong>Time on task</strong> bước confirm</div>
+            <div class="metric-chip"><strong>Misclick rate</strong> có đọc risk không</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── OSET ─── -->
+    <div class="phase-card">
+      <div class="pc-header">
+        <span class="pc-name">Chờ phân bổ Token</span>
+        <span class="pc-priority">P3 &middot; Waiting state</span>
+      </div>
+      <div class="pc-full-row">
+        <div class="pc-row-label">Các bước</div>
+        <div class="touchpoint">Màn hình chờ → Theo dõi tiến độ → Nhận kết quả</div>
+      </div>
+      <div class="pc-trust-row">
+        <div class="pc-row-label">Mục tiêu</div>
+        <div class="trust-item">Không có black box. Push notification chủ động — không để user tự vào check.</div>
+      </div>
+      <div class="pc-emo-grid">
+        <div class="pc-emo-col good">
+          <div class="pc-row-label good-label">💭 User nghĩ</div>
+          <div class="thought">"Bước 3/5 · xong lúc 14:00 · tiền đang trong escrow"</div>
+          <div style="margin-top:10px;">
+            <span class="emo-tag">Yên tâm</span>
+            <span class="emo-tag">Chờ đợi</span>
+          </div>
+        </div>
+        <div class="pc-emo-col bad">
+          <div class="pc-row-label bad-label">🚨 Rủi ro</div>
+          <div class="thought">"Tiền ở đâu? Không có thông tin gì cả?"</div>
+          <div style="margin-top:10px;">
+            <span class="emo-tag neg">Lo lắng</span>
+            <span class="emo-tag neg">Mất tin tưởng</span>
+          </div>
+        </div>
+      </div>
+      <div class="pc-design-row">
+        <div class="design-label pc-row-label">Design solution</div>
+        <div class="design-col-do">
+          <div class="design-col-header do">✅ Cần làm</div>
+          <div class="di-item"><span class="di-num do">1</span><div class="di-body"><div class="di-title">Từng bước chờ có màn riêng <span class="di-gap trust">Trust</span></div><div class="di-reason">"Bước 3/5 · Xác nhận thanh toán · Dự kiến 14:00" — không black box</div></div></div>
+          <div class="di-item"><span class="di-num do">2</span><div class="di-body"><div class="di-title">Push notification từng bước <span class="di-gap behav">Behavior</span></div><div class="di-reason">Chủ động thông báo — không để user tự mò vào check</div></div></div>
+          <div class="di-item"><span class="di-num do">3</span><div class="di-body"><div class="di-title">Kết quả bằng tiếng người <span class="di-gap know">Knowledge</span></div><div class="di-reason">"357 token · 35.7M đ · Hoàn 14.3M đ vào ví" — không phải raw data</div></div></div>
+        </div>
+        <div class="design-col-ex">
+          <div class="design-col-header avoid">✕ Nên tránh</div>
+          <div class="di-item"><span class="di-num avoid">1</span><div class="di-body"><div class="di-title">Spinner "Đang xử lý..."</div><div class="di-reason">Không timeline → user nghĩ mất tiền → gọi support</div></div></div>
+          <div class="di-item"><span class="di-num avoid">2</span><div class="di-body"><div class="di-title">Không push notification</div><div class="di-reason">User tự check liên tục → anxiety loop → mất tin platform</div></div></div>
+          <div class="di-item"><span class="di-num avoid">3</span><div class="di-body"><div class="di-title">Kết quả raw data</div><div class="di-reason">"0.00142 token allocated" → hoang mang, không hiểu lời hay lỗ</div></div></div>
+        </div>
+      </div>
+      <div class="pc-metric-row">
+        <div class="pc-row-label">Success Metrics — Maze</div>
+        <div class="metric-section">
+          <div class="metric-items">
+            <div class="metric-chip"><strong>Task completion</strong> tìm trạng thái đơn</div>
+            <div class="metric-chip"><strong>Comprehension</strong> "Tiền đang ở đâu?"</div>
+            <div class="metric-chip"><strong>Misclick rate</strong> có tìm support không</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── MNTR ─── -->
+    <div class="phase-card">
+      <div class="pc-header">
+        <span class="pc-name">Theo dõi danh mục</span>
+        <span class="pc-priority">P3 &middot; Retention</span>
+      </div>
+      <div class="pc-full-row">
+        <div class="pc-row-label">Các bước</div>
+        <div class="touchpoint">Nhận token → Xem danh mục → Báo cáo tháng</div>
+      </div>
+      <div class="pc-trust-row">
+        <div class="pc-row-label">Mục tiêu</div>
+        <div class="trust-item">Củng cố quyết định đã đầu tư. Tạo vòng lặp re-invest tự nhiên — không ép buộc.</div>
+      </div>
+      <div class="pc-emo-grid">
+        <div class="pc-emo-col good">
+          <div class="pc-row-label good-label">💭 User nghĩ</div>
+          <div class="thought">"Tăng 3.2% — tốt hơn gửi ngân hàng. Campaign mới không?"</div>
+          <div style="margin-top:10px;">
+            <span class="emo-tag">Tự hào</span>
+            <span class="emo-tag">Muốn đầu tư thêm</span>
+          </div>
+        </div>
+        <div class="pc-emo-col bad">
+          <div class="pc-row-label bad-label">🚨 Rủi ro</div>
+          <div class="thought">"Giá xuống — bán không? Không có gì mới, chán rồi"</div>
+          <div style="margin-top:10px;">
+            <span class="emo-tag neg">Lo thị trường</span>
+            <span class="emo-tag neg">Nhàm chán</span>
+          </div>
+        </div>
+      </div>
+      <div class="pc-design-row">
+        <div class="design-label pc-row-label">Design solution</div>
+        <div class="design-col-do">
+          <div class="design-col-header do">✅ Cần làm</div>
+          <div class="di-item"><span class="di-num do">1</span><div class="di-body"><div class="di-title">Dashboard có context đầy đủ <span class="di-gap know">Knowledge</span></div><div class="di-reason">Giá trị VND · % thay đổi · so sánh lãi suất ngân hàng — user tự đánh giá được</div></div></div>
+          <div class="di-item"><span class="di-num do">2</span><div class="di-body"><div class="di-title">Giải thích khi giá biến động <span class="di-gap trust">Trust</span></div><div class="di-reason">Ngắn gọn + nhắc timeline dài hạn — ngăn user bán hoảng</div></div></div>
+          <div class="di-item"><span class="di-num do">3</span><div class="di-body"><div class="di-title">Báo cáo tháng + gợi ý campaign <span class="di-gap behav">Behavior</span></div><div class="di-reason">Lợi nhuận + tiến độ dự án + campaign mới — vòng lặp re-invest tự nhiên</div></div></div>
+        </div>
+        <div class="design-col-ex">
+          <div class="design-col-header avoid">✕ Nên tránh</div>
+          <div class="di-item"><span class="di-num avoid">1</span><div class="di-body"><div class="di-title">Chỉ hiện số token</div><div class="di-reason">User không biết trị giá → không cảm nhận được lợi ích</div></div></div>
+          <div class="di-item"><span class="di-num avoid">2</span><div class="di-body"><div class="di-title">Không giải thích khi giá xuống</div><div class="di-reason">Hoảng loạn → gọi support → đòi rút — churn có thể tránh được</div></div></div>
+          <div class="di-item"><span class="di-num avoid">3</span><div class="di-body"><div class="di-title">Không có action sau khi đầu tư</div><div class="di-reason">Không lý do mở app → không quay lại → re-invest rate = 0</div></div></div>
+        </div>
+      </div>
+      <div class="pc-metric-row">
+        <div class="pc-row-label">Success Metrics — Maze</div>
+        <div class="metric-section">
+          <div class="metric-items">
+            <div class="metric-chip"><strong>Task completion</strong> hiệu suất tháng này</div>
+            <div class="metric-chip"><strong>Comprehension</strong> "Đang lời hay lỗ?"</div>
+            <div class="metric-chip"><strong>Time on task</strong> đọc dashboard</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- BOTTOM: Trust equation + Flow principles -->
+  <div class="bottom-row">
+    <div class="bottom-box">
+      <div class="bb-label">Trust Equation</div>
+      <div class="trust-eq">Trust <span class="op">=</span> (Competence <span class="op">&times;</span> Benevolence) <span class="op">/</span> Perceived Risk</div>
+      <div class="trust-eq-desc">
+        Tăng trust = tăng cả hai &times; giảm perceived risk.<br>
+        Giấu risk không giảm được risk — chỉ làm trust collapse nặng hơn.
+      </div>
+    </div>
+    <div class="bottom-box">
+      <div class="bb-label">5 Flow Principles</div>
+      <ul class="principle-list">
+        <li><span class="pl-num">1.</span> Progressive Commitment — hỏi tiền sau khi trust đã có</li>
+        <li><span class="pl-num">2.</span> Education = Product — inline, không phải help docs</li>
+        <li><span class="pl-num">3.</span> Abstract &rarr; Concrete — jargon ra, plain language vào</li>
+        <li><span class="pl-num">4.</span> Design for Waiting — mỗi waiting state cần reassurance riêng</li>
+        <li><span class="pl-num">5.</span> 1 screen = 1 job — không ôm nhiều quyết định vào 1 màn</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- JARGON STRIP -->
+  <div style="margin-bottom: 6px;">
+    <div class="jm-label">Jargon &rarr; Plain Language</div>
+  </div>
+  <div class="jargon-strip">
+    <div class="jargon-chip"><span class="jc-from">Token</span><span class="jc-to">&rarr; 1 phần nhỏ của căn hộ</span></div>
+    <div class="jargon-chip"><span class="jc-from">Blockchain</span><span class="jc-to">&rarr; Hợp đồng không thể sửa xóa</span></div>
+    <div class="jargon-chip"><span class="jc-from">NAV</span><span class="jc-to">&rarr; Giá trị hiện tại phần bạn nắm</span></div>
+    <div class="jargon-chip"><span class="jc-from">Settlement</span><span class="jc-to">&rarr; Ngày bạn nhận token vào ví</span></div>
+    <div class="jargon-chip"><span class="jc-from">SPV</span><span class="jc-to">&rarr; Công ty lập riêng để nắm BĐS</span></div>
+  </div>
+
+  <div class="footer">Polaris &middot; First Principles &middot; RWA Investment Platform &middot; Feb 2026</div>
+</div>
+</body>
+</html>

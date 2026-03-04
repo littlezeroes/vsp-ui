@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>POLARIS - Allocation Result</title>
+  <script src="https://cdn.tailwindcss.com/4"></script>
+  <link rel="stylesheet" href="../../styles.css">
+  <script src="../../data.js"></script>
+  <script src="../../components.js"></script>
+</head>
+<body class="phone-screen">
+
+<div class="phone">
+
+  <!-- Sub-page header -->
+  <div class="sub-header">
+    <a href="../toko/status-tracking.html" class="btn-circle proto-link">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+    </a>
+    <span class="sub-header-title">Allocation Result</span>
+  </div>
+
+  <!-- Success hero -->
+  <div style="text-align:center; padding:28px var(--pad) 12px var(--pad)" class="fade-in">
+    <div style="width:64px; height:64px; border-radius:50%; background:var(--green-light); display:flex; align-items:center; justify-content:center; margin:0 auto 14px auto">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+    </div>
+    <p style="font-size:20px; font-weight:700; color:var(--text)">Token Offering Complete!</p>
+    <span class="badge badge-success" style="margin-top:8px; display:inline-block">ALLOCATION COMPLETE</span>
+  </div>
+
+  <!-- Token allocation highlight -->
+  <div class="fade-in" style="animation-delay:0.05s; padding:0 var(--pad)">
+    <div class="card" style="background:linear-gradient(145deg, #1A6B52 0%, #00B894 50%, #2ED8A3 100%); color:white; border-radius:var(--r16); padding:24px; text-align:center; position:relative; overflow:hidden">
+      <div style="position:absolute; top:-30px; right:-20px; width:120px; height:120px; background:radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%); border-radius:50%; pointer-events:none"></div>
+      <p style="font-size:13px; opacity:0.85; margin-bottom:8px">Allocated Tokens</p>
+      <p style="font-size:32px; font-weight:700; letter-spacing:-0.5px" id="allocTokens"></p>
+      <p style="font-size:13px; opacity:0.75; margin-top:6px" id="tokenPriceLabel"></p>
+    </div>
+  </div>
+
+  <!-- Project info -->
+  <div class="section fade-in" style="animation-delay:0.1s">
+    <div class="section-head">
+      <span class="section-title">Project Information</span>
+    </div>
+    <div class="card card-pad">
+      <div class="card-body" style="display:flex; align-items:center; gap:12px; margin-bottom:12px">
+        <div style="width:44px; height:44px; border-radius:var(--r12); background:linear-gradient(135deg, #667eea, #764ba2); display:flex; align-items:center; justify-content:center; color:white; font-size:11px; font-weight:700; flex-shrink:0" id="tokenIcon"></div>
+        <div>
+          <strong style="display:block; font-size:15px; font-weight:700; color:var(--text)" id="projectName"></strong>
+          <p style="font-size:13px; color:var(--text-2); margin-top:2px" id="tokenSymbol"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Allocation summary -->
+  <div class="section fade-in" style="animation-delay:0.15s">
+    <div class="section-head">
+      <span class="section-title">Allocation Summary</span>
+    </div>
+    <div class="card card-pad">
+      <div class="card-body" id="allocDetails"></div>
+    </div>
+  </div>
+
+  <!-- Lock-up info card (conditional) -->
+  <div class="section fade-in" style="animation-delay:0.2s" id="lockupSection" style="display:none">
+    <div class="card card-pad" style="background:#FFFBEB; border:1.5px solid #FDE68A">
+      <div class="card-body">
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:10px">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#D97706" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          <strong style="font-size:14px; color:#92400E">Lock-up Period</strong>
+        </div>
+        <div style="display:flex; align-items:center; justify-content:space-between">
+          <div>
+            <p style="font-size:13px; color:var(--text-2)">Duration</p>
+            <strong style="font-size:15px; color:var(--text)" id="lockupDuration"></strong>
+          </div>
+          <div style="text-align:right">
+            <p style="font-size:13px; color:var(--text-2)">Unlock Date</p>
+            <strong style="font-size:15px; color:var(--text)" id="lockupEndDate"></strong>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Action buttons -->
+  <div style="padding:20px var(--pad) 0 var(--pad); animation-delay:0.25s" class="fade-in">
+    <a href="payment.html" class="btn-primary proto-link" style="margin-bottom:12px">
+      View Breakdown
+    </a>
+    <a href="portfolio.html" class="btn-secondary proto-link">
+      View Portfolio
+    </a>
+  </div>
+
+  <div class="bottom-space"></div>
+
+</div>
+
+<script>
+  const alloc = ACTIVE_ALLOCATION;
+
+  // Token allocation highlight
+  document.getElementById('allocTokens').textContent = alloc.tokensAllocated + ' ' + alloc.tokenSymbol;
+  document.getElementById('tokenPriceLabel').textContent = formatVND(alloc.tokenPrice) + ' / token';
+
+  // Project info
+  document.getElementById('tokenIcon').textContent = alloc.tokenSymbol.substring(0, 3);
+  document.getElementById('projectName').textContent = alloc.projectName;
+  document.getElementById('tokenSymbol').textContent = alloc.tokenSymbol;
+
+  // Allocation summary
+  var demandLabel = alloc.subscriptionRate + '% ' + (alloc.isOversubscribed ? 'Oversubscribed' : 'Subscribed');
+  var demandBadge = '<span class="badge badge-' + (alloc.isOversubscribed ? 'info' : 'success') + '">' + demandLabel + '</span>';
+  var refundBadge = alloc.refundAmount > 0
+    ? '<span class="badge badge-success" style="margin-left:6px">' + alloc.refundStatus + '</span>'
+    : '';
+
+  document.getElementById('allocDetails').innerHTML =
+    renderInfoRow('Committed Amount', formatVND(alloc.commitmentAmount)) +
+    renderInfoRow('Demand Status', demandBadge) +
+    renderInfoRow('Allocation Ratio', alloc.allocationRatio + '%') +
+    renderInfoRow('Tokens Received', alloc.tokensAllocated + ' ' + alloc.tokenSymbol, 'green') +
+    renderInfoRow('Amount Charged', formatVND(alloc.amountCharged), 'green') +
+    (alloc.refundAmount > 0
+      ? renderInfoRow('Refund Amount', formatVND(alloc.refundAmount) + ' ' + refundBadge)
+      : '');
+
+  // Lock-up card (conditional)
+  if (alloc.lockUpDays > 0) {
+    document.getElementById('lockupSection').style.display = '';
+    document.getElementById('lockupDuration').textContent = alloc.lockUpDays + ' days';
+    document.getElementById('lockupEndDate').textContent = formatDateEN(alloc.lockUpEndDate);
+  }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VPay Super-App -- Investor Wireframes</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #F9FAFB;
+      color: #1A1A2E;
+      line-height: 1.5;
+      padding: 32px 24px 64px;
+    }
+    .container { max-width: 720px; margin: 0 auto; }
+
+    /* Header */
+    header { margin-bottom: 32px; border-bottom: 1px solid #E5E7EB; padding-bottom: 20px; }
+    header h1 { font-size: 22px; font-weight: 700; }
+    header p { font-size: 13px; color: #6B7280; margin-top: 4px; }
+    .tag { display: inline-block; margin-top: 8px; font-size: 11px; font-weight: 600; color: #6B7280; background: #F3F4F6; padding: 2px 10px; border-radius: 12px; }
+
+    /* Two-column grid */
+    .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; }
+    @media (max-width: 600px) { .grid { grid-template-columns: 1fr; } }
+
+    /* Phase group */
+    .phase { margin-bottom: 8px; }
+    .phase-label {
+      font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;
+      color: #9CA3AF; margin-bottom: 4px; padding-left: 4px;
+    }
+
+    /* Links */
+    .link-list { list-style: none; }
+    .link-list a {
+      display: flex; align-items: center; gap: 6px;
+      padding: 5px 8px; border-radius: 6px;
+      font-size: 13px; color: #374151; text-decoration: none;
+      transition: background 0.1s;
+    }
+    .link-list a:hover { background: #F3F4F6; color: #111827; }
+    .link-list .dot {
+      width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0;
+      background: #3B82F6;
+    }
+
+    /* Collapsible launch sections */
+    .launch-section {
+      margin-bottom: 24px;
+      border: 1px solid #E5E7EB;
+      border-radius: 10px;
+      background: #FFFFFF;
+    }
+    .launch-section summary {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 20px;
+      cursor: pointer;
+      list-style: none;
+      user-select: none;
+    }
+    .launch-section summary::-webkit-details-marker { display: none; }
+    .launch-section summary::after {
+      content: '▸';
+      font-size: 14px;
+      color: #9CA3AF;
+      transition: transform 0.15s;
+    }
+    .launch-section[open] summary::after { transform: rotate(90deg); }
+    .launch-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: #1A1A2E;
+    }
+    .launch-meta {
+      font-size: 12px;
+      color: #6B7280;
+      margin-left: 10px;
+      font-weight: 400;
+    }
+    .launch-body {
+      padding: 4px 20px 20px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+
+  <header>
+    <h1>POLARIS RWA -- Investor Wireframes</h1>
+    <p>VPay Super-App Team -- Investor (RL_INV) Flow</p>
+    <span class="tag">22 screens</span>
+  </header>
+
+  <!-- ── Alpha Phase ── -->
+  <details class="launch-section" open>
+    <summary>
+      <span><span class="launch-title">Alpha Phase</span><span class="launch-meta">— April 2026 | 22 screens</span></span>
+    </summary>
+    <div class="launch-body">
+      <div class="grid">
+
+        <!-- ── ONBO ── -->
+        <div class="phase">
+          <div class="phase-label">ONBO — VPay Entry & Wallet Setup (3)</div>
+          <ul class="link-list">
+            <li><a target="_blank" href="investor/onbo/vpay-entry.html"><span class="dot"></span>VPay Entry</a></li>
+            <li><a target="_blank" href="investor/onbo/kyc-gate.html"><span class="dot"></span>KYC Gate</a></li>
+            <li><a target="_blank" href="investor/onbo/wallet-setup.html"><span class="dot"></span>Wallet Setup</a></li>
+          </ul>
+        </div>
+
+        <!-- ── PREO ── -->
+        <div class="phase">
+          <div class="phase-label">PREO — Explore Projects (6)</div>
+          <ul class="link-list">
+            <li><a target="_blank" href="investor/preo/home.html"><span class="dot"></span>Home</a></li>
+            <li><a target="_blank" href="investor/preo/project-list.html"><span class="dot"></span>Project List</a></li>
+            <li><a target="_blank" href="investor/preo/project-details.html"><span class="dot"></span>Project Details</a></li>
+            <li><a target="_blank" href="investor/preo/property-list.html"><span class="dot"></span>Property List</a></li>
+            <li><a target="_blank" href="investor/preo/property-details.html"><span class="dot"></span>Property Details</a></li>
+            <li><a target="_blank" href="investor/preo/calculator.html"><span class="dot"></span>Calculator</a></li>
+          </ul>
+        </div>
+
+        <!-- ── TOKO ── -->
+        <div class="phase">
+          <div class="phase-label">TOKO — Buy Tokens (6)</div>
+          <ul class="link-list">
+            <li><a target="_blank" href="investor/toko/campaign-list.html"><span class="dot"></span>Campaign List</a></li>
+            <li><a target="_blank" href="investor/toko/campaign-details.html"><span class="dot"></span>Campaign Details</a></li>
+            <li><a target="_blank" href="investor/toko/whitelist-join.html"><span class="dot"></span>Whitelist Join</a></li>
+            <li><a target="_blank" href="investor/toko/commitment.html"><span class="dot"></span>Commitment</a></li>
+            <li><a target="_blank" href="investor/toko/confirmation.html"><span class="dot"></span>Confirmation</a></li>
+            <li><a target="_blank" href="investor/toko/status-tracking.html"><span class="dot"></span>Status Tracking</a></li>
+          </ul>
+        </div>
+
+        <!-- ── OSET ── -->
+        <div class="phase">
+          <div class="phase-label">OSET — Settlement (5)</div>
+          <ul class="link-list">
+            <li><a target="_blank" href="investor/oset/allocation-result.html"><span class="dot"></span>Allocation Result</a></li>
+            <li><a target="_blank" href="investor/oset/offering-cancelled.html"><span class="dot"></span>Offering Cancelled</a></li>
+            <li><a target="_blank" href="investor/oset/payment.html"><span class="dot"></span>Payment</a></li>
+            <li><a target="_blank" href="investor/oset/token-receipt.html"><span class="dot"></span>Token Receipt</a></li>
+            <li><a target="_blank" href="investor/oset/portfolio.html"><span class="dot"></span>Portfolio</a></li>
+          </ul>
+        </div>
+
+        <!-- ── MNTR ── -->
+        <div class="phase">
+          <div class="phase-label">MNTR — Monitoring (1)</div>
+          <ul class="link-list">
+            <li><a target="_blank" href="investor/mntr/notifications.html"><span class="dot"></span>Notifications</a></li>
+          </ul>
+        </div>
+
+        <!-- ── SUPP ── -->
+        <div class="phase">
+          <div class="phase-label">SUPP — Support (1)</div>
+          <ul class="link-list">
+            <li><a target="_blank" href="investor/supp/submit-ticket.html"><span class="dot"></span>Submit Ticket</a></li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+  </details>
+
+  <footer style="text-align:center; margin-top:48px; font-size:12px; color:#9CA3AF;">
+    POLARIS RWA -- VPay Super-App Team | Investor flow wireframes only
+  </footer>
+
+</div>
+
+</body>
+</html>

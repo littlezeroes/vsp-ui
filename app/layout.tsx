@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { SmoothCornersProvider } from "@/components/providers/smooth-corners-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -24,9 +25,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      {/* eslint-disable-next-line @next/next/no-sync-scripts */}
+      <script src="https://mcp.figma.com/mcp/html-to-design/capture.js" async></script>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <SmoothCornersProvider />
         {children}
       </body>
     </html>

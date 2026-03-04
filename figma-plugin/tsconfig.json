@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "target": "ES2017",
+    "lib": ["ES2017", "DOM"],
+    "strict": true,
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "jsx": "react",
+    "typeRoots": [
+      "./node_modules/@types",
+      "./node_modules/@figma/plugin-typings"
+    ]
+  },
+  "include": ["src/**/*"]
+}

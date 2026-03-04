@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>POLARIS - Join Whitelist</title>
+  <script src="https://cdn.tailwindcss.com/4"></script>
+  <link rel="stylesheet" href="../../styles.css">
+  <script src="../../data.js"></script>
+  <script src="../../components.js"></script>
+</head>
+<body class="phone-screen">
+<div class="phone">
+
+  <!-- Sub-page header -->
+  <div class="sub-header">
+    <a href="campaign-details.html" class="btn-circle proto-link">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+    </a>
+    <span class="sub-header-title">Join Whitelist</span>
+  </div>
+
+  <!-- Campaign Info Card -->
+  <div class="section fade-in">
+    <div class="card card-pad">
+      <div class="card-body">
+        <div style="display:flex; align-items:center; gap:12px; margin-bottom:16px">
+          <div style="width:48px; height:48px; border-radius:var(--r12); background:linear-gradient(135deg, var(--green), #2ED8A3); display:flex; align-items:center; justify-content:center; flex-shrink:0">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v12"/><path d="M8 10h8"/><path d="M8 14h8"/></svg>
+          </div>
+          <div style="flex:1">
+            <div style="font-size:15px; font-weight:700; color:var(--text)" id="projectName"></div>
+            <div style="font-size:13px; color:var(--text-2); margin-top:2px" id="campaignName"></div>
+          </div>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Token Price</span>
+          <span class="info-value" id="tokenPrice"></span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Duration</span>
+          <span class="info-value" id="campaignDates"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Eligibility Card -->
+  <div class="section fade-in" style="animation-delay:0.05s">
+    <div class="card card-pad">
+      <div class="card-body">
+        <div style="font-size:15px; font-weight:700; color:var(--text); margin-bottom:16px">Participation Requirements</div>
+
+        <!-- Check items -->
+        <div id="eligibility"></div>
+
+        <!-- Eligibility result -->
+        <div style="margin-top:12px; padding:10px 16px; background:var(--green-light); border-radius:var(--r8)">
+          <p style="font-size:13px; color:#065F46; font-weight:500">You are eligible to participate in this offering</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Agreement Card -->
+  <div class="section fade-in" style="animation-delay:0.1s">
+    <div class="card card-pad">
+      <div class="card-body">
+        <div style="font-size:15px; font-weight:700; color:var(--text); margin-bottom:16px">Terms</div>
+
+        <div style="display:flex; align-items:flex-start; gap:10px; margin-bottom:16px">
+          <input type="checkbox" id="agree-check" onchange="toggleSubmit()" style="margin-top:3px; width:16px; height:16px; accent-color:var(--green); flex-shrink:0">
+          <label for="agree-check" style="font-size:13px; color:var(--text); line-height:1.5">
+            You agree to the terms of this offering
+          </label>
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:8px">
+          <a href="#" style="font-size:13px; color:var(--green); font-weight:600; text-decoration:none">Offering Terms</a>
+          <a href="#" style="font-size:13px; color:var(--green); font-weight:600; text-decoration:none">Project Information</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Submit Button -->
+  <div style="padding:20px var(--pad) 0 var(--pad); animation-delay:0.15s" class="fade-in">
+    <a href="commitment.html" id="submit-btn" class="btn-primary btn-disabled proto-link">
+      Join Whitelist
+    </a>
+  </div>
+
+  <!-- Note -->
+  <p style="text-align:center; font-size:12px; color:var(--text-2); padding:12px var(--pad) 0 var(--pad)">
+    Joining the whitelist does not guarantee the right to purchase tokens
+  </p>
+
+  <div class="bottom-space"></div>
+</div>
+
+<script>
+  // Data
+  const campaign = CAMPAIGNS.find(c => c.status === 'OPEN') || CAMPAIGNS[0];
+  const project = PROJECTS.find(p => p.id === campaign.projectId) || PROJECTS[0];
+
+  // Populate campaign info
+  document.getElementById('projectName').textContent = project.name;
+  document.getElementById('campaignName').textContent = campaign.name;
+  document.getElementById('tokenPrice').textContent = formatVND(project.tokenPrice);
+  document.getElementById('campaignDates').textContent = formatDateEN(campaign.startDate) + ' - ' + formatDateEN(campaign.endDate);
+
+  // Render check items
+  function renderCheckItem(text, checked) {
+    const bgColor = checked ? 'var(--green-light)' : '#F3F4F6';
+    const iconColor = checked ? 'var(--green)' : 'var(--text-3)';
+    const textColor = checked ? 'var(--text)' : 'var(--text-3)';
+    const icon = checked
+      ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>'
+      : '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+
+    return `
+      <div style="display:flex; align-items:center; gap:12px; padding:10px 0; border-bottom:1px solid #F5F5F5">
+        <div style="width:28px; height:28px; border-radius:50%; background:${bgColor}; display:flex; align-items:center; justify-content:center; color:${iconColor}; flex-shrink:0">
+          ${icon}
+        </div>
+        <span style="font-size:14px; color:${textColor}">${text}</span>
+      </div>
+    `;
+  }
+
+  document.getElementById('eligibility').innerHTML =
+    renderCheckItem('KYC Verified', true) +
+    renderCheckItem('Wallet Connected', true) +
+    renderCheckItem('VPay Account Linked', true);
+
+  // Toggle submit
+  window.toggleSubmit = function() {
+    const btn = document.getElementById('submit-btn');
+    const checked = document.getElementById('agree-check').checked;
+    if (checked) {
+      btn.classList.remove('btn-disabled');
+    } else {
+      btn.classList.add('btn-disabled');
+    }
+  };
+</script>
+
+</body>
+</html>

@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>POLARIS - Properties</title>
+  <script src="https://cdn.tailwindcss.com/4"></script>
+  <link rel="stylesheet" href="../../styles.css">
+  <script src="../../data.js"></script>
+  <script src="../../components.js"></script>
+</head>
+<body class="phone-screen">
+
+<div class="phone">
+
+  <!-- Sub-page header: back + page title -->
+  <div class="sub-header">
+    <a href="javascript:history.back()" class="btn-circle" onclick="history.back();return false">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+    </a>
+    <span class="sub-header-title">Properties</span>
+  </div>
+
+  <!-- Search Bar -->
+  <div class="fade-in" style="padding:0 var(--pad); margin-top:8px">
+    <div style="position:relative">
+      <div style="position:absolute; left:14px; top:50%; transform:translateY(-50%); color:var(--text-3)">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </div>
+      <input type="text" id="searchInput" class="input" style="padding-left:42px" placeholder="Search by address..." oninput="applyFilters()">
+    </div>
+  </div>
+
+  <!-- Filter Chips -->
+  <div class="fade-in" style="display:flex; gap:8px; padding:12px var(--pad) 0; overflow-x:auto; animation-delay:0.05s" id="filterChips">
+    <button onclick="setFilter('All')" class="filter-chip active" style="padding:6px 16px; border-radius:20px; font-size:13px; font-weight:600; border:none; cursor:pointer; white-space:nowrap; background:var(--green); color:white">All</button>
+    <button onclick="setFilter('Apartment')" class="filter-chip" style="padding:6px 16px; border-radius:20px; font-size:13px; font-weight:500; border:1.5px solid #E5E7EB; cursor:pointer; white-space:nowrap; background:var(--white); color:var(--text-2)">Apartment</button>
+    <button onclick="setFilter('Villa')" class="filter-chip" style="padding:6px 16px; border-radius:20px; font-size:13px; font-weight:500; border:1.5px solid #E5E7EB; cursor:pointer; white-space:nowrap; background:var(--white); color:var(--text-2)">Villa</button>
+    <button onclick="setFilter('Shophouse')" class="filter-chip" style="padding:6px 16px; border-radius:20px; font-size:13px; font-weight:500; border:1.5px solid #E5E7EB; cursor:pointer; white-space:nowrap; background:var(--white); color:var(--text-2)">Shophouse</button>
+    <button onclick="setFilter('Penthouse')" class="filter-chip" style="padding:6px 16px; border-radius:20px; font-size:13px; font-weight:500; border:1.5px solid #E5E7EB; cursor:pointer; white-space:nowrap; background:var(--white); color:var(--text-2)">Penthouse</button>
+  </div>
+
+  <!-- Sort Row -->
+  <div class="fade-in" style="display:flex; align-items:center; justify-content:space-between; padding:12px var(--pad) 0; animation-delay:0.1s">
+    <span style="font-size:13px; color:var(--text-2)" id="resultCount"></span>
+    <div style="display:flex; align-items:center; gap:4px; font-size:13px; color:var(--text-2)">
+      <span>Sort by:</span>
+      <select id="sortSelect" onchange="applyFilters()" style="font-size:13px; font-weight:600; color:var(--green); background:transparent; border:none; cursor:pointer; outline:none">
+        <option value="nav-desc">NAV High→Low</option>
+        <option value="nav-asc">NAV Low→High</option>
+        <option value="area-desc">Area Large→Small</option>
+        <option value="area-asc">Area Small→Large</option>
+        <option value="floor-desc">Floor High→Low</option>
+        <option value="floor-asc">Floor Low→High</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Property List -->
+  <div class="section fade-in" style="margin-top:12px; animation-delay:0.15s" id="propertyList"></div>
+
+  <!-- Load More Button -->
+  <div class="fade-in" style="padding:8px var(--pad) 0; animation-delay:0.2s" id="loadMoreWrap">
+    <button onclick="loadMore()" id="loadMoreBtn" class="btn-secondary" style="cursor:pointer; border:none; width:100%">
+      Load More
+    </button>
+  </div>
+
+  <div class="bottom-space"></div>
+
+</div>
+
+<script>
+  // Read projectId from URL params
+  const urlParams = new URLSearchParams(window.location.search);
+  const projectId = urlParams.get('projectId') || 'PRJ-001';
+  const allProperties = PROPERTIES.filter(p => p.projectId === projectId);
+
+  let activeFilter = 'All';
+  let displayCount = 10;
+
+  function getFilteredSorted() {
+    let filtered = allProperties;
+
+    // Filter by type
+    if (activeFilter !== 'All') {
+      filtered = filtered.filter(p => p.type === activeFilter);
+    }
+
+    // Filter by search
+    const query = document.getElementById('searchInput').value.toLowerCase();
+    if (query) {
+      filtered = filtered.filter(p => p.address.toLowerCase().includes(query));
+    }
+
+    // Sort
+    const sort = document.getElementById('sortSelect').value;
+    const [field, dir] = sort.split('-');
+    filtered.sort((a, b) => {
+      const va = a[field];
+      const vb = b[field];
+      return dir === 'desc' ? vb - va : va - vb;
+    });
+
+    return filtered;
+  }
+
+  function renderProperties() {
+    const filtered = getFilteredSorted();
+    const visible = filtered.slice(0, displayCount);
+
+    document.getElementById('resultCount').textContent = filtered.length + ' properties';
+
+    const typeIcons = {
+      Apartment: { bg: 'linear-gradient(135deg, #E8F8F5, #D1F2EB)', color: 'var(--green)',
+        svg: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M9 22v-4h6v4"/></svg>' },
+      Villa: { bg: 'linear-gradient(135deg, #FEF3C7, #FDE68A)', color: '#D97706',
+        svg: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>' },
+      Shophouse: { bg: 'linear-gradient(135deg, #EFF6FF, #DBEAFE)', color: '#2563EB',
+        svg: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="15" rx="2"/><path d="M17 22V2H7v20"/><path d="M2 12h20"/></svg>' },
+      Penthouse: { bg: 'linear-gradient(135deg, #EDE9FE, #DDD6FE)', color: '#7C3AED',
+        svg: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 22 8.5 22 22 2 22 2 8.5 12 2"/><path d="M9 22v-6h6v6"/></svg>' },
+    };
+
+    document.getElementById('propertyList').innerHTML = visible.map(prop => {
+      const icon = typeIcons[prop.type] || typeIcons.Apartment;
+      const floorText = prop.floor > 0 ? 'Floor ' + prop.floor : 'Ground';
+      const tokenBadge = prop.tokenized
+        ? '<span style="display:inline-block; padding:2px 8px; border-radius:10px; font-size:10px; font-weight:600; background:#ECFDF5; color:#065F46">Tokenized</span>'
+        : '<span style="display:inline-block; padding:2px 8px; border-radius:10px; font-size:10px; font-weight:600; background:#F3F4F6; color:#6B7280">Not Tokenized</span>';
+
+      return renderListItem({
+        iconBg: icon.bg,
+        iconColor: icon.color,
+        iconSvg: icon.svg,
+        title: prop.address,
+        subtitle: '<span style="font-weight:600">' + prop.type + '</span> | ' + prop.area + ' m\u00B2 | ' + prop.bedrooms + ' BR | ' + floorText + '<br/>' + tokenBadge,
+        rightHtml: '<div class="list-right"><strong style="color:var(--green)">' + formatVNDShort(prop.nav) + '</strong><p>NAV</p></div>',
+        href: 'property-details.html?id=' + prop.id,
+      });
+    }).join('');
+
+    // Show/hide load more
+    const wrap = document.getElementById('loadMoreWrap');
+    if (displayCount >= filtered.length) {
+      wrap.style.display = 'none';
+    } else {
+      wrap.style.display = 'block';
+      document.getElementById('loadMoreBtn').textContent = 'Load More (' + (filtered.length - displayCount) + ' remaining)';
+    }
+  }
+
+  function setFilter(type) {
+    activeFilter = type;
+    displayCount = 10;
+
+    // Update chip styles
+    document.querySelectorAll('#filterChips button').forEach(btn => {
+      if (btn.textContent.trim() === type) {
+        btn.style.background = 'var(--green)';
+        btn.style.color = 'white';
+        btn.style.border = 'none';
+        btn.style.fontWeight = '600';
+      } else {
+        btn.style.background = 'var(--white)';
+        btn.style.color = 'var(--text-2)';
+        btn.style.border = '1.5px solid #E5E7EB';
+        btn.style.fontWeight = '500';
+      }
+    });
+
+    renderProperties();
+  }
+
+  function applyFilters() {
+    displayCount = 10;
+    renderProperties();
+  }
+
+  function loadMore() {
+    displayCount += 10;
+    renderProperties();
+  }
+
+  // Initial render
+  renderProperties();
+</script>
+
+</body>
+</html>

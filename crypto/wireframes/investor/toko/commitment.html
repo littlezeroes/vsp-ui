@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>POLARIS - Investment Commitment</title>
+  <script src="https://cdn.tailwindcss.com/4"></script>
+  <link rel="stylesheet" href="../../styles.css">
+  <script src="../../data.js"></script>
+  <script src="../../components.js"></script>
+</head>
+<body class="phone-screen">
+<div class="phone">
+
+  <!-- Sub-page header -->
+  <div class="sub-header">
+    <a href="whitelist-join.html" class="btn-circle proto-link">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+    </a>
+    <span class="sub-header-title">Investment Commitment</span>
+  </div>
+
+  <!-- Project Summary Card -->
+  <div class="section fade-in">
+    <div class="card card-pad">
+      <div class="card-body">
+        <div style="display:flex; align-items:center; gap:12px">
+          <div style="width:40px; height:40px; border-radius:var(--r8); background:linear-gradient(135deg, var(--green), #2ED8A3); display:flex; align-items:center; justify-content:center; flex-shrink:0">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v12"/><path d="M8 10h8"/><path d="M8 14h8"/></svg>
+          </div>
+          <div>
+            <div style="font-size:15px; font-weight:700; color:var(--text)" id="projectName"></div>
+            <div style="font-size:12px; color:var(--text-2); margin-top:2px" id="projectMeta"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Amount Input Card -->
+  <div class="section fade-in" style="animation-delay:0.05s">
+    <div class="card card-pad">
+      <div class="card-body">
+        <label class="input-label">Commitment Amount</label>
+
+        <!-- Editable Amount Input -->
+        <div style="position:relative; margin-top:4px">
+          <input type="text" id="amount-input" class="input" style="font-size:22px; font-weight:700; padding-right:52px"
+            oninput="onAmountInput(this)" onblur="onAmountBlur(this)">
+          <span style="position:absolute; right:16px; top:50%; transform:translateY(-50%); font-size:14px; color:var(--text-2); font-weight:500">VND</span>
+        </div>
+
+        <!-- Range Slider -->
+        <div style="margin-top:16px">
+          <input type="range" id="investSlider" min="10000000" max="500000000" step="1000000" value="50000000" oninput="onSliderChange(this.value)" style="width:100%; accent-color:var(--green); height:6px; cursor:pointer">
+          <div style="display:flex; justify-content:space-between; margin-top:6px">
+            <span style="font-size:11px; font-weight:500; color:var(--text-3)" id="sliderMin"></span>
+            <span style="font-size:11px; font-weight:500; color:var(--text-3)" id="sliderMax"></span>
+          </div>
+        </div>
+
+        <!-- Admin-set range note -->
+        <div style="margin-top:10px; display:flex; align-items:center; gap:6px">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+          <span style="font-size:11px; color:var(--text-3)">Investment range set by campaign administrator</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Token Estimation -->
+  <div style="padding:0 var(--pad); margin-top:16px; animation-delay:0.1s" class="fade-in">
+    <div style="background:var(--green-light); border-radius:var(--r16); padding:20px; display:flex; align-items:center; justify-content:space-between">
+      <div>
+        <p style="font-size:12px; color:var(--green-dark); font-weight:500">Estimated Token Count</p>
+        <p style="font-size:22px; font-weight:700; color:var(--text); margin-top:4px" id="tokenEstimate"></p>
+      </div>
+      <div style="width:44px; height:44px; border-radius:50%; background:rgba(0,184,148,0.15); display:flex; align-items:center; justify-content:center; color:var(--green)">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v12"/><path d="M8 10h8"/><path d="M8 14h8"/></svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- VPay Hold Warning -->
+  <div class="section fade-in" style="animation-delay:0.15s; margin-top:16px">
+    <div style="background:#FFFBEB; border:1.5px solid #FDE68A; border-radius:var(--r16); padding:16px">
+      <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D97706" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        <span style="font-size:14px; font-weight:600; color:#92400E">VPay Hold</span>
+      </div>
+      <p style="font-size:13px; color:#92400E; line-height:1.5; margin-bottom:8px">
+        The amount will be held in your VPay account until the allocation results are announced.
+      </p>
+      <span class="badge badge-info">HOLD CREATED</span>
+    </div>
+  </div>
+
+  <!-- Actions -->
+  <div style="padding:20px var(--pad) 0 var(--pad); animation-delay:0.2s" class="fade-in">
+    <a href="confirmation.html" class="btn-primary proto-link">
+      Confirm Commitment
+    </a>
+    <a href="campaign-details.html" class="btn-secondary proto-link" style="margin-top:12px">
+      Cancel
+    </a>
+  </div>
+
+  <div class="bottom-space"></div>
+</div>
+
+<script>
+  const campaign = CAMPAIGNS.find(c => c.status === 'OPEN') || CAMPAIGNS[0];
+  const project = PROJECTS.find(p => p.id === campaign.projectId) || PROJECTS[0];
+
+  // Use campaign min/max for slider range
+  const minAmount = campaign.minInvestment || project.minInvestment;
+  const maxAmount = campaign.maxInvestment || 500000000;
+  let commitAmount = Math.max(minAmount, Math.min(50000000, maxAmount));
+
+  // Configure slider range from campaign data
+  const slider = document.getElementById('investSlider');
+  slider.min = minAmount;
+  slider.max = maxAmount;
+  slider.step = project.tokenPrice; // step by 1 token price
+  slider.value = commitAmount;
+  document.getElementById('sliderMin').textContent = 'Min: ' + formatVNDShortEN(minAmount);
+  document.getElementById('sliderMax').textContent = 'Max: ' + formatVNDShortEN(maxAmount);
+
+  // Populate static fields
+  document.getElementById('projectName').textContent = project.name;
+  document.getElementById('projectMeta').textContent = project.tokenSymbol + ' -- ' + formatVND(project.tokenPrice) + '/token';
+
+  function estimateTokens() {
+    return project.tokenPrice > 0 ? Math.floor(commitAmount / project.tokenPrice) : 0;
+  }
+
+  function updateDisplay() {
+    document.getElementById('amount-input').value = new Intl.NumberFormat('vi-VN').format(commitAmount);
+    document.getElementById('tokenEstimate').textContent = estimateTokens() + ' ' + project.tokenSymbol;
+  }
+
+  // Sync: slider -> input + calculation
+  window.onSliderChange = function(val) {
+    commitAmount = parseInt(val);
+    updateDisplay();
+  };
+
+  // Sync: input typing -> slider + calculation
+  window.onAmountInput = function(el) {
+    const raw = el.value.replace(/\./g, '').replace(/\s/g, '');
+    const num = parseInt(raw);
+    if (!isNaN(num) && num > 0) {
+      commitAmount = num;
+      slider.value = Math.max(minAmount, Math.min(num, maxAmount));
+      updateDisplay();
+      // Don't reformat while typing -- let onBlur handle it
+      el.value = raw;
+    }
+  };
+
+  // Sync: on blur -> clamp to min/max and reformat
+  window.onAmountBlur = function(el) {
+    const raw = el.value.replace(/\./g, '').replace(/\s/g, '');
+    let num = parseInt(raw);
+    if (isNaN(num) || num < minAmount) num = minAmount;
+    if (num > maxAmount) num = maxAmount;
+    commitAmount = num;
+    el.value = new Intl.NumberFormat('vi-VN').format(num);
+    slider.value = num;
+    updateDisplay();
+  };
+
+  // Initial display
+  updateDisplay();
+</script>
+
+</body>
+</html>

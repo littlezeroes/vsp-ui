@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>POLARIS - Investment Calculator</title>
+  <script src="https://cdn.tailwindcss.com/4"></script>
+  <link rel="stylesheet" href="../../styles.css">
+  <script src="../../data.js"></script>
+  <script src="../../components.js"></script>
+</head>
+<body class="phone-screen">
+
+<div class="phone">
+
+  <!-- Sub-page header: back + page title -->
+  <div class="sub-header">
+    <a href="javascript:history.back()" class="btn-circle" onclick="history.back();return false">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+    </a>
+    <span class="sub-header-title">Investment Calculator</span>
+  </div>
+
+  <!-- Project Selector (read-only) -->
+  <div class="card card-pad fade-in" style="margin-top:8px">
+    <div class="card-body" style="display:flex; align-items:center; gap:14px">
+      <div class="list-icon" style="background:linear-gradient(135deg, #E8F8F5, #D1F2EB); color:var(--green)">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M9 22v-4h6v4"/></svg>
+      </div>
+      <div>
+        <div style="font-size:15px; font-weight:600; color:var(--text)" id="calcProjectName"></div>
+        <div style="font-size:13px; color:var(--text-2); margin-top:2px" id="calcProjectSymbol"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Investment Amount: Slider + Input -->
+  <div class="card card-pad fade-in" style="margin-top:16px; animation-delay:0.05s">
+    <div class="card-body">
+      <label class="input-label">Investment Amount</label>
+
+      <!-- Editable Amount Input -->
+      <div style="position:relative; margin-top:4px">
+        <input type="text" id="investAmount" class="input" style="font-size:18px; font-weight:700; padding-right:50px" value="50.000.000" oninput="onAmountInput(this)" onblur="onAmountBlur(this)">
+        <span style="position:absolute; right:16px; top:50%; transform:translateY(-50%); font-size:14px; font-weight:500; color:var(--text-3)">VND</span>
+      </div>
+
+      <!-- Range Slider -->
+      <div style="margin-top:16px">
+        <input type="range" id="investSlider" min="10000000" max="500000000" step="1000000" value="50000000" oninput="onSliderChange(this.value)" style="width:100%; accent-color:var(--green); height:6px; cursor:pointer">
+        <!-- Min / Max labels -->
+        <div style="display:flex; justify-content:space-between; margin-top:6px">
+          <span style="font-size:11px; font-weight:500; color:var(--text-3)" id="sliderMin">Min: 10M</span>
+          <span style="font-size:11px; font-weight:500; color:var(--text-3)" id="sliderMax">Max: 500M</span>
+        </div>
+      </div>
+
+      <!-- Admin-set range note -->
+      <div style="margin-top:10px; display:flex; align-items:center; gap:6px">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+        <span style="font-size:11px; color:var(--text-3)">Investment range set by campaign administrator</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Token Quantity Result -->
+  <div class="card card-pad fade-in" style="margin-top:16px; animation-delay:0.1s">
+    <div class="card-body" style="display:flex; justify-content:space-between; align-items:center">
+      <div>
+        <div style="font-size:12px; color:var(--text-2); margin-bottom:4px">Tokens Received</div>
+        <div style="font-size:28px; font-weight:700; color:var(--green)" id="tokenQty">10</div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-size:12px; color:var(--text-2); margin-bottom:4px">Price per Token</div>
+        <div style="font-size:15px; font-weight:600; color:var(--text)" id="tokenPriceDisplay"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Yield Projection Card -->
+  <div class="card card-pad fade-in" style="margin-top:16px; animation-delay:0.15s">
+    <div class="card-body">
+      <div style="font-size:14px; font-weight:600; color:var(--text); margin-bottom:16px">Expected Return</div>
+
+      <!-- 12 months -->
+      <div style="padding-bottom:14px; margin-bottom:14px; border-bottom:1px solid #F5F5F5">
+        <div class="info-row" style="padding:0; border-bottom:none">
+          <span class="info-label">After 12 months</span>
+          <span class="info-value green" id="yield12"></span>
+        </div>
+        <div class="info-row" style="padding:4px 0 0; border-bottom:none">
+          <span style="font-size:12px; color:var(--text-3)">Expected Yield</span>
+          <span style="font-size:12px; font-weight:600; color:var(--green)" id="yieldPct12"></span>
+        </div>
+      </div>
+
+      <!-- 36 months -->
+      <div>
+        <div class="info-row" style="padding:0; border-bottom:none">
+          <span class="info-label">After 36 months</span>
+          <span class="info-value green" id="yield36"></span>
+        </div>
+        <div class="info-row" style="padding:4px 0 0; border-bottom:none">
+          <span style="font-size:12px; color:var(--text-3)">Expected Yield</span>
+          <span style="font-size:12px; font-weight:600; color:var(--green)" id="yieldPct36"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Risk Disclaimer -->
+  <div class="fade-in" style="padding:16px var(--pad) 0; animation-delay:0.2s">
+    <div style="background:#FFFBEB; border:1px solid #FDE68A; border-radius:var(--r12); padding:14px 16px">
+      <p style="font-size:12px; color:#92400E; line-height:1.6">
+        <strong>Disclaimer:</strong> This is an estimate based on the current expected yield. Actual returns may vary. All investments carry risk, including the risk of loss of principal.
+      </p>
+    </div>
+  </div>
+
+  <!-- Invest Button -->
+  <div class="fade-in" style="padding:20px var(--pad) 0; animation-delay:0.25s">
+    <a href="../toko/campaign-list.html" class="btn-primary proto-link">
+      Invest with This Amount
+    </a>
+  </div>
+
+  <div class="bottom-space"></div>
+
+</div>
+
+<script>
+  const project = PROJECTS[0];
+
+  // Look up the active campaign for this project to get admin-set min/max
+  const campaign = CAMPAIGNS.find(c => c.projectId === project.id && (c.status === 'OPEN' || c.status === 'UPCOMING'));
+  const minAmount = campaign ? campaign.minInvestment : project.minInvestment;
+  const maxAmount = campaign ? campaign.maxInvestment : 500000000;
+  let investAmount = Math.max(minAmount, Math.min(50000000, maxAmount));
+
+  // Configure slider range from campaign data
+  const slider = document.getElementById('investSlider');
+  slider.min = minAmount;
+  slider.max = maxAmount;
+  slider.step = project.tokenPrice; // step by 1 token price
+  slider.value = investAmount;
+  document.getElementById('sliderMin').textContent = 'Min: ' + formatVNDShortEN(minAmount);
+  document.getElementById('sliderMax').textContent = 'Max: ' + formatVNDShortEN(maxAmount);
+
+  document.getElementById('calcProjectName').textContent = project.name;
+  document.getElementById('calcProjectSymbol').textContent = project.tokenSymbol + ' | Yield: ' + formatPercent(project.expectedYield) + '/year';
+  document.getElementById('tokenPriceDisplay').textContent = formatVND(project.tokenPrice);
+
+  function updateCalculation() {
+    const tokens = Math.floor(investAmount / project.tokenPrice);
+    document.getElementById('tokenQty').textContent = tokens.toLocaleString('vi-VN');
+
+    const yield12 = Math.round(investAmount * project.expectedYield / 100);
+    const yield36 = Math.round(investAmount * project.expectedYield / 100 * 3);
+
+    document.getElementById('yield12').textContent = '+' + formatVND(yield12);
+    document.getElementById('yieldPct12').textContent = '+' + formatPercent(project.expectedYield);
+    document.getElementById('yield36').textContent = '+' + formatVND(yield36);
+    document.getElementById('yieldPct36').textContent = '+' + formatPercent(project.expectedYield * 3);
+  }
+
+  // Sync: slider → input + calculation
+  function onSliderChange(val) {
+    investAmount = parseInt(val);
+    document.getElementById('investAmount').value = new Intl.NumberFormat('vi-VN').format(investAmount);
+    updateCalculation();
+  }
+
+  // Sync: input typing → slider + calculation (live as user types)
+  function onAmountInput(el) {
+    const raw = el.value.replace(/\./g, '').replace(/\s/g, '');
+    const num = parseInt(raw);
+    if (!isNaN(num) && num > 0) {
+      investAmount = num;
+      slider.value = Math.max(minAmount, Math.min(num, maxAmount));
+      updateCalculation();
+    }
+  }
+
+  // Sync: on blur → clamp to min/max and reformat
+  function onAmountBlur(el) {
+    const raw = el.value.replace(/\./g, '').replace(/\s/g, '');
+    let num = parseInt(raw);
+    if (isNaN(num) || num < minAmount) num = minAmount;
+    if (num > maxAmount) num = maxAmount;
+    investAmount = num;
+    el.value = new Intl.NumberFormat('vi-VN').format(num);
+    slider.value = num;
+    updateCalculation();
+  }
+
+  // Initial display
+  document.getElementById('investAmount').value = new Intl.NumberFormat('vi-VN').format(investAmount);
+  updateCalculation();
+</script>
+
+</body>
+</html>

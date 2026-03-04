@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>POLARIS - Mở khóa đầu tư</title>
+  <script src="https://cdn.tailwindcss.com/4"></script>
+  <link rel="stylesheet" href="../../styles.css">
+  <script src="../../data.js"></script>
+  <script src="../../components.js"></script>
+  <style>
+    /* ── Step Preview ─────────────────────────────────────────────── */
+    .step-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 0;
+    }
+    .step-row + .step-row {
+      border-top: 1px solid var(--bg);
+    }
+    .step-num {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--green-light);
+      color: var(--green-dark);
+      font-size: 12px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .step-label {
+      font-size: 13px;
+      color: var(--text);
+      font-weight: 500;
+      flex: 1;
+    }
+    .step-time {
+      font-size: 11px;
+      color: var(--text-2);
+    }
+
+    /* ── Benefit Row ──────────────────────────────────────────────── */
+    .benefit-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 10px 0;
+    }
+    .benefit-row + .benefit-row {
+      border-top: 1px solid var(--bg);
+    }
+    .benefit-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--r8);
+      background: var(--green-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .benefit-text {
+      flex: 1;
+    }
+    .benefit-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.4;
+    }
+    .benefit-sub {
+      font-size: 12px;
+      color: var(--text-2);
+      line-height: 1.4;
+      margin-top: 2px;
+    }
+
+    /* ── Social Proof ─────────────────────────────────────────────── */
+    .social-proof {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px var(--pad);
+      justify-content: center;
+    }
+    .avatar-stack {
+      display: flex;
+    }
+    .avatar-stack span {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 2px solid white;
+      margin-left: -6px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 9px;
+      font-weight: 700;
+      color: white;
+    }
+    .avatar-stack span:first-child { margin-left: 0; }
+
+    /* ── Intent Banner ────────────────────────────────────────────── */
+    .intent-banner {
+      margin: 0 var(--pad) 0 var(--pad);
+      background: linear-gradient(135deg, #EFF6FF, #DBEAFE);
+      border: 1px solid #BFDBFE;
+      border-radius: var(--r12);
+      padding: 14px 16px;
+    }
+    .intent-label {
+      font-size: 11px;
+      color: #2563EB;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+    .intent-project {
+      font-size: 14px;
+      font-weight: 700;
+      color: #1E40AF;
+    }
+
+    /* ── Security Micro ───────────────────────────────────────────── */
+    .security-micro {
+      text-align: center;
+      font-size: 11px;
+      color: var(--text-2);
+      padding: 0 var(--pad);
+      line-height: 1.5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    /* ── Skip Link ────────────────────────────────────────────────── */
+    .skip-link {
+      display: block;
+      text-align: center;
+      font-size: 13px;
+      color: var(--text-2);
+      padding: 12px var(--pad);
+      text-decoration: none;
+    }
+    .skip-link:hover {
+      color: var(--text);
+    }
+  </style>
+</head>
+<body class="phone-screen">
+<div class="phone">
+
+  <!-- Header: user-centric frame, not "Account Verification" -->
+  <div class="sub-header">
+    <a href="vpay-entry.html" class="btn-circle proto-link">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+    </a>
+    <span class="sub-header-title">Mở khóa đầu tư</span>
+    <div style="width:36px"></div>
+  </div>
+
+  <!-- Intent Context: connect to the project user clicked Đầu tư on -->
+  <div class="intent-banner fade-in" style="margin-top:16px; animation-delay:0s">
+    <div class="intent-label">Dự án bạn quan tâm</div>
+    <div class="intent-project" id="projectName">Landmark 81 · Giai đoạn 1</div>
+  </div>
+
+  <!-- Hero: one clear message, outcome-focused -->
+  <div class="fade-in" style="padding: 20px var(--pad) 4px var(--pad); animation-delay:0.05s">
+    <h2 style="font-size:18px; font-weight:700; color:var(--text); line-height:1.3; margin:0 0 6px 0">
+      Còn 1 bước để bắt đầu đầu tư
+    </h2>
+    <p style="font-size:13px; color:var(--text-2); margin:0; line-height:1.5">
+      Xác minh danh tính để mở khóa toàn bộ tính năng POLARIS — chỉ mất <strong style="color:var(--text)">5 phút</strong>.
+    </p>
+  </div>
+
+  <!-- Step Preview: reduce unknown anxiety -->
+  <div class="section fade-in" style="margin-top:16px; animation-delay:0.1s">
+    <div class="card card-pad">
+      <div class="card-body">
+        <p style="font-size:11px; font-weight:600; color:var(--text-2); letter-spacing:0.04em; text-transform:uppercase; margin-bottom:8px">
+          3 bước đơn giản
+        </p>
+        <div class="step-row">
+          <div class="step-num">1</div>
+          <span class="step-label">Chụp CCCD mặt trước</span>
+          <span class="step-time">~1 phút</span>
+        </div>
+        <div class="step-row">
+          <div class="step-num">2</div>
+          <span class="step-label">Chụp CCCD mặt sau</span>
+          <span class="step-time">~1 phút</span>
+        </div>
+        <div class="step-row">
+          <div class="step-num">3</div>
+          <span class="step-label">Selfie xác nhận</span>
+          <span class="step-time">~30 giây</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Benefits: user-centric, NOT "regulatory compliance" -->
+  <div class="section fade-in" style="margin-top:12px; animation-delay:0.15s">
+    <div class="card card-pad">
+      <div class="card-body">
+        <p style="font-size:11px; font-weight:600; color:var(--text-2); letter-spacing:0.04em; text-transform:uppercase; margin-bottom:8px">
+          Sau khi xác minh, bạn được
+        </p>
+        <div class="benefit-row">
+          <div class="benefit-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          </div>
+          <div class="benefit-text">
+            <div class="benefit-title">Đầu tư không giới hạn số tiền</div>
+            <div class="benefit-sub">Sở hữu nhiều token theo nhu cầu, từ 5 triệu đồng</div>
+          </div>
+        </div>
+        <div class="benefit-row">
+          <div class="benefit-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+          </div>
+          <div class="benefit-text">
+            <div class="benefit-title">Nhận lợi nhuận & rút token dễ dàng</div>
+            <div class="benefit-sub">Lợi nhuận thuê nhà về ví hàng quý, bán token khi muốn</div>
+          </div>
+        </div>
+        <div class="benefit-row">
+          <div class="benefit-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+          <div class="benefit-text">
+            <div class="benefit-title">Quyền lợi được bảo vệ pháp lý</div>
+            <div class="benefit-sub">Token ghi nhận trên blockchain, được pháp lý VN bảo vệ</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Social Proof -->
+  <div class="social-proof fade-in" style="animation-delay:0.2s">
+    <div class="avatar-stack">
+      <span style="background:#4F46E5">N</span>
+      <span style="background:#0891B2">T</span>
+      <span style="background:#059669">M</span>
+      <span style="background:#D97706">H</span>
+    </div>
+    <span style="font-size:12px; color:var(--text-2)">
+      <strong style="color:var(--text)">1,247 nhà đầu tư</strong> đã xác minh thành công
+    </span>
+  </div>
+
+  <!-- Primary CTA: action + time expectation -->
+  <div class="section fade-in" style="animation-delay:0.25s">
+    <a href="kyc-step-cccd-front.html" class="btn-primary proto-link">
+      Bắt đầu xác minh · 5 phút
+    </a>
+  </div>
+
+  <!-- Security Micro-copy -->
+  <div class="security-micro fade-in" style="margin-top:10px; animation-delay:0.3s">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+    <span>Bảo mật bởi VPay · 85% duyệt tự động trong 30 giây</span>
+  </div>
+
+  <!-- Skip: text link only, NOT a button (reduce visual prominence) -->
+  <a href="../preo/home.html?mode=explore" class="skip-link proto-link fade-in" style="animation-delay:0.35s">
+    Xem dự án trước, xác minh sau
+  </a>
+
+  <div class="bottom-space"></div>
+</div>
+
+<script>
+  // Pull project name from URL param or fallback to CAMPAIGNS[0]
+  const params = new URLSearchParams(window.location.search);
+  const projectParam = params.get('project');
+  const campaign = (typeof CAMPAIGNS !== 'undefined' && CAMPAIGNS.length > 0)
+    ? CAMPAIGNS.find(c => c.id === projectParam) || CAMPAIGNS[0]
+    : null;
+  if (campaign) {
+    document.getElementById('projectName').textContent = campaign.name + ' · Giai đoạn 1';
+  }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>POLARIS - Portfolio</title>
+  <script src="https://cdn.tailwindcss.com/4"></script>
+  <link rel="stylesheet" href="../../styles.css">
+  <script src="../../data.js"></script>
+  <script src="../../components.js"></script>
+</head>
+<body class="phone-screen">
+
+<div class="phone">
+
+  <!-- Sub-page header -->
+  <div class="sub-header">
+    <a href="../preo/home.html" class="btn-circle proto-link">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+    </a>
+    <span class="sub-header-title">Portfolio</span>
+  </div>
+
+  <!-- Wallet summary card -->
+  <div id="walletCard" class="fade-in"></div>
+
+  <!-- Stats row -->
+  <div class="stats-row fade-in" style="animation-delay:0.03s">
+    <div class="stat-box">
+      <div class="stat-value" id="tokenCountStat"></div>
+      <div class="stat-label">Tokens</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-value" id="projectCountStat"></div>
+      <div class="stat-label">Projects</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-value" id="balanceStat"></div>
+      <div class="stat-label">Available</div>
+    </div>
+  </div>
+
+  <!-- Refund note (conditional) -->
+  <div id="refundNote" class="fade-in" style="display:none; animation-delay:0.04s; padding:0 var(--pad); margin-bottom:4px">
+    <div style="padding:10px 16px; background:var(--green-light); border-radius:var(--r12); display:flex; align-items:center; gap:8px">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+      <p style="font-size:12px; color:var(--green)" id="refundNoteText"></p>
+    </div>
+  </div>
+
+  <!-- Quick actions row -->
+  <div class="actions-row fade-in" style="animation-delay:0.05s">
+    <a href="../toko/campaign-list.html" class="action-item proto-link">
+      <div class="action-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v12"/><path d="M8 10h8"/><path d="M8 14h8"/></svg>
+      </div>
+      <span class="action-label">Buy More</span>
+    </a>
+    <a href="../xfer/transfer-hub.html" class="action-item proto-link">
+      <div class="action-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+      </div>
+      <span class="action-label">Transfer</span>
+    </a>
+    <a href="../redm/eligibility.html" class="action-item proto-link">
+      <div class="action-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-9-9"/><path d="M21 3v6h-6"/></svg>
+      </div>
+      <span class="action-label">Redeem</span>
+    </a>
+  </div>
+
+  <!-- Holdings section -->
+  <div class="section fade-in" style="animation-delay:0.1s">
+    <div class="section-head">
+      <span class="section-title">Current Holdings</span>
+      <span style="font-size:13px; color:var(--text-2)" id="holdingCount"></span>
+    </div>
+    <div id="holdingsList"></div>
+  </div>
+
+  <!-- Recent transactions -->
+  <div class="section fade-in" style="animation-delay:0.15s">
+    <div class="section-head">
+      <span class="section-title">Transaction History</span>
+      <a href="#" class="section-link proto-link">View All</a>
+    </div>
+    <div class="card card-pad">
+      <div class="card-body" id="recentTx"></div>
+    </div>
+  </div>
+
+  <div class="bottom-space"></div>
+
+</div>
+
+<script>
+  var port = OSET_PORTFOLIO;
+
+  // Render wallet card
+  var valStr = formatVND(port.totalValue).replace(' VND','').replace('VND','');
+  var plPct = port.returnPercentage;
+  document.getElementById('walletCard').innerHTML = renderWalletCard(
+    valStr + ' <span>d</span>',
+    '+' + plPct.toString().replace('.', ',') + '% returns'
+  );
+
+  // Stats row
+  document.getElementById('tokenCountStat').textContent = port.tokenCount;
+  document.getElementById('projectCountStat').textContent = port.projectCount;
+  document.getElementById('balanceStat').textContent = formatVNDShortEN(port.availableBalance);
+
+  // Refund note (conditional)
+  if (port.refundAmount > 0) {
+    document.getElementById('refundNote').style.display = '';
+    document.getElementById('refundNoteText').textContent = port.refundNote;
+  }
+
+  // Holdings count
+  document.getElementById('holdingCount').textContent = port.tokens.length + ' tokens';
+
+  // Render holding cards
+  var gradients = [
+    'linear-gradient(135deg, #667eea, #764ba2)',
+    'linear-gradient(135deg, #43e97b, #38f9d7)',
+    'linear-gradient(135deg, #4facfe, #00f2fe)',
+    'linear-gradient(135deg, #f093fb, #f5576c)',
+    'linear-gradient(135deg, #fa709a, #fee140)',
+  ];
+
+  document.getElementById('holdingsList').innerHTML = port.tokens.map(function(t, i) {
+    var pctVal = t.returnPercentage;
+    var plColor, plSign;
+    if (pctVal > 0) {
+      plColor = 'color:var(--green)';
+      plSign = '+';
+    } else if (pctVal < 0) {
+      plColor = 'color:var(--danger)';
+      plSign = '';
+    } else {
+      plColor = 'color:var(--text-3)';
+      plSign = '';
+    }
+
+    var newBadge = t.isNew
+      ? '<span class="badge badge-info" style="margin-left:6px; font-size:10px">New</span>'
+      : '';
+
+    var lockupRow = '';
+    if (t.lockupStatus === 'LOCKED') {
+      lockupRow = '<div style="display:flex; align-items:center; gap:6px; padding-top:8px; margin-top:8px; border-top:1px solid #F5F5F5">' +
+        '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#D97706" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>' +
+        '<span style="font-size:12px; color:#D97706; font-weight:500">Locked — ' + t.lockupDaysRemaining + ' days remaining</span></div>';
+    } else if (t.lockupStatus === 'UNLOCKED') {
+      lockupRow = '<div style="display:flex; align-items:center; gap:6px; padding-top:8px; margin-top:8px; border-top:1px solid #F5F5F5">' +
+        '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 5-5 5 5 0 0 1 5 5"/></svg>' +
+        '<span style="font-size:12px; color:var(--green); font-weight:500">Unlocked</span></div>';
+    }
+
+    return '<div class="card card-pad fade-in" style="margin-bottom:12px; animation-delay:' + (0.1 + i * 0.05) + 's">' +
+      '<div class="card-body">' +
+        '<div style="display:flex; align-items:center; gap:12px; margin-bottom:12px">' +
+          '<div style="width:40px; height:40px; border-radius:var(--r12); background:' + gradients[i % gradients.length] + '; display:flex; align-items:center; justify-content:center; color:white; font-size:11px; font-weight:700; flex-shrink:0">' +
+            t.tokenSymbol.substring(0, 3) +
+          '</div>' +
+          '<div style="flex:1; min-width:0">' +
+            '<strong style="display:block; font-size:14px; font-weight:600; color:var(--text)">' + t.projectName + '</strong>' +
+            '<p style="font-size:12px; color:var(--text-2); margin-top:2px">' + t.tokenSymbol + newBadge + '</p>' +
+          '</div>' +
+          '<div style="text-align:right">' +
+            '<strong style="display:block; font-size:14px; font-weight:700; color:var(--text)">' + formatVNDShortEN(t.currentValue) + '</strong>' +
+            '<p style="font-size:12px; font-weight:600; margin-top:2px; ' + plColor + '">' + plSign + formatPercent(pctVal) + '</p>' +
+          '</div>' +
+        '</div>' +
+        '<div style="display:flex; justify-content:space-between; font-size:12px; color:var(--text-2); padding-top:10px; border-top:1px solid #F5F5F5">' +
+          '<span>' + t.balance + ' tokens</span>' +
+          '<span>Current price: ' + formatVNDShortEN(t.currentPrice) + '/token</span>' +
+        '</div>' +
+        lockupRow +
+      '</div>' +
+    '</div>';
+  }).join('');
+
+  // Render recent transactions
+  var txTypeConfig = {
+    BUY: { bg: 'linear-gradient(135deg, #E8F8F5, #D1F2EB)', color: 'var(--green)', label: 'Buy' },
+    TRANSFER: { bg: 'linear-gradient(135deg, #EFF6FF, #DBEAFE)', color: 'var(--info)', label: 'Transfer' },
+    REDEEM: { bg: 'linear-gradient(135deg, #FFFBEB, #FEF3C7)', color: 'var(--warning)', label: 'Redeem' },
+  };
+
+  document.getElementById('recentTx').innerHTML = TRANSACTIONS.slice(0, 4).map(function(tx) {
+    var cfg = txTypeConfig[tx.type] || { bg: '#F3F4F6', color: 'var(--text-2)', label: tx.type };
+    return renderListItem({
+      iconBg: cfg.bg,
+      iconColor: cfg.color,
+      iconSvg: tx.type === 'BUY'
+        ? '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>'
+        : tx.type === 'TRANSFER'
+          ? '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>'
+          : '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-9-9"/><path d="M21 3v6h-6"/></svg>',
+      title: tx.projectName,
+      subtitle: cfg.label + ' - ' + formatDateEN(tx.date),
+      rightHtml: '<div class="list-right"><strong>' + formatVNDShortEN(tx.value) + '</strong><p>' + tx.amount + ' ' + tx.tokenSymbol + '</p></div>',
+    });
+  }).join('');
+</script>
+
+</body>
+</html>
