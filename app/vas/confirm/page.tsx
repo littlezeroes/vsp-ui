@@ -65,7 +65,7 @@ const PAYMENT_SOURCES = [
 ]
 
 /* ── Page ──────────────────────────────────────────────────────────────── */
-export default function ConfirmPaymentPage() {
+function ConfirmPaymentContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
 
@@ -273,5 +273,13 @@ export default function ConfirmPaymentPage() {
         }}
       />
     </div>
+  )
+}
+
+export default function ConfirmPaymentPage() {
+  return (
+    <React.Suspense fallback={null}>
+      <ConfirmPaymentContent />
+    </React.Suspense>
   )
 }

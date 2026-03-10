@@ -102,7 +102,7 @@ function SkeletonList() {
 }
 
 /* ── Page ─────────────────────────────────────────────────────────────── */
-export default function ProviderPage() {
+function ProviderContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
 
@@ -209,5 +209,13 @@ export default function ProviderPage() {
         <div className="w-[139px] h-[5px] rounded-full bg-foreground" />
       </div>
     </div>
+  )
+}
+
+export default function ProviderPage() {
+  return (
+    <React.Suspense fallback={null}>
+      <ProviderContent />
+    </React.Suspense>
   )
 }

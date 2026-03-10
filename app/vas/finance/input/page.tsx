@@ -41,7 +41,7 @@ const MOCK_LOAN = {
 }
 
 /* ── Page ──────────────────────────────────────────────────────────────── */
-export default function FinanceInputPage() {
+function FinanceInputContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
 
@@ -289,5 +289,13 @@ export default function FinanceInputPage() {
         </div>
       </BottomSheet>
     </div>
+  )
+}
+
+export default function FinanceInputPage() {
+  return (
+    <React.Suspense fallback={null}>
+      <FinanceInputContent />
+    </React.Suspense>
   )
 }

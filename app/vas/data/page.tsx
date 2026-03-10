@@ -51,7 +51,7 @@ function formatPrice(n: number): string {
 }
 
 /* ── Page ─────────────────────────────────────────────────────────────── */
-export default function DataPage() {
+function DataContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const stateParam = searchParams.get("state") || "empty"
@@ -161,5 +161,13 @@ export default function DataPage() {
         <div className="w-[139px] h-[5px] rounded-full bg-foreground" />
       </div>
     </div>
+  )
+}
+
+export default function DataPage() {
+  return (
+    <React.Suspense fallback={null}>
+      <DataContent />
+    </React.Suspense>
   )
 }

@@ -26,7 +26,7 @@ const PHONES: Record<string, { phone: string; carrier: string }> = {
 type StateParam = "loaded" | "auto-pay-on" | "auto-pay-off" | "confirm-delete"
 
 /* ── Page ──────────────────────────────────────────────────────────────── */
-export default function SavedDetailPage() {
+function SavedDetailContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
 
@@ -210,5 +210,13 @@ export default function SavedDetailPage() {
         }}
       />
     </div>
+  )
+}
+
+export default function SavedDetailPage() {
+  return (
+    <React.Suspense fallback={null}>
+      <SavedDetailContent />
+    </React.Suspense>
   )
 }

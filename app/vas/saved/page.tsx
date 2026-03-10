@@ -43,7 +43,7 @@ type Tab = "bill" | "phone"
 type StateParam = "bill-tab" | "phone-tab" | "empty-bill" | "empty-phone"
 
 /* ── Page ──────────────────────────────────────────────────────────────── */
-export default function SavedManagePage() {
+function SavedManageContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
 
@@ -187,5 +187,13 @@ export default function SavedManagePage() {
         <div className="w-[139px] h-[5px] rounded-full bg-foreground" />
       </div>
     </div>
+  )
+}
+
+export default function SavedManagePage() {
+  return (
+    <React.Suspense fallback={null}>
+      <SavedManageContent />
+    </React.Suspense>
   )
 }

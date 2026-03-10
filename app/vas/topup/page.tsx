@@ -49,7 +49,7 @@ function formatDenom(n: number): string {
 }
 
 /* ── Page ─────────────────────────────────────────────────────────────── */
-export default function TopupPage() {
+function TopupContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const stateParam = searchParams.get("state") || "empty"
@@ -195,5 +195,13 @@ export default function TopupPage() {
         <div className="w-[139px] h-[5px] rounded-full bg-foreground" />
       </div>
     </div>
+  )
+}
+
+export default function TopupPage() {
+  return (
+    <React.Suspense fallback={null}>
+      <TopupContent />
+    </React.Suspense>
   )
 }

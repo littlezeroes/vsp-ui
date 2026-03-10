@@ -33,7 +33,7 @@ function formatDenom(n: number): string {
 }
 
 /* ── Page ─────────────────────────────────────────────────────────────── */
-export default function CardPage() {
+function CardContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const stateParam = searchParams.get("state") || "empty"
@@ -175,5 +175,13 @@ export default function CardPage() {
         <div className="w-[139px] h-[5px] rounded-full bg-foreground" />
       </div>
     </div>
+  )
+}
+
+export default function CardPage() {
+  return (
+    <React.Suspense fallback={null}>
+      <CardContent />
+    </React.Suspense>
   )
 }

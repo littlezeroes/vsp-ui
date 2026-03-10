@@ -45,7 +45,7 @@ const TYPE_ICONS: Record<string, string> = {
 /* ── Page ─────────────────────────────────────────────────────────────── */
 type PageState = "empty" | "typing" | "loading" | "bill-found" | "error-not-found" | "error-network" | "guide-sheet"
 
-export default function BillInputPage() {
+function BillInputContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
 
@@ -283,5 +283,13 @@ export default function BillInputPage() {
         }}
       />
     </div>
+  )
+}
+
+export default function BillInputPage() {
+  return (
+    <React.Suspense fallback={null}>
+      <BillInputContent />
+    </React.Suspense>
   )
 }
