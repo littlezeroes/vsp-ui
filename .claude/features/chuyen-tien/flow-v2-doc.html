@@ -286,12 +286,63 @@
   <tr><td><strong>Nhập người nhận</strong></td><td>Navigate sang page mới (full-screen bank picker &rarr; back)</td><td>Bottom sheet (giữ nguyên context)</td><td>Cake, TCB</td></tr>
   <tr><td><strong>Hiển thị nguồn &rarr; đích</strong></td><td>Chỉ show recipient ở 1 dòng text</td><td>Swap card A&rarr;B (Ví VSP &rarr; Người nhận)</td><td>OKX, Uniswap</td></tr>
   <tr><td><strong>Xác nhận + Auth</strong></td><td>Confirm page riêng &rarr; PIN page riêng</td><td>1 sheet gộp: review + PIN</td><td>Cake, Revolut</td></tr>
-  <tr><td><strong>Bank recipients đã lưu</strong></td><td>Không có &mdash; nhập lại mỗi lần</td><td>Hiện chung "Gần đây", 1-tap chọn</td><td>Tất cả bank</td></tr>
+  <tr><td><strong>Entry screen</strong></td><td>Tab "Tất cả / Ví / NH" + "Gần đây" (auto-recent)</td><td>Smart Input: tự detect SĐT/STK/tên + chỉ "Đã lưu" (opt-in)</td><td>Cake, Revolut</td></tr>
+  <tr><td><strong>Bank recipients đã lưu</strong></td><td>Không có &mdash; nhập lại mỗi lần</td><td>"Đã lưu" — chỉ khi user bật toggle, 1-tap chọn</td><td>Tất cả bank</td></tr>
   <tr><td><strong>Auto-detect ngân hàng</strong></td><td>Chọn thủ công từ danh sách</td><td>Tự nhận diện từ prefix STK</td><td>Cake, LioBank</td></tr>
 </table>
 
 <!-- ══════════════════════════════════════════════ -->
-<h2>2. So sánh từng flow: Cũ vs Mới</h2>
+<h2>2. Entry Screen — Smart Input</h2>
+
+<div class="highlight">
+  <strong>Vấn đề v1:</strong> Quá nhiều element cạnh tranh: 3-tab filter (Tất cả/Ví/NH) + "Gần đây" (auto-recent, noise) + 2 nút nhập tay → user overwhelmed, không biết focus đâu.
+</div>
+
+<h3>Research</h3>
+<table>
+  <tr><th>App</th><th>Entry screen pattern</th><th>P2P vs Bank</th></tr>
+  <tr><td><b>MoMo</b></td><td>2 entry points riêng: "Đến ví MoMo" và "Đến ngân hàng"</td><td>Tách hẳn</td></tr>
+  <tr><td><b>ZaloPay</b></td><td>Tab "Ví ZaloPay" | "Ngân hàng"</td><td>Segment</td></tr>
+  <tr><td><b>Cake</b></td><td>Unified single input, auto-detect</td><td>Gộp</td></tr>
+  <tr><td><b>Revolut</b></td><td>Single search → pick from contacts</td><td>Gộp</td></tr>
+  <tr><td><b>Cash App</b></td><td>Single $Cashtag/phone input</td><td>Chỉ P2P</td></tr>
+  <tr><td><b>Venmo</b></td><td>Single search → contacts</td><td>Chỉ P2P</td></tr>
+  <tr><td><b>GrabPay</b></td><td>Hub cards: "Đến người dùng" / "Đến tài khoản NH"</td><td>Tách</td></tr>
+</table>
+
+<h3>Quyết định: Smart Input (auto-detect)</h3>
+<p>Gộp Cake-style + MoMo insight thành <b>1 input field thông minh</b> — tự detect SĐT / STK / tên:</p>
+
+<table>
+  <tr><th>User nhập</th><th>Pattern</th><th>Auto-detect</th><th>Hành vi</th></tr>
+  <tr><td><code>098...</code></td><td>Bắt đầu <code>0</code>, max 10 số</td><td style="color:var(--red);font-weight:700;">→ Ví VSP</td><td>Filter saved P2P + lookup ví VSP khi đủ 10 số</td></tr>
+  <tr><td><code>1903...</code></td><td>Không bắt đầu <code>0</code>, hoặc &gt;10 số</td><td style="color:#4F46E5;font-weight:700;">→ Ngân hàng</td><td>Auto-detect bank từ BIN prefix + NAPAS lookup tên</td></tr>
+  <tr><td><code>Nam</code></td><td>Chữ cái</td><td style="color:var(--blue);font-weight:700;">→ Tìm tên</td><td>Search across tất cả saved (P2P + Bank)</td></tr>
+</table>
+
+<div class="highlight">
+  <strong>Tại sao bỏ Segmented Control?</strong> Smart input xử lý cả 2 case mà không cần user chọn tab trước. Giảm 1 decision point. User chỉ cần nhập — hệ thống tự hiểu.
+</div>
+
+<h3>Flow theo loại input</h3>
+<ul>
+  <li><b>SĐT (P2P):</b> Nhập → auto-filter saved → đủ 10 số → resolve tên → "Tiếp tục" → Amount</li>
+  <li><b>STK (Bank):</b> Nhập → auto-detect bank (BIN) → resolve tên (NAPAS) → "Tiếp tục" → Amount</li>
+  <li><b>Tên:</b> Nhập → filter saved list (cả P2P + Bank) → tap chọn → Amount</li>
+  <li><b>Tap saved:</b> Tap trực tiếp từ list → Amount (skip input hoàn toàn)</li>
+</ul>
+
+<h3>Lưu người nhận — Opt-in</h3>
+<p>Không show "Gần đây" tự động. Chỉ show những người nhận mà user đã chủ động bật toggle <b>"Lưu người nhận"</b>. Lý do:</p>
+<ul>
+  <li>User chuyển linh tinh → lưu làm gì?</li>
+  <li>Chủ động lưu = danh sách sạch, đúng nhu cầu</li>
+  <li>Saved list hiện <b>tất cả</b> (P2P + Bank) — không cần tab filter</li>
+  <li>Empty state cho user mới: "Chưa có người nhận nào" + helper chips</li>
+</ul>
+
+<!-- ══════════════════════════════════════════════ -->
+<h2>3. So sánh từng flow: Cũ vs Mới</h2>
 
 <!-- ── FLOW A: P2P người cũ ──────────────────── -->
 <div class="flow-compare">
@@ -325,7 +376,7 @@
       <span class="saved-badge">&darr; 2 taps</span>
     </div>
     <div class="steps">
-      <div class="step-box improved"><div class="step-head"><span class="step-type page">PAGE</span> Step 1</div><div class="step-body"><div class="screen-name">Chuyển tiền</div><div class="screen-desc">Unified entry + tabs filter + gần đây (P2P &amp; NH)</div></div></div>
+      <div class="step-box improved"><div class="step-head"><span class="step-type page">PAGE</span> Step 1</div><div class="step-body"><div class="screen-name">Chuyển tiền</div><div class="screen-desc">Smart input + Đã lưu (mixed P2P+Bank)</div></div></div>
       <div class="step-arrow">&rarr;</div>
       <div class="step-box new-step"><div class="step-head"><span class="step-type page">PAGE</span> Step 2</div><div class="step-body"><div class="screen-name">Nhập số tiền</div><div class="screen-desc">Swap card A&rarr;B + numpad + nội dung</div></div></div>
       <div class="step-arrow">&rarr;</div>
@@ -407,7 +458,7 @@
   <div class="flow-row" style="background:#F0FDF4;">
     <div class="flow-row-label"><span class="tag tag-new">MỚI</span> <span class="ver">v2</span><span class="taps new">3</span><span class="taps-unit">taps</span><span class="saved-badge">&darr; 7 taps !!!</span></div>
     <div class="steps">
-      <div class="step-box improved"><div class="step-head"><span class="step-type page">PAGE</span> S1</div><div class="step-body"><div class="screen-name">Entry</div><div class="screen-desc">Tap saved bank recipient (1-tap!)</div></div></div>
+      <div class="step-box improved"><div class="step-head"><span class="step-type page">PAGE</span> S1</div><div class="step-body"><div class="screen-name">Entry</div><div class="screen-desc">Tap saved from mixed list (1-tap!)</div></div></div>
       <div class="step-arrow">&rarr;</div>
       <div class="step-box new-step"><div class="step-head"><span class="step-type page">PAGE</span> S2</div><div class="step-body"><div class="screen-name">Số tiền (A&rarr;B)</div><div class="screen-desc">Swap card show bank info</div></div></div>
       <div class="step-arrow">&rarr;</div>
@@ -465,31 +516,68 @@
 </div>
 
 <!-- ══════════════════════════════════════════════ -->
-<h2>3. UI Wireframes — Flow mới</h2>
+<h2>4. UI Wireframes — Flow mới</h2>
 <p>Xem đầy đủ wireframe interactive: <code>crypto/wireframes/investor/xfer/transfer-hub.html</code></p>
 
-<!-- P2P Flow -->
-<h3><span class="tag tag-p2p">P2P</span> Flow A — Người nhận cũ (4 screens)</h3>
+<!-- Smart Input Entry -->
+<h3>Entry Screen — Smart Input (6 states)</h3>
 <div class="phones-row">
-  <!-- S1: Entry -->
+  <!-- S1: Default (idle) -->
   <div class="phone-col">
-    <div class="phone-col-label">S1 — Entry</div>
+    <div class="phone-col-label">Default (idle)</div>
     <div class="ph">
       <div class="ph-island"></div>
       <div class="ph-body">
         <div class="ph-nav"><div class="ph-back"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1a1a2e" stroke-width="3" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg></div></div>
         <div class="ph-title">Chuyển tiền</div>
-        <div class="ph-search"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg> Tìm tên, SĐT, STK</div>
-        <div class="ph-tabs"><div class="ph-tab on">Tất cả</div><div class="ph-tab">Ví VSP</div><div class="ph-tab">Ngân hàng</div></div>
-        <div class="ph-section">Gần đây</div>
+        <div class="ph-search" style="margin-top:8px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg> SĐT, STK, hoặc tên người nhận</div>
+        <div class="ph-section">Đã lưu</div>
         <div class="ph-row"><div class="ph-avatar">PN</div><div class="ph-info"><div class="ph-name">Phạm Văn Nam</div><div class="ph-sub">0983 882 233</div></div><div class="ph-badge vsp">VSP</div></div>
         <div class="ph-row"><div class="ph-avatar">ĐN</div><div class="ph-info"><div class="ph-name">Đào Văn Nam</div><div class="ph-sub">0901 232 512</div></div><div class="ph-badge vsp">VSP</div></div>
-        <div class="ph-row"><div class="ph-avatar bank">TCB</div><div class="ph-info"><div class="ph-name">Nguyễn Văn Mạnh</div><div class="ph-sub">8288 8121 &middot; Techcombank</div></div><div class="ph-badge">NH</div></div>
-        <div class="ph-row"><div class="ph-avatar bank">VCB</div><div class="ph-info"><div class="ph-name">Trần Thị Lan</div><div class="ph-sub">1023 4567 &middot; Vietcombank</div></div><div class="ph-badge">NH</div></div>
-        <div class="ph-divider"></div>
-        <div class="ph-section">Người nhận mới</div>
-        <div class="ph-manual"><div class="ph-manual-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div><div class="ph-info"><div class="ph-name" style="color:#888">Nhập số điện thoại</div><div class="ph-sub">Ví VSP</div></div></div>
-        <div class="ph-manual"><div class="ph-manual-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><path d="M1 10h22"/></svg></div><div class="ph-info"><div class="ph-name" style="color:#888">Nhập số tài khoản</div><div class="ph-sub">Ngân hàng</div></div></div>
+        <div class="ph-row"><div class="ph-avatar bank">TCB</div><div class="ph-info"><div class="ph-name">Nguyễn Văn Mạnh</div><div class="ph-sub">8288 8121 &middot; TCB</div></div><div class="ph-badge">NH</div></div>
+        <div class="ph-row"><div class="ph-avatar bank">VCB</div><div class="ph-info"><div class="ph-name">Trần Thị Lan</div><div class="ph-sub">1023 4567 &middot; VCB</div></div><div class="ph-badge">NH</div></div>
+        <div style="text-align:center;padding:10px;font-size:9px;color:#aaa;">Tất cả saved &middot; P2P + Bank</div>
+        <div class="ph-home"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S1: Typing SĐT "098" -->
+  <div class="phone-col">
+    <div class="phone-col-label">Typing "098" → P2P</div>
+    <div class="ph">
+      <div class="ph-island"></div>
+      <div class="ph-body">
+        <div class="ph-nav"><div class="ph-back"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1a1a2e" stroke-width="3" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg></div></div>
+        <div class="ph-title">Chuyển tiền</div>
+        <div class="ph-field-input focus" style="margin:8px 16px 0; font-size:14px; font-weight:500;">098<span style="display:inline-block;width:2px;height:16px;background:var(--blue);vertical-align:middle;margin-left:1px;"></span></div>
+        <div style="margin:6px 16px; padding:6px 10px; border-radius:8px; background:#EEF6FF; font-size:10px; font-weight:600; color:var(--blue); display:flex; align-items:center; gap:4px;">&#9742; Nhận diện: SĐT → Ví VSP</div>
+        <div class="ph-section">Đã lưu &middot; khớp "098"</div>
+        <div class="ph-row" style="background:#FFF0F2;border-radius:10px;margin:0 16px;"><div class="ph-avatar">PN</div><div class="ph-info"><div class="ph-name">Phạm Văn Nam</div><div class="ph-sub"><b style="color:var(--red);">098</b>3 882 233</div></div><div class="ph-badge vsp">VSP</div></div>
+        <div style="padding:14px 16px;font-size:11px;color:#888;">Hoặc nhập đủ 10 số để tìm mới</div>
+        <div class="ph-home"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S1: STK resolved -->
+  <div class="phone-col">
+    <div class="phone-col-label">STK → auto bank</div>
+    <div class="ph">
+      <div class="ph-island"></div>
+      <div class="ph-body">
+        <div class="ph-nav"><div class="ph-back"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1a1a2e" stroke-width="3" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg></div></div>
+        <div class="ph-title">Chuyển tiền</div>
+        <div class="ph-field-input ok" style="margin:8px 16px 0; font-size:14px; font-weight:500;">19038291832 <span style="color:var(--green);">&#10003;</span></div>
+        <div style="margin:6px 16px; padding:6px 10px; border-radius:8px; background:#EEF2FF; font-size:10px; font-weight:600; color:#4F46E5; display:flex; align-items:center; gap:4px;">&#10003; STK → Techcombank</div>
+        <div style="margin:6px 16px; padding:10px 12px; background:#EAFBEF; border:1.5px solid var(--green); border-radius:10px; display:flex; align-items:center; gap:10px;">
+          <div class="ph-avatar bank" style="background:#1A1F71;color:#fff;font-size:7px;width:32px;height:32px;">TCB</div>
+          <div class="ph-info"><div class="ph-name">NGUYEN VAN MANH</div><div class="ph-sub">1903 8291 &middot; Techcombank</div></div>
+          <span style="color:var(--green);font-size:14px;">&#10003;</span>
+        </div>
+        <div class="ph-toggle-row"><span>Lưu người nhận</span><div class="ph-toggle"></div></div>
+        <div style="flex:1;"></div>
+        <div style="padding:0 16px;"><div class="ph-cta">Tiếp tục</div></div>
         <div class="ph-home"></div>
       </div>
     </div>
@@ -706,7 +794,7 @@
 </div>
 
 <!-- ══════════════════════════════════════════════ -->
-<h2>4. Benchmark vs Bank Apps VN</h2>
+<h2>5. Benchmark vs Bank Apps VN</h2>
 
 <table>
   <tr><th>App</th><th>Flow bank transfer (new)</th><th>Screens</th><th>Taps</th></tr>
@@ -727,7 +815,7 @@
 </div>
 
 <!-- ══════════════════════════════════════════════ -->
-<h2>5. Edge Cases</h2>
+<h2>6. Edge Cases</h2>
 <table>
   <tr><th style="width:6%">ID</th><th style="width:25%">Case</th><th>Xử lý</th></tr>
   <tr><td><span class="tag tag-edge">E1</span></td><td>STK không tồn tại</td><td>Field đỏ + hint error &middot; CTA disabled</td></tr>
@@ -743,7 +831,7 @@
 </table>
 
 <!-- ══════════════════════════════════════════════ -->
-<h2>6. Component mới cần build</h2>
+<h2>7. Component mới cần build</h2>
 <table>
   <tr><th>Component</th><th>Mô tả</th><th>Dùng ở</th></tr>
   <tr><td><b>SwapCard</b> <span class="tag tag-new">NEW</span></td><td>Card From/To + arrow, kiểu token swap</td><td>Amount screen</td></tr>
@@ -751,9 +839,10 @@
   <tr><td><b>BankPickerSheet</b> <span class="tag tag-new">NEW</span></td><td>Sheet chọn NH (search + popular)</td><td>Trong RecipientSheet</td></tr>
   <tr><td><b>ConfirmPinSheet</b> <span class="tag tag-new">NEW</span></td><td>Review + PIN gộp 1 sheet</td><td>Step 3</td></tr>
   <tr><td><b>AmountInput</b> <span class="tag tag-new">NEW</span></td><td>Số tiền + balance + chips + numpad</td><td>Step 2</td></tr>
+  <tr><td><b>SmartInput</b> <span class="tag tag-new">NEW</span></td><td>Auto-detect SĐT/STK/tên — tự switch context + inline resolve</td><td>Entry screen</td></tr>
 </table>
 
-<h2>7. Open Questions</h2>
+<h2>8. Open Questions</h2>
 <ul>
   <li>QR scan shortcut trên Entry screen?</li>
   <li>Quick amount chips: cố định hay smart suggestion?</li>

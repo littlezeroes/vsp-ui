@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VSP Design Team — Vi + Team</title>
+<style>
+  :root {
+    --bg: #ffffff;
+    --surface: #f8f8f8;
+    --surface2: #f0f0f0;
+    --border: #e5e5e5;
+    --text: #171717;
+    --text2: #525252;
+    --text3: #a3a3a3;
+    --accent: #6366f1;
+    --green: #16a34a;
+    --amber: #d97706;
+    --red: #dc2626;
+    --purple: #7c3aed;
+    --blue: #2563eb;
+    --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font);
+    line-height: 1.6;
+    padding: 40px 20px 80px;
+  }
+
+  .container {
+    max-width: 960px;
+    margin: 0 auto;
+  }
+
+  /* ── Header ── */
+  .hero {
+    text-align: center;
+    padding: 48px 0 40px;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 14px;
+    border-radius: 100px;
+    background: rgba(99, 102, 241, 0.15);
+    color: var(--accent);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    margin-bottom: 16px;
+  }
+
+  .hero h1 {
+    font-size: 32px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    margin-bottom: 8px;
+  }
+
+  .hero h1 span { color: var(--accent); }
+
+  .hero p {
+    font-size: 15px;
+    color: var(--text2);
+    max-width: 520px;
+    margin: 0 auto;
+  }
+
+  /* ── Stats ── */
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 48px;
+  }
+
+  .stat {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px;
+    text-align: center;
+  }
+
+  .stat-value {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--text);
+  }
+
+  .stat-label {
+    font-size: 12px;
+    color: var(--text3);
+    margin-top: 4px;
+    font-weight: 500;
+  }
+
+  /* ── Section titles ── */
+  .section-title {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-bottom: 16px;
+    padding-left: 4px;
+  }
+
+  /* ── Team cards ── */
+  .team-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+    margin-bottom: 48px;
+  }
+
+  .member {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 24px 16px;
+    text-align: center;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+
+  .member:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+  }
+
+  .member-icon {
+    font-size: 36px;
+    margin-bottom: 12px;
+    display: block;
+  }
+
+  .member-name {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 2px;
+  }
+
+  .member-role {
+    font-size: 11px;
+    color: var(--text3);
+    font-weight: 500;
+    margin-bottom: 10px;
+  }
+
+  .member-quote {
+    font-size: 11px;
+    color: var(--text2);
+    font-style: italic;
+    line-height: 1.4;
+  }
+
+  .member-tag {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 100px;
+    font-size: 10px;
+    font-weight: 600;
+    margin-top: 10px;
+  }
+
+  .tag-lead { background: rgba(99, 102, 241, 0.15); color: var(--accent); }
+  .tag-research { background: rgba(59, 130, 246, 0.15); color: var(--blue); }
+  .tag-review { background: rgba(239, 68, 68, 0.15); color: var(--red); }
+  .tag-design { background: rgba(139, 92, 246, 0.15); color: var(--purple); }
+  .tag-qa { background: rgba(34, 197, 94, 0.15); color: var(--green); }
+
+  /* ── Pipeline ── */
+  .pipeline {
+    margin-bottom: 48px;
+  }
+
+  .phase {
+    margin-bottom: 24px;
+  }
+
+  .phase-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  .phase-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .phase-label {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .phase-time {
+    font-size: 11px;
+    color: var(--text3);
+    margin-left: auto;
+    font-weight: 500;
+  }
+
+  .steps {
+    margin-left: 5px;
+    border-left: 2px solid var(--border);
+    padding-left: 24px;
+  }
+
+  .step {
+    position: relative;
+    padding: 10px 16px;
+    margin-bottom: 6px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .step::before {
+    content: '';
+    position: absolute;
+    left: -25px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--border);
+    border: 2px solid var(--bg);
+  }
+
+  .step-number {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text3);
+    min-width: 20px;
+  }
+
+  .step-desc {
+    font-size: 13px;
+    color: var(--text2);
+    flex: 1;
+  }
+
+  .step-agent {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 10px;
+    border-radius: 100px;
+    background: var(--surface2);
+    color: var(--text2);
+    white-space: nowrap;
+  }
+
+  .step-checkpoint {
+    font-size: 10px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 100px;
+    background: rgba(245, 158, 11, 0.15);
+    color: var(--amber);
+    white-space: nowrap;
+    letter-spacing: 0.3px;
+  }
+
+  /* ── Timeline ── */
+  .timeline-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin-bottom: 48px;
+  }
+
+  .timeline-table th {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text3);
+    text-align: left;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border);
+    letter-spacing: 0.3px;
+  }
+
+  .timeline-table td {
+    font-size: 13px;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text2);
+    vertical-align: middle;
+  }
+
+  .timeline-table tr:last-child td {
+    border-bottom: none;
+  }
+
+  .timeline-table tr:hover td {
+    background: var(--surface);
+  }
+
+  .time-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 100px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  .time-fast { background: rgba(34, 197, 94, 0.15); color: var(--green); }
+  .time-mid { background: rgba(245, 158, 11, 0.15); color: var(--amber); }
+  .time-wait { background: rgba(99, 102, 241, 0.15); color: var(--accent); }
+
+  /* ── Output ── */
+  .output-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 48px;
+  }
+
+  .output-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px;
+  }
+
+  .output-card-icon {
+    font-size: 20px;
+    margin-bottom: 8px;
+  }
+
+  .output-card-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+
+  .output-card-desc {
+    font-size: 11px;
+    color: var(--text3);
+    line-height: 1.4;
+  }
+
+  /* ── Footer ── */
+  .footer {
+    text-align: center;
+    padding-top: 32px;
+    border-top: 1px solid var(--border);
+  }
+
+  .footer p {
+    font-size: 12px;
+    color: var(--text3);
+  }
+
+  .footer a {
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 768px) {
+    .stats { grid-template-columns: repeat(2, 1fr); }
+    .team-grid { grid-template-columns: repeat(2, 1fr); }
+    .output-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- ── Hero ── -->
+  <div class="hero">
+    <div class="hero-badge">⚡ AI-POWERED DESIGN TEAM</div>
+    <h1>V-Smart Pay <span>Design Team</span></h1>
+    <p>5 AI agents chạy trên Claude Code — từ BRD đến production-ready prototype trong vài giờ, không phải vài tuần.</p>
+  </div>
+
+  <!-- ── Stats ── -->
+  <div class="stats">
+    <div class="stat">
+      <div class="stat-value">5</div>
+      <div class="stat-label">AI Agents</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value">11</div>
+      <div class="stat-label">Pipeline Steps</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value">4</div>
+      <div class="stat-label">PO Checkpoints</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value">~4h</div>
+      <div class="stat-label">Feature Turnaround</div>
+    </div>
+  </div>
+
+  <!-- ── Team ── -->
+  <div class="section-title">TEAM</div>
+  <div class="team-grid">
+    <div class="member">
+      <span class="member-icon">🤖</span>
+      <div class="member-name">Vi</div>
+      <div class="member-role">Design Lead</div>
+      <div class="member-quote">"Recommend trước, để user chốt"</div>
+      <span class="member-tag tag-lead">Orchestrator</span>
+    </div>
+    <div class="member">
+      <span class="member-icon">🔍</span>
+      <div class="member-name">Nate</div>
+      <div class="member-role">UX Researcher</div>
+      <div class="member-quote">"Khoan, case này chưa cover nè"</div>
+      <span class="member-tag tag-research">Research</span>
+    </div>
+    <div class="member">
+      <span class="member-icon">👹</span>
+      <div class="member-name">Đức</div>
+      <div class="member-role">Senior UX Reviewer</div>
+      <div class="member-quote">"Mày là user mày có hiểu cái này không?"</div>
+      <span class="member-tag tag-review">Critic</span>
+    </div>
+    <div class="member">
+      <span class="member-icon">🎨</span>
+      <div class="member-name">Ivy</div>
+      <div class="member-role">UI Designer</div>
+      <div class="member-quote">"Dùng component có sẵn đi, đừng vẽ lại"</div>
+      <span class="member-tag tag-design">Builder</span>
+    </div>
+    <div class="member">
+      <span class="member-icon">📋</span>
+      <div class="member-name">Khoa</div>
+      <div class="member-role">QA Design</div>
+      <div class="member-quote">"Thiếu empty state, thiếu loading, thiếu error"</div>
+      <span class="member-tag tag-qa">Quality</span>
+    </div>
+  </div>
+
+  <!-- ── Pipeline ── -->
+  <div class="section-title">QUY TRÌNH — 3 PHASES, 11 STEPS</div>
+  <div class="pipeline">
+
+    <!-- Phase A -->
+    <div class="phase">
+      <div class="phase-header">
+        <div class="phase-dot" style="background: var(--blue)"></div>
+        <div class="phase-label">Phase A — Understand</div>
+        <div class="phase-time">~45 phút</div>
+      </div>
+      <div class="steps">
+        <div class="step">
+          <span class="step-number">01</span>
+          <span class="step-desc">Đọc BRD, phân tích gaps, tìm edge cases</span>
+          <span class="step-agent">🔍 Nate</span>
+        </div>
+        <div class="step">
+          <span class="step-number">02</span>
+          <span class="step-desc">Hỏi PO xác nhận gaps & assumptions</span>
+          <span class="step-agent">🤖 Vi</span>
+          <span class="step-checkpoint">CHECKPOINT</span>
+        </div>
+        <div class="step">
+          <span class="step-number">03</span>
+          <span class="step-desc">Design user flows + edge cases</span>
+          <span class="step-agent">🔍 Nate</span>
+        </div>
+        <div class="step">
+          <span class="step-number">04</span>
+          <span class="step-desc">Review flow — chê, debate, đề xuất alternative</span>
+          <span class="step-agent">👹 Đức</span>
+        </div>
+        <div class="step">
+          <span class="step-number">05</span>
+          <span class="step-desc">Show PO kết quả debate, chốt flow</span>
+          <span class="step-agent">🤖 Vi</span>
+          <span class="step-checkpoint">CHECKPOINT</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Phase B -->
+    <div class="phase">
+      <div class="phase-header">
+        <div class="phase-dot" style="background: var(--purple)"></div>
+        <div class="phase-label">Phase B — Plan</div>
+        <div class="phase-time">~30 phút</div>
+      </div>
+      <div class="steps">
+        <div class="step">
+          <span class="step-number">06</span>
+          <span class="step-desc">Tạo screen breakdown — components, states, transitions</span>
+          <span class="step-agent">🎨 Ivy</span>
+        </div>
+        <div class="step">
+          <span class="step-number">07</span>
+          <span class="step-desc">Check state coverage — empty, loading, error cho mọi screen</span>
+          <span class="step-agent">📋 Khoa</span>
+        </div>
+        <div class="step">
+          <span class="step-number">08</span>
+          <span class="step-desc">Show PO screens + states, approve</span>
+          <span class="step-agent">🤖 Vi</span>
+          <span class="step-checkpoint">CHECKPOINT</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Phase C -->
+    <div class="phase">
+      <div class="phase-header">
+        <div class="phase-dot" style="background: var(--green)"></div>
+        <div class="phase-label">Phase C — Build</div>
+        <div class="phase-time">~2.5 giờ</div>
+      </div>
+      <div class="steps">
+        <div class="step">
+          <span class="step-number">09</span>
+          <span class="step-desc">Gen code — parallel agents, mỗi agent 3-4 screens</span>
+          <span class="step-agent">🎨 Ivy</span>
+        </div>
+        <div class="step">
+          <span class="step-number">10</span>
+          <span class="step-desc">Full QA — token check, state coverage, design rules</span>
+          <span class="step-agent">📋 Khoa</span>
+        </div>
+        <div class="step">
+          <span class="step-number">11</span>
+          <span class="step-desc">Final report — states browser + summary</span>
+          <span class="step-agent">🤖 Vi</span>
+          <span class="step-checkpoint">CHECKPOINT</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── Timeline table ── -->
+  <div class="section-title">THỜI GIAN THỰC HIỆN MỖI TASK</div>
+  <table class="timeline-table">
+    <thead>
+      <tr>
+        <th>Task</th>
+        <th>Agent</th>
+        <th>Thời gian</th>
+        <th>Ghi chú</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Phân tích BRD</td>
+        <td>🔍 Nate</td>
+        <td><span class="time-badge time-fast">5-10 phút</span></td>
+        <td>Đọc file, extract requirements, tìm gaps</td>
+      </tr>
+      <tr>
+        <td>PO trả lời gaps</td>
+        <td>🤖 Vi ↔ PO</td>
+        <td><span class="time-badge time-wait">tùy PO</span></td>
+        <td>Pipeline pause tại checkpoint</td>
+      </tr>
+      <tr>
+        <td>Design user flows</td>
+        <td>🔍 Nate</td>
+        <td><span class="time-badge time-fast">10-15 phút</span></td>
+        <td>Flow diagrams + edge case mapping</td>
+      </tr>
+      <tr>
+        <td>Review & debate</td>
+        <td>👹 Đức</td>
+        <td><span class="time-badge time-fast">5-10 phút</span></td>
+        <td>Adversarial review, đề xuất alternatives</td>
+      </tr>
+      <tr>
+        <td>Screen breakdown</td>
+        <td>🎨 Ivy</td>
+        <td><span class="time-badge time-fast">10-15 phút</span></td>
+        <td>Components, props, states per screen</td>
+      </tr>
+      <tr>
+        <td>State coverage QA</td>
+        <td>📋 Khoa</td>
+        <td><span class="time-badge time-fast">5 phút</span></td>
+        <td>Verify empty/loading/error/edge states</td>
+      </tr>
+      <tr>
+        <td>Code gen (12 screens)</td>
+        <td>🎨 Ivy ×3</td>
+        <td><span class="time-badge time-mid">30-45 phút</span></td>
+        <td>3 parallel agents, ~4 screens mỗi agent</td>
+      </tr>
+      <tr>
+        <td>Token QA + fix</td>
+        <td>📋 Khoa</td>
+        <td><span class="time-badge time-fast">10 phút</span></td>
+        <td>Auto-fix loop: check → fix → recheck</td>
+      </tr>
+      <tr>
+        <td>States browser</td>
+        <td>🤖 Vi</td>
+        <td><span class="time-badge time-fast">5 phút</span></td>
+        <td>iPhone preview + flow charts per epic</td>
+      </tr>
+      <tr>
+        <td style="font-weight: 700; color: var(--text);">Tổng (không tính PO wait)</td>
+        <td></td>
+        <td><span class="time-badge time-mid">~3-4 giờ</span></td>
+        <td>Từ BRD đến interactive prototype</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- ── Output files ── -->
+  <div class="section-title">OUTPUT MỖI FEATURE</div>
+  <div class="output-grid">
+    <div class="output-card">
+      <div class="output-card-icon">📄</div>
+      <div class="output-card-name">analysis.md</div>
+      <div class="output-card-desc">BRD analysis, gaps, assumptions cần PO confirm</div>
+    </div>
+    <div class="output-card">
+      <div class="output-card-icon">🔀</div>
+      <div class="output-card-name">flow.md</div>
+      <div class="output-card-desc">User flows, screen map, reuse analysis</div>
+    </div>
+    <div class="output-card">
+      <div class="output-card-icon">⚔️</div>
+      <div class="output-card-name">review.md</div>
+      <div class="output-card-desc">Đức's adversarial review + alternatives</div>
+    </div>
+    <div class="output-card">
+      <div class="output-card-icon">📐</div>
+      <div class="output-card-name">screens.md</div>
+      <div class="output-card-desc">Screen breakdown — components, states, transitions</div>
+    </div>
+    <div class="output-card">
+      <div class="output-card-icon">✅</div>
+      <div class="output-card-name">qa-final.md</div>
+      <div class="output-card-desc">Token check, state coverage, design rule compliance</div>
+    </div>
+    <div class="output-card">
+      <div class="output-card-icon">📊</div>
+      <div class="output-card-name">status.md</div>
+      <div class="output-card-desc">Pipeline status — realtime tracking qua Telegram</div>
+    </div>
+  </div>
+
+  <!-- ── Tech stack ── -->
+  <div class="section-title">INFRASTRUCTURE</div>
+  <table class="timeline-table">
+    <thead>
+      <tr>
+        <th>Layer</th>
+        <th>Tool</th>
+        <th>Cost</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>AI Runtime</td>
+        <td>Claude Code (Claude Max)</td>
+        <td><span class="time-badge time-fast">FREE</span></td>
+      </tr>
+      <tr>
+        <td>Design System</td>
+        <td>Figma VSP_Core-Components</td>
+        <td><span class="time-badge time-fast">FREE</span></td>
+      </tr>
+      <tr>
+        <td>Prototype</td>
+        <td>Next.js + Tailwind v4 + Vercel</td>
+        <td><span class="time-badge time-fast">FREE</span></td>
+      </tr>
+      <tr>
+        <td>Status Relay</td>
+        <td>Vi Telegram (Haiku)</td>
+        <td><span class="time-badge time-fast">~$2/mo</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- ── Footer ── -->
+  <div class="footer">
+    <p>Built by <strong>Vi + Team</strong> — V-Smart Pay Design System</p>
+    <p style="margin-top: 8px;">Pipeline source: <a href="#">.claude/workflows/uxui-pipeline/</a></p>
+  </div>
+
+</div>
+
+</body>
+</html>

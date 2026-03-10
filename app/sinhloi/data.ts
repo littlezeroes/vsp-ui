@@ -1,7 +1,6 @@
-/* ── Sinh lời tự động — Types & Mock Data ─────────────────────────── */
+/* ── Sinh loi tu dong v2 — Types & Mock Data ───────────────────────── */
 
 export type TransactionType = "interest" | "deposit" | "withdrawal"
-export type OtpContext = "activate" | "deactivate" | "deposit" | "withdraw"
 
 export interface SinhLoiTransaction {
   id: string
@@ -13,17 +12,23 @@ export interface SinhLoiTransaction {
 }
 
 export interface SinhLoiConfig {
-  interestRate: number        // 4.5 (%/năm)
-  maxBalance: number          // 100_000_000
-  dailyWithdrawLimit: number  // 30_000_000
-  provider: string            // "ABC"
+  interestRate: number
+  maxBalance: number
+  dailyWithdrawLimit: number
+  monthlyDepositLimit: number
+  provider: string
 }
 
-export interface ChartDataPoint {
-  label: string
-  value: number
-  isHighlight?: boolean
-  isDanger?: boolean
+export interface ProfitMonth {
+  month: number
+  amount: number
+  isEstimate: boolean
+}
+
+export interface ProfitYear {
+  year: number
+  months: ProfitMonth[]
+  total: number
 }
 
 /* ── Config ────────────────────────────────────────────────────────── */
@@ -31,187 +36,128 @@ export const SINHLOI_CONFIG: SinhLoiConfig = {
   interestRate: 4.5,
   maxBalance: 100_000_000,
   dailyWithdrawLimit: 30_000_000,
+  monthlyDepositLimit: 100_000_000,
   provider: "ABC",
 }
 
-/* ── Limits ────────────────────────────────────────────────────────── */
-export const SINHLOI_LIMITS = {
-  minDeposit: 10_000,
-  maxDeposit: 100_000_000,
-  minWithdraw: 10_000,
-  maxWithdraw: 30_000_000,
+/* ── Mock user ─────────────────────────────────────────────────────── */
+export const MOCK_USER = {
+  fullName: "Nguyen Van A",
+  phone: "0912345678",
+  cccd: "012345678901",
+  walletBalance: 25_000_000,
 }
 
-/* ── Mock balance state ────────────────────────────────────────────── */
+/* ── Mock balance ──────────────────────────────────────────────────── */
 export const MOCK_BALANCE = {
   balance: 10_831_048,
   totalInterestEarned: 100_000,
   todayInterest: 2_714,
 }
 
-/* ── Mock chart data (7 days) ──────────────────────────────────────── */
-export const MOCK_CHART_DATA: ChartDataPoint[] = [
-  { label: "30",   value: 3700 },
-  { label: "1/11", value: 1250, isDanger: true },
-  { label: "2",    value: 2500 },
-  { label: "3",    value: 1900 },
-  { label: "4",    value: 2300 },
-  { label: "5",    value: 1800 },
-  { label: "6",    value: 2714, isHighlight: true },
-]
+/* ── Quick amount chips ────────────────────────────────────────────── */
+export const QUICK_AMOUNTS = [500_000, 1_000_000, 5_000_000, 10_000_000]
 
-/* ── Mock transactions (recent — shown on dashboard) ─────────────── */
+/* ── Mock transactions ─────────────────────────────────────────────── */
 export const MOCK_TRANSACTIONS: SinhLoiTransaction[] = [
-  {
-    id: "t1",
-    type: "interest",
-    label: "Tiền lời hằng ngày",
-    amount: 2_714,
-    date: "18:30 • 06/11/2025",
-    status: "success",
-  },
-  {
-    id: "t2",
-    type: "deposit",
-    label: "Nạp tiền",
-    amount: 150_000,
-    date: "18:30 • 06/11/2025",
-    status: "success",
-  },
-  {
-    id: "t3",
-    type: "interest",
-    label: "Tiền lời hằng ngày",
-    amount: 2_672,
-    date: "18:30 • 05/11/2025",
-    status: "success",
-  },
-  {
-    id: "t4",
-    type: "withdrawal",
-    label: "Rút tiền",
-    amount: -200_000,
-    date: "18:30 • 05/11/2025",
-    status: "success",
-  },
-  {
-    id: "t5",
-    type: "deposit",
-    label: "Nạp tiền",
-    amount: 3_000_000,
-    date: "18:30 • 04/11/2025",
-    status: "success",
-  },
+  { id: "t1", type: "interest", label: "Tra lai thang 11", amount: 2_714, date: "06/03/2026", status: "success" },
+  { id: "t2", type: "deposit", label: "Nap tien", amount: 150_000, date: "06/03/2026", status: "success" },
+  { id: "t3", type: "interest", label: "Tra lai thang 10", amount: 2_672, date: "05/03/2026", status: "success" },
 ]
 
-/* ── Full transactions (for history page) ────────────────────────── */
 export const MOCK_TRANSACTIONS_FULL: SinhLoiTransaction[] = [
   ...MOCK_TRANSACTIONS,
+  { id: "t4", type: "withdrawal", label: "Rut tien", amount: -200_000, date: "05/03/2026", status: "success" },
+  { id: "t5", type: "deposit", label: "Nap tien", amount: 3_000_000, date: "04/03/2026", status: "success" },
+  { id: "t6", type: "interest", label: "Tra lai thang 09", amount: 2_650, date: "04/03/2026", status: "success" },
+  { id: "t7", type: "withdrawal", label: "Rut tien", amount: -500_000, date: "03/03/2026", status: "success" },
+  { id: "t8", type: "deposit", label: "Nap tien", amount: 5_000_000, date: "02/03/2026", status: "success" },
+  { id: "t9", type: "interest", label: "Tra lai thang 08", amount: 2_510, date: "02/03/2026", status: "success" },
+  { id: "t10", type: "withdrawal", label: "Rut tien", amount: -1_000_000, date: "01/03/2026", status: "failed" },
+  { id: "t11", type: "deposit", label: "Nap tien", amount: 2_000_000, date: "28/02/2026", status: "pending" },
+]
+
+/* ── Profit data ───────────────────────────────────────────────────── */
+export const MOCK_PROFIT: ProfitYear[] = [
   {
-    id: "t6",
-    type: "interest",
-    label: "Tiền lời hằng ngày",
-    amount: 2_650,
-    date: "18:30 • 04/11/2025",
-    status: "success",
+    year: 2026,
+    total: 28_500,
+    months: [
+      { month: 1, amount: 8_200, isEstimate: false },
+      { month: 2, amount: 9_100, isEstimate: false },
+      { month: 3, amount: 11_200, isEstimate: true },
+    ],
   },
   {
-    id: "t7",
-    type: "withdrawal",
-    label: "Rút tiền",
-    amount: -500_000,
-    date: "10:15 • 03/11/2025",
-    status: "success",
-  },
-  {
-    id: "t8",
-    type: "interest",
-    label: "Tiền lời hằng ngày",
-    amount: 2_580,
-    date: "18:30 • 03/11/2025",
-    status: "success",
-  },
-  {
-    id: "t9",
-    type: "deposit",
-    label: "Nạp tiền",
-    amount: 5_000_000,
-    date: "09:00 • 02/11/2025",
-    status: "success",
-  },
-  {
-    id: "t10",
-    type: "interest",
-    label: "Tiền lời hằng ngày",
-    amount: 2_510,
-    date: "18:30 • 02/11/2025",
-    status: "success",
-  },
-  {
-    id: "t11",
-    type: "withdrawal",
-    label: "Rút tiền",
-    amount: -1_000_000,
-    date: "14:20 • 01/11/2025",
-    status: "failed",
-  },
-  {
-    id: "t12",
-    type: "interest",
-    label: "Tiền lời hằng ngày",
-    amount: 2_490,
-    date: "18:30 • 01/11/2025",
-    status: "success",
-  },
-  {
-    id: "t13",
-    type: "deposit",
-    label: "Nạp tiền",
-    amount: 2_000_000,
-    date: "11:00 • 31/10/2025",
-    status: "success",
-  },
-  {
-    id: "t14",
-    type: "interest",
-    label: "Tiền lời hằng ngày",
-    amount: 2_420,
-    date: "18:30 • 31/10/2025",
-    status: "success",
-  },
-  {
-    id: "t15",
-    type: "deposit",
-    label: "Nạp tiền",
-    amount: 1_000_000,
-    date: "08:45 • 30/10/2025",
-    status: "pending",
+    year: 2025,
+    total: 95_000,
+    months: [
+      { month: 10, amount: 22_000, isEstimate: false },
+      { month: 11, amount: 35_000, isEstimate: false },
+      { month: 12, amount: 38_000, isEstimate: false },
+    ],
   },
 ]
 
-/* ── Status label helper ─────────────────────────────────────────── */
-export function getStatusLabel(status: SinhLoiTransaction["status"]): { text: string; color: string } {
-  switch (status) {
-    case "success":
-      return { text: "Thành công", color: "text-success" }
-    case "pending":
-      return { text: "Đang xử lý", color: "text-warning" }
-    case "failed":
-      return { text: "Thất bại", color: "text-destructive" }
-  }
+/* ── Daily interest (7 ngay gan nhat) ────────────────────────────── */
+export interface DailyInterest {
+  day: string   // "T2", "T3", ...
+  date: string  // "04/03"
+  amount: number
 }
+
+export const MOCK_DAILY_INTEREST: DailyInterest[] = [
+  { day: "T2", date: "04/03", amount: 1_480 },
+  { day: "T3", date: "05/03", amount: 1_520 },
+  { day: "T4", date: "06/03", amount: 2_100 },
+  { day: "T5", date: "07/03", amount: 2_350 },
+  { day: "T6", date: "08/03", amount: 2_680 },
+  { day: "T7", date: "09/03", amount: 2_714 },
+  { day: "CN", date: "10/03", amount: 2_750 },
+]
 
 /* ── Helpers ────────────────────────────────────────────────────────── */
 export function formatVND(n: number): string {
   const abs = Math.abs(n)
   const formatted = abs.toLocaleString("vi-VN")
-  if (n < 0) return `-${formatted} đ`
-  return `${formatted} đ`
+  if (n < 0) return `-${formatted} d`
+  return `${formatted} d`
 }
 
 export function formatVNDSigned(n: number): string {
   const abs = Math.abs(n)
   const formatted = abs.toLocaleString("vi-VN")
-  if (n < 0) return `-${formatted} đ`
-  return `+${formatted} đ`
+  if (n < 0) return `-${formatted} d`
+  return `+${formatted} d`
+}
+
+export function formatVNDInput(n: number): string {
+  if (n === 0) return ""
+  return n.toLocaleString("vi-VN")
+}
+
+export function getStatusLabel(status: SinhLoiTransaction["status"]): { text: string; color: string } {
+  switch (status) {
+    case "success":
+      return { text: "Thanh cong", color: "text-success" }
+    case "pending":
+      return { text: "Dang xu ly", color: "text-warning" }
+    case "failed":
+      return { text: "That bai", color: "text-danger" }
+  }
+}
+
+export function getTxIcon(type: TransactionType): { bg: string; color: string; sign: string } {
+  switch (type) {
+    case "interest":
+      return { bg: "bg-success/10", color: "text-success", sign: "+" }
+    case "deposit":
+      return { bg: "bg-info/10", color: "text-info", sign: "+" }
+    case "withdrawal":
+      return { bg: "bg-danger/10", color: "text-danger", sign: "-" }
+  }
+}
+
+export function calculateInterest(amount: number, rate: number): number {
+  return Math.round((amount * rate) / 100)
 }

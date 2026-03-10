@@ -1,0 +1,1466 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chuyển tiền — Flow Chọn Người Nhận (Revised)</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: system-ui, -apple-system, sans-serif;
+    background: #0a0a0a;
+    color: #e5e5e5;
+    line-height: 1.6;
+    padding: 24px 16px 80px;
+  }
+  .container { max-width: 1200px; margin: 0 auto; }
+
+  /* Header */
+  .report-header {
+    text-align: center;
+    padding: 48px 0 40px;
+    border-bottom: 1px solid #222;
+    margin-bottom: 40px;
+  }
+  .report-header h1 {
+    font-size: 32px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 8px;
+  }
+  .report-header .subtitle {
+    font-size: 15px;
+    color: #888;
+    margin-bottom: 4px;
+  }
+  .report-header .date {
+    font-size: 13px;
+    color: #555;
+  }
+  .report-header .revision-badge {
+    display: inline-block;
+    background: #2563eb;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 20px;
+    margin-top: 12px;
+    letter-spacing: 0.5px;
+  }
+
+  /* PO Feedback banner */
+  .po-feedback {
+    background: #1a1a0a;
+    border: 1px solid #44440a;
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-bottom: 32px;
+  }
+  .po-feedback h3 {
+    font-size: 14px;
+    font-weight: 700;
+    color: #facc15;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 12px;
+  }
+  .po-feedback ul {
+    list-style: none;
+    padding: 0;
+  }
+  .po-feedback li {
+    padding: 4px 0 4px 20px;
+    position: relative;
+    font-size: 14px;
+    color: #ddd;
+  }
+  .po-feedback li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 12px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #facc15;
+  }
+  .po-feedback code {
+    background: #222;
+    padding: 1px 5px;
+    border-radius: 4px;
+    font-size: 13px;
+    color: #facc15;
+  }
+
+  /* Collapsible */
+  .collapsible {
+    background: #141414;
+    border-radius: 12px;
+    margin-bottom: 32px;
+    overflow: hidden;
+  }
+  .collapsible-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.15s;
+  }
+  .collapsible-header:hover { background: #1a1a1a; }
+  .collapsible-header h2 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #fff;
+  }
+  .collapsible-arrow {
+    font-size: 14px;
+    color: #666;
+    transition: transform 0.2s;
+  }
+  .collapsible.open .collapsible-arrow { transform: rotate(180deg); }
+  .collapsible-body {
+    display: none;
+    padding: 0 20px 20px;
+  }
+  .collapsible.open .collapsible-body { display: block; }
+
+  /* Section titles */
+  .section-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 8px;
+    margin-top: 48px;
+  }
+  .section-subtitle {
+    font-size: 14px;
+    color: #888;
+    margin-bottom: 24px;
+  }
+
+  /* Tables */
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    margin-bottom: 16px;
+  }
+  .data-table th {
+    text-align: left;
+    padding: 8px 10px;
+    background: #1a1a1a;
+    color: #aaa;
+    font-weight: 600;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid #222;
+    white-space: nowrap;
+  }
+  .data-table td {
+    padding: 7px 10px;
+    border-bottom: 1px solid #1a1a1a;
+    color: #ccc;
+    vertical-align: top;
+  }
+  .data-table tr:hover td { background: #161616; }
+  .data-table .yes { color: #4ade80; }
+  .data-table .no { color: #666; }
+  .data-table .partial { color: #fbbf24; }
+
+  /* Stats row */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .stat-card {
+    background: #1a1a1a;
+    border-radius: 10px;
+    padding: 16px;
+    text-align: center;
+  }
+  .stat-card .num {
+    font-size: 28px;
+    font-weight: 700;
+    color: #fff;
+  }
+  .stat-card .label {
+    font-size: 12px;
+    color: #888;
+    margin-top: 4px;
+  }
+
+  /* Bullets */
+  .bullet-list {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 16px;
+  }
+  .bullet-list li {
+    padding: 4px 0 4px 20px;
+    position: relative;
+    font-size: 14px;
+    color: #ccc;
+  }
+  .bullet-list li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 12px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #555;
+  }
+  .bullet-list.green li::before { background: #4ade80; }
+  .bullet-list.red li::before { background: #f87171; }
+
+  /* Option card */
+  .option-card {
+    background: #141414;
+    border-radius: 16px;
+    padding: 28px 24px;
+    margin-bottom: 32px;
+  }
+  .option-card.recommended {
+    border: 1px solid #2563eb;
+    box-shadow: 0 0 20px rgba(37,99,235,0.1);
+  }
+  .option-card h3 {
+    font-size: 20px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 4px;
+  }
+  .option-card .ref {
+    font-size: 13px;
+    color: #888;
+    margin-bottom: 20px;
+  }
+  .option-card .pros-cons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+  .option-card .pc-title {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+  }
+  .pc-title.green { color: #4ade80; }
+  .pc-title.red { color: #f87171; }
+  .use-case {
+    background: #1a1a1a;
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 13px;
+    color: #aaa;
+    margin-top: 8px;
+  }
+  .use-case strong { color: #ccc; }
+
+  /* Lane badges */
+  .lane-row {
+    display: flex;
+    gap: 8px;
+    margin: 12px 0;
+    flex-wrap: wrap;
+  }
+  .lane-badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 20px;
+    letter-spacing: 0.3px;
+  }
+  .lane-badge.vsp { background: #1e3a5f; color: #60a5fa; }
+  .lane-badge.bank { background: #3b2f1a; color: #fbbf24; }
+  .lane-badge.search { background: #1a3a2a; color: #4ade80; }
+
+  /* Wireframe container */
+  .wireframe-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+  @media (max-width: 900px) {
+    .wireframe-row { grid-template-columns: 1fr; }
+  }
+  .wireframe-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .wireframe-caption {
+    font-size: 12px;
+    color: #888;
+    margin-top: 8px;
+    text-align: center;
+  }
+
+  /* iPhone frame */
+  .iphone {
+    width: 260px;
+    height: 520px;
+    border: 2px solid #333;
+    border-radius: 28px;
+    background: #f5f5f5;
+    position: relative;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  .iphone .notch {
+    width: 100px;
+    height: 22px;
+    background: #333;
+    border-radius: 0 0 14px 14px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 2;
+  }
+  .iphone .screen {
+    padding: 4px 14px 8px;
+    height: calc(100% - 22px);
+    overflow: hidden;
+    font-family: system-ui, -apple-system, sans-serif;
+    color: #1a1a1a;
+    font-size: 11px;
+    line-height: 1.4;
+    display: flex;
+    flex-direction: column;
+  }
+  .iphone .home-ind {
+    width: 100px;
+    height: 4px;
+    background: #333;
+    border-radius: 2px;
+    margin: auto auto 4px;
+  }
+
+  /* Wire elements */
+  .w-nav {
+    display: flex;
+    align-items: center;
+    padding: 6px 0 4px;
+    gap: 6px;
+  }
+  .w-nav .back { font-size: 14px; color: #999; }
+  .w-nav .title { font-weight: 700; font-size: 13px; color: #1a1a1a; flex: 1; }
+  .w-nav .icon { font-size: 12px; color: #999; }
+  .w-search {
+    display: flex;
+    align-items: center;
+    background: #e8e8e8;
+    border-radius: 8px;
+    padding: 6px 8px;
+    margin: 4px 0;
+    gap: 6px;
+    font-size: 10px;
+    color: #999;
+  }
+  .w-search.filled { color: #1a1a1a; background: #ddd; }
+  .w-search .qr {
+    margin-left: auto;
+    font-size: 12px;
+    color: #888;
+  }
+  .w-section {
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #888;
+    margin: 8px 0 4px;
+  }
+  .w-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 0;
+    border-bottom: 1px solid #e0e0e0;
+  }
+  .w-row:last-child { border-bottom: none; }
+  .w-avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #d4d4d4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 700;
+    color: #888;
+    flex-shrink: 0;
+  }
+  .w-avatar.vsp-color { background: #c7d2fe; color: #4338ca; }
+  .w-avatar.bank-color { background: #fde68a; color: #92400e; }
+  .w-info { flex: 1; min-width: 0; }
+  .w-name { font-weight: 600; font-size: 11px; color: #1a1a1a; }
+  .w-sub { font-size: 9px; color: #888; }
+  .w-badge {
+    font-size: 8px;
+    font-weight: 700;
+    padding: 2px 5px;
+    border-radius: 4px;
+    flex-shrink: 0;
+  }
+  .w-badge.vsp { background: #c7d2fe; color: #4338ca; }
+  .w-badge.bank { background: #fde68a; color: #92400e; }
+  .w-detect {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 9px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 6px;
+    margin: 4px 0;
+  }
+  .w-detect.sdt { background: #c7d2fe; color: #4338ca; }
+  .w-detect.stk { background: #fde68a; color: #92400e; }
+
+  /* Hub cards */
+  .w-hub-row {
+    display: flex;
+    gap: 6px;
+    margin: 6px 0;
+  }
+  .w-hub-card {
+    flex: 1;
+    background: #e8e8e8;
+    border-radius: 10px;
+    padding: 10px 8px;
+    text-align: center;
+  }
+  .w-hub-card .hub-icon {
+    font-size: 18px;
+    margin-bottom: 2px;
+  }
+  .w-hub-card .hub-label {
+    font-size: 10px;
+    font-weight: 700;
+    color: #1a1a1a;
+  }
+  .w-hub-card .hub-sub {
+    font-size: 8px;
+    color: #888;
+  }
+
+  /* Tabs */
+  .w-tabs {
+    display: flex;
+    border-bottom: 2px solid #e0e0e0;
+    margin: 4px 0;
+  }
+  .w-tab {
+    flex: 1;
+    text-align: center;
+    padding: 6px 0 4px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #999;
+  }
+  .w-tab.active {
+    color: #1a1a1a;
+    border-bottom: 2px solid #1a1a1a;
+    margin-bottom: -2px;
+  }
+
+  /* Bank grid */
+  .w-bank-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 4px;
+    margin: 6px 0;
+  }
+  .w-bank-item {
+    background: #e8e8e8;
+    border-radius: 6px;
+    padding: 6px 2px;
+    text-align: center;
+    font-size: 7px;
+    font-weight: 600;
+    color: #666;
+  }
+
+  /* STK input */
+  .w-input {
+    background: #fff;
+    border: 1.5px solid #ccc;
+    border-radius: 8px;
+    padding: 8px;
+    margin: 4px 0;
+    font-size: 10px;
+    color: #999;
+  }
+  .w-input.filled { color: #1a1a1a; border-color: #1a1a1a; }
+
+  /* Resolved card */
+  .w-resolved {
+    background: #e8f5e9;
+    border-radius: 10px;
+    padding: 10px;
+    margin: 6px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .w-resolved .check { color: #16a34a; font-size: 16px; }
+
+  /* Button */
+  .w-btn {
+    background: #1a1a1a;
+    color: #fff;
+    border-radius: 10px;
+    padding: 8px;
+    text-align: center;
+    font-size: 11px;
+    font-weight: 700;
+    margin: 6px 0;
+  }
+  .w-btn.secondary {
+    background: #e8e8e8;
+    color: #1a1a1a;
+  }
+
+  /* Contact action sheet */
+  .w-action-sheet {
+    background: #fff;
+    border-radius: 14px 14px 0 0;
+    padding: 12px;
+    margin-top: auto;
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
+  }
+
+  /* Bottom link */
+  .w-link {
+    text-align: center;
+    font-size: 10px;
+    color: #2563eb;
+    font-weight: 600;
+    padding: 8px 0;
+    margin-top: auto;
+  }
+
+  /* Recommendation */
+  .rec-card {
+    background: #0f172a;
+    border: 1px solid #1e3a5f;
+    border-radius: 16px;
+    padding: 28px 24px;
+    margin-top: 32px;
+  }
+  .rec-card h3 {
+    font-size: 20px;
+    font-weight: 700;
+    color: #60a5fa;
+    margin-bottom: 16px;
+  }
+  .rec-card p {
+    font-size: 14px;
+    color: #ccc;
+    margin-bottom: 12px;
+  }
+  .rec-card strong { color: #fff; }
+
+  /* Print */
+  @media print {
+    body { background: #fff; color: #222; padding: 12px; }
+    .report-header { border-color: #ddd; }
+    .report-header h1 { color: #000; }
+    .collapsible-body { display: block !important; }
+    .option-card, .collapsible, .po-feedback, .rec-card { background: #f9f9f9; border: 1px solid #ddd; }
+    .iphone { border-color: #999; }
+    .data-table th { background: #eee; color: #333; }
+    .data-table td { color: #333; }
+    .section-title, .option-card h3, .rec-card h3 { color: #000; }
+    .w-search, .w-hub-card, .w-bank-item { background: #e5e5e5; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+<!-- HEADER -->
+<div class="report-header">
+  <h1>Chuyển tiền — Flow Chọn Người Nhận</h1>
+  <div class="subtitle">V-Smart Pay | Nate (Research) + Ivy (Wireframes)</div>
+  <div class="date">2026-03-09</div>
+  <div class="revision-badge">REVISED — PO Feedback Applied</div>
+  <div class="revision-badge" style="background:#16a34a;margin-left:6px;">OPTION D CHOSEN</div>
+</div>
+
+<!-- PO FEEDBACK -->
+<div class="po-feedback">
+  <h3>PO Feedback (Applied)</h3>
+  <ul>
+    <li><strong>Bo "Gan day" va "Thuong xuyen"</strong> — prototype chua co data lich su. Thay bang <code>Da luu</code> (saved recipients) va <code>Danh ba</code> (phone contacts co vi VSP).</li>
+    <li><strong>3 tru cot ro rang:</strong> Chuyen den vi VSP (P2P qua SDT) | Chuyen den bank/vi khac (qua STK) | Global Search (tim xuyen suot).</li>
+    <li><strong>Logic bat buoc:</strong> Gui cho ai → Gui bao nhieu tien.</li>
+  </ul>
+</div>
+
+<!-- RESEARCH SUMMARY (collapsible) -->
+<div class="collapsible">
+  <div class="collapsible-header" onclick="this.parentElement.classList.toggle('open')">
+    <h2>Research Summary (15 apps)</h2>
+    <span class="collapsible-arrow">&#9660;</span>
+  </div>
+  <div class="collapsible-body">
+    <div class="stats-row">
+      <div class="stat-card"><div class="num">15</div><div class="label">Apps analyzed</div></div>
+      <div class="stat-card"><div class="num">100%</div><div class="label">Recipient-first</div></div>
+      <div class="stat-card"><div class="num">87%</div><div class="label">Multi-channel search</div></div>
+      <div class="stat-card"><div class="num">67%</div><div class="label">QR scan support</div></div>
+    </div>
+
+    <h3 style="color:#fff;font-size:16px;margin-bottom:12px;">Common Patterns</h3>
+    <table class="data-table">
+      <tr><th>Pattern</th><th>Adoption</th><th>Relevance VSP</th></tr>
+      <tr><td>Recipient-first (ai truoc, tien sau)</td><td class="yes">15/15 (100%)</td><td class="yes">Bat buoc</td></tr>
+      <tr><td>Search da kenh (SDT/ten/STK)</td><td class="yes">13/15 (87%)</td><td class="yes">Cao</td></tr>
+      <tr><td>Saved/favorite recipients</td><td class="yes">14/15 (93%)</td><td class="yes">Cao — thay "Gan day"</td></tr>
+      <tr><td>Full-screen search</td><td class="yes">10/15 (67%)</td><td class="yes">Cao</td></tr>
+      <tr><td>QR code scan</td><td class="yes">10/15 (67%)</td><td class="yes">Cao (VN market)</td></tr>
+      <tr><td>P2P + Bank tach entry point</td><td class="partial">9/15 (60%)</td><td class="partial">Tuy option</td></tr>
+      <tr><td>Auto-detect bank tu STK</td><td class="yes">MoMo, BIDV, VCB</td><td class="yes">Bat buoc</td></tr>
+    </table>
+
+    <h3 style="color:#fff;font-size:16px;margin:20px 0 12px;">Benchmark VN</h3>
+    <table class="data-table">
+      <tr><th>App</th><th>Search</th><th>P2P vs Bank</th><th>Saved</th><th>Auto-detect</th></tr>
+      <tr><td>MoMo</td><td>Full-screen, SDT/STK</td><td>Gop 1 entry</td><td>Yeu thich + Gan day</td><td class="yes">Co (BIN)</td></tr>
+      <tr><td>ZaloPay</td><td>Full-screen, Zalo chat</td><td>Tach 2 flow</td><td>Zalo friends</td><td class="no">Khong ro</td></tr>
+      <tr><td>ViettelMoney</td><td>Nhap SDT</td><td>Tach 2 menu</td><td>Nguoi nhan thuong xuyen</td><td class="no">Khong ro</td></tr>
+      <tr><td>BIDV</td><td>STK/SDT + Da luu</td><td>Tach 3 entry</td><td>Luu nguoi thu huong</td><td class="yes">Co (Napas)</td></tr>
+      <tr><td>VCB</td><td>STK + Da luu</td><td>Tach 2 entry</td><td>Luu nguoi thu huong</td><td class="yes">Co</td></tr>
+    </table>
+
+    <h3 style="color:#fff;font-size:16px;margin:20px 0 12px;">Key Insights</h3>
+    <ul class="bullet-list green">
+      <li>"Da luu" (saved recipients) la pattern pho bien nhat — user chu dong luu, khong phu thuoc lich su</li>
+      <li>"Danh ba vi VSP" (contacts co vi) = viral growth: user thay ban be dung app</li>
+      <li>Auto-detect bank tu STK la table stakes 2024-2026 — MoMo, BIDV, VCB deu co</li>
+      <li>Prototype khong can "Gan day" hay "Thuong xuyen" — chua co data de hien</li>
+    </ul>
+  </div>
+</div>
+
+<!-- DUC REVIEW SUMMARY (collapsible) -->
+<div class="collapsible">
+  <div class="collapsible-header" onclick="this.parentElement.classList.toggle('open')">
+    <h2>Duc Review Summary</h2>
+    <span class="collapsible-arrow">&#9660;</span>
+  </div>
+  <div class="collapsible-body">
+    <ul class="bullet-list red">
+      <li>Hai search bar (main + sheet) = 2 mental model xung dot — MoMo/ZaloPay/Revolut chi co 1</li>
+      <li>Destination picker 9 options khi paste STK = over-engineered — auto-detect la du</li>
+      <li>Default state dump 11 items = cognitive overload — can progressive disclosure</li>
+      <li>Badge "Uu tien" tren vi VSP = business bias lo ra UI, mat trust</li>
+      <li>Hardcoded colors (#FFF0F2, #EEF2FF) vi pham Golden Rule #1</li>
+    </ul>
+    <p style="color:#888;font-size:13px;margin-top:12px;">Verdict: <strong style="color:#f87171;">REWORK</strong> — can redesign tu IA level.</p>
+  </div>
+</div>
+
+<!-- 4 OPTIONS -->
+<h2 class="section-title">4 Options — Revised</h2>
+<p class="section-subtitle">Moi option da ap dung PO feedback: bo "Gan day"/"Thuong xuyen", dung "Da luu" + "Danh ba vi VSP", lam ro 3 lane</p>
+
+<!-- ========== OPTION A ========== -->
+<div class="option-card recommended">
+  <h3>Option A: Unified Smart Search</h3>
+  <div class="ref">Mo hinh: MoMo + Revolut + Monzo | MVP Recommended</div>
+  <div class="lane-row">
+    <span class="lane-badge vsp">Vi VSP: auto-detect SDT</span>
+    <span class="lane-badge bank">Bank: auto-detect STK</span>
+    <span class="lane-badge search">Search: 1 o gop tat ca</span>
+  </div>
+  <p style="font-size:14px;color:#ccc;margin-bottom:16px;">
+    1 o search duy nhat, auto-detect: SDT → vi VSP, STK → ngan hang, ten → filter tat ca.
+    Default hien "Da luu" (list doc) + "Danh ba vi VSP" (contacts co vi).
+    QR scan icon canh search bar.
+  </p>
+  <div class="pros-cons">
+    <div>
+      <div class="pc-title green">Uu diem</div>
+      <ul class="bullet-list green">
+        <li>It step nhat — 1 screen, khong can chon "loai chuyen khoan"</li>
+        <li>Auto-detect giam cognitive load — app tu hieu intent</li>
+        <li>"Da luu" 1 tap = chuyen ngay, phu hop prototype</li>
+        <li>Trend hien dai nhat (MoMo, Revolut)</li>
+      </ul>
+    </div>
+    <div>
+      <div class="pc-title red">Nhuoc diem</div>
+      <ul class="bullet-list red">
+        <li>Auto-detect can logic phuc tap (SDT vs STK overlap)</li>
+        <li>User moi co the khong biet co the nhap STK vao cung o search</li>
+        <li>3 lane khong explicit — user phai "kham pha"</li>
+      </ul>
+    </div>
+  </div>
+  <div class="use-case"><strong>3 states:</strong> Default (Da luu + Danh ba) → Typing SDT (filter + badge detect) → Typing STK (auto-detect bank card)</div>
+
+  <div class="wireframe-row" style="margin-top:20px;">
+    <!-- A State 1 -->
+    <div class="wireframe-wrapper">
+      <div class="iphone">
+        <div class="notch"></div>
+        <div class="screen">
+          <div class="w-nav">
+            <span class="back">&#8249;</span>
+            <span class="title">Chuyen tien</span>
+          </div>
+          <div class="w-search">
+            <span>&#128269;</span> SDT, ten, so tai khoan...
+            <span class="qr">&#9634;</span>
+          </div>
+          <div class="w-section">Da luu</div>
+          <div class="w-row">
+            <div class="w-avatar vsp-color">AN</div>
+            <div class="w-info">
+              <div class="w-name">Anh Nam</div>
+              <div class="w-sub">0983 882 233</div>
+            </div>
+            <div class="w-badge vsp">VSP</div>
+          </div>
+          <div class="w-row">
+            <div class="w-avatar bank-color">MT</div>
+            <div class="w-info">
+              <div class="w-name">Manh TCB</div>
+              <div class="w-sub">1903 8291 832 · TCB</div>
+            </div>
+            <div class="w-badge bank">Bank</div>
+          </div>
+          <div class="w-row">
+            <div class="w-avatar vsp-color">BM</div>
+            <div class="w-info">
+              <div class="w-name">Bo Me</div>
+              <div class="w-sub">0901 232 512</div>
+            </div>
+            <div class="w-badge vsp">VSP</div>
+          </div>
+          <div class="w-section">Danh ba vi VSP</div>
+          <div class="w-row">
+            <div class="w-avatar vsp-color">TH</div>
+            <div class="w-info">
+              <div class="w-name">Thanh Hang</div>
+              <div class="w-sub">0912 345 678</div>
+            </div>
+            <div class="w-badge vsp">VSP</div>
+          </div>
+          <div class="w-row">
+            <div class="w-avatar vsp-color">DL</div>
+            <div class="w-info">
+              <div class="w-name">Duc Long</div>
+              <div class="w-sub">0987 654 321</div>
+            </div>
+            <div class="w-badge vsp">VSP</div>
+          </div>
+          <div class="home-ind"></div>
+        </div>
+      </div>
+      <div class="wireframe-caption">State 1: Default — Da luu + Danh ba</div>
+    </div>
+
+    <!-- A State 2 -->
+    <div class="wireframe-wrapper">
+      <div class="iphone">
+        <div class="notch"></div>
+        <div class="screen">
+          <div class="w-nav">
+            <span class="back">&#8249;</span>
+            <span class="title">Chuyen tien</span>
+          </div>
+          <div class="w-search filled">
+            <span>&#128269;</span> 098
+            <span style="margin-left:auto;color:#999;">&#10005;</span>
+          </div>
+          <div class="w-detect sdt">SDT → Vi VSP</div>
+          <div class="w-section">Da luu</div>
+          <div class="w-row">
+            <div class="w-avatar vsp-color">AN</div>
+            <div class="w-info">
+              <div class="w-name">Anh Nam</div>
+              <div class="w-sub"><strong style="color:#4338ca;">098</strong>3 882 233</div>
+            </div>
+            <div class="w-badge vsp">VSP</div>
+          </div>
+          <div class="w-section">Danh ba vi VSP</div>
+          <div class="w-row">
+            <div class="w-avatar vsp-color">HV</div>
+            <div class="w-info">
+              <div class="w-name">Hoang Vu</div>
+              <div class="w-sub"><strong style="color:#4338ca;">098</strong>7 111 222</div>
+            </div>
+            <div class="w-badge vsp">VSP</div>
+          </div>
+          <div style="height:120px;"></div>
+          <div class="home-ind"></div>
+        </div>
+      </div>
+      <div class="wireframe-caption">State 2: Typing SDT "098" — filter + detect</div>
+    </div>
+
+    <!-- A State 3 -->
+    <div class="wireframe-wrapper">
+      <div class="iphone">
+        <div class="notch"></div>
+        <div class="screen">
+          <div class="w-nav">
+            <span class="back">&#8249;</span>
+            <span class="title">Chuyen tien</span>
+          </div>
+          <div class="w-search filled">
+            <span>&#128269;</span> 19038291832
+            <span style="margin-left:auto;color:#999;">&#10005;</span>
+          </div>
+          <div class="w-detect stk">STK → Ngan hang</div>
+          <div class="w-resolved">
+            <div class="w-avatar bank-color">TCB</div>
+            <div class="w-info">
+              <div class="w-name">Techcombank</div>
+              <div class="w-sub">1903 8291 832</div>
+              <div class="w-sub" style="color:#16a34a;">Dang xac minh ten...</div>
+            </div>
+          </div>
+          <div style="height:160px;"></div>
+          <div class="home-ind"></div>
+        </div>
+      </div>
+      <div class="wireframe-caption">State 3: STK detected — auto-detect bank</div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== OPTION B ========== -->
+<div class="option-card">
+  <h3>Option B: Tab-Based Split</h3>
+  <div class="ref">Mo hinh: ZaloPay + ViettelMoney + N26</div>
+  <div class="lane-row">
+    <span class="lane-badge vsp">Vi VSP: Tab rieng</span>
+    <span class="lane-badge bank">Bank: Tab rieng</span>
+    <span class="lane-badge search">Search: filter across tabs</span>
+  </div>
+  <p style="font-size:14px;color:#ccc;margin-bottom:16px;">
+    2 tabs: [Vi VSP] | [Ngan hang]. Moi tab co Da luu rieng. Tab Vi co Danh ba vi VSP.
+    Tab Bank co bank grid + nhap STK. Global search = go tren thanh search, filter across ca 2 tabs.
+  </p>
+  <div class="pros-cons">
+    <div>
+      <div class="pc-title green">Uu diem</div>
+      <ul class="bullet-list green">
+        <li>Ro rang, de hieu — user biet chinh xac dang lam gi</li>
+        <li>Logic don gian hon (khong can auto-detect)</li>
+        <li>Moi tab toi uu UI cho use case rieng</li>
+        <li>Quen thuoc user VN (ZaloPay, ViettelMoney)</li>
+      </ul>
+    </div>
+    <div>
+      <div class="pc-title red">Nhuoc diem</div>
+      <ul class="bullet-list red">
+        <li>Them 1 quyet dinh cho user: "vi hay bank?"</li>
+        <li>Nguoi Da luu nam o tab khac → phai switch</li>
+        <li>Khong scale tot neu them loai chuyen khoan</li>
+      </ul>
+    </div>
+  </div>
+  <div class="use-case"><strong>3 states:</strong> Tab Vi (Da luu P2P + Danh ba) → Tab Bank (bank grid + Da luu bank) → Tab Bank: STK resolved</div>
+
+  <div class="wireframe-row" style="margin-top:20px;">
+    <!-- B State 1 -->
+    <div class="wireframe-wrapper">
+      <div class="iphone">
+        <div class="notch"></div>
+        <div class="screen">
+          <div class="w-nav">
+            <span class="back">&#8249;</span>
+            <span class="title">Chuyen tien</span>
+          </div>
+          <div class="w-tabs">
+            <div class="w-tab active">Vi VSP</div>
+            <div class="w-tab">Ngan hang</div>
+          </div>
+          <div class="w-search">
+            <span>&#128269;</span> Tim SDT hoac ten...
+          </div>
+          <div class="w-section">Da luu</div>
+          <div class="w-row">
+            <div class="w-avatar vsp-color">AN</div>
+            <div class="w-info">
+              <div class="w-name">Anh Nam</div>
+              <div class="w-sub">0983 882 233</div>
+            </div>
+            <div class="w-badge vsp">VSP</div>
+          </div>
+          <div class="w-row">
+            <div class="w-avatar vsp-color">BM</div>
+            <div class="w-info">
+              <div class="w-name">Bo Me</div>
+              <div class="w-sub">0901 232 512</div>
+            </div>
+            <div class="w-badge vsp">VSP</div>
+          </div>
+          <div class="w-section">Danh ba vi VSP</div>
+          <div class="w-row">
+            <div class="w-avatar vsp-color">TH</div>
+            <div class="w-info">
+              <div class="w-name">Thanh Hang</div>
+              <div class="w-sub">0912 345 678</div>
+            </div>
+            <div class="w-badge vsp">VSP</div>
+          </div>
+          <div class="w-row">
+            <div class="w-avatar vsp-color">DL</div>
+            <div class="w-info">
+              <div class="w-name">Duc Long</div>
+              <div class="w-sub">0987 654 321</div>
+            </div>
+            <div class="w-badge vsp">VSP</div>
+          </div>
+          <div class="home-ind"></div>
+        </div>
+      </div>
+      <div class="wireframe-caption">State 1: Tab Vi VSP active</div>
+    </div>
+
+    <!-- B State 2 -->
+    <div class="wireframe-wrapper">
+      <div class="iphone">
+        <div class="notch"></div>
+        <div class="screen">
+          <div class="w-nav">
+            <span class="back">&#8249;</span>
+            <span class="title">Chuyen tien</span>
+          </div>
+          <div class="w-tabs">
+            <div class="w-tab">Vi VSP</div>
+            <div class="w-tab active">Ngan hang</div>
+          </div>
+          <div class="w-search">
+            <span>&#128269;</span> Tim ngan hang...
+          </div>
+          <div class="w-bank-grid">
+            <div class="w-bank-item">VCB</div>
+            <div class="w-bank-item">TCB</div>
+            <div class="w-bank-item">BIDV</div>
+            <div class="w-bank-item">VTB</div>
+            <div class="w-bank-item">ACB</div>
+            <div class="w-bank-item">MB</div>
+            <div class="w-bank-item">TPB</div>
+            <div class="w-bank-item">SHB</div>
+          </div>
+          <div class="w-input">Nhap so tai khoan...</div>
+          <div class="w-section">Da luu</div>
+          <div class="w-row">
+            <div class="w-avatar bank-color">MT</div>
+            <div class="w-info">
+              <div class="w-name">Manh TCB</div>
+              <div class="w-sub">1903 8291 832 · TCB</div>
+            </div>
+            <div class="w-badge bank">Bank</div>
+          </div>
+          <div class="home-ind"></div>
+        </div>
+      </div>
+      <div class="wireframe-caption">State 2: Tab Ngan hang active</div>
+    </div>
+
+    <!-- B State 3 -->
+    <div class="wireframe-wrapper">
+      <div class="iphone">
+        <div class="notch"></div>
+        <div class="screen">
+          <div class="w-nav">
+            <span class="back">&#8249;</span>
+            <span class="title">Chuyen tien</span>
+          </div>
+          <div class="w-tabs">
+            <div class="w-tab">Vi VSP</div>
+            <div class="w-tab active">Ngan hang</div>
+          </div>
+          <div class="w-input filled">19038291832</div>
+          <div class="w-resolved">
+            <div class="w-avatar bank-color">TCB</div>
+            <div class="w-info">
+              <div class="w-name">Techcombank</div>
+              <div class="w-sub">1903 8291 832</div>
+              <div class="w-name" style="color:#16a34a;font-size:10px;">NGUYEN VAN MANH</div>
+            </div>
+            <span class="check" style="color:#16a34a;font-size:14px;margin-left:auto;">&#10003;</span>
+          </div>
+          <div style="flex:1;"></div>
+          <div class="w-btn">Tiep tuc</div>
+          <div class="home-ind"></div>
+        </div>
+      </div>
+      <div class="wireframe-caption">State 3: STK resolved + ten verified</div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== OPTION C ========== -->
+<div class="option-card">
+  <h3>Option C: Contacts-First</h3>
+  <div class="ref">Mo hinh: WeChat Pay + Venmo + Zelle</div>
+  <div class="lane-row">
+    <span class="lane-badge vsp">Vi VSP: tap contact co vi</span>
+    <span class="lane-badge bank">Bank: link "Chuyen bang STK"</span>
+    <span class="lane-badge search">Search: filter danh ba + da luu</span>
+  </div>
+  <p style="font-size:14px;color:#ccc;margin-bottom:16px;">
+    Danh ba la trung tam — full contact list, badge ai co vi VSP. "Da luu" = pinned section tren cung (ca P2P + bank).
+    Tap contact → neu co VSP → chuyen luon. Neu khong → hoi nhap STK.
+    Link "Chuyen bang STK" o bottom cho bank transfer khong qua contact.
+  </p>
+  <div class="pros-cons">
+    <div>
+      <div class="pc-title green">Uu diem</div>
+      <ul class="bullet-list green">
+        <li>Contact-centric: phu hop mental model "gui cho NGUOI"</li>
+        <li>"Da luu" pinned = repeat transfers cuc nhanh</li>
+        <li>Social proof: thay ai dung VSP → viral growth</li>
+        <li>Bank transfer van co, chi khong la primary</li>
+      </ul>
+    </div>
+    <div>
+      <div class="pc-title red">Nhuoc diem</div>
+      <ul class="bullet-list red">
+        <li>Bank transfer bi "secondary" — user bank phai scroll</li>
+        <li>Phu thuoc contact sync permission</li>
+        <li>VSP user base nho → danh ba toan nguoi khong dung VSP</li>
+      </ul>
+    </div>
+  </div>
+  <div class="use-case"><strong>3 states:</strong> Default (Da luu + Danh ba full) → Contact tapped (action sheet) → STK manual</div>
+
+  <div class="wireframe-row" style="margin-top:20px;">
+    <!-- C State 1 -->
+    <div class="wireframe-wrapper">
+      <div class="iphone">
+        <div class="notch"></div>
+        <div class="screen">
+          <div class="w-nav">
+            <span class="back">&#8249;</span>
+            <span class="title">Chuyen tien</span>
+          </div>
+          <div class="w-search">
+            <span>&#128269;</span> Tim ten, SDT...
+          </div>
+          <div class="w-section">Da luu</div>
+          <div class="w-row">
+            <div class="w-avatar vsp-color">AN</div>
+            <div class="w-info">
+              <div class="w-name">Anh Nam</div>
+              <div class="w-sub">0983 882 233</div>
+            </div>
+            <div class="w-badge vsp">VSP</div>
+          </div>
+          <div class="w-row">
+            <div class="w-avatar bank-color">MT</div>
+            <div class="w-info">
+              <div class="w-name">Manh TCB</div>
+              <div class="w-sub">1903 8291 832 · TCB</div>
+            </div>
+            <div class="w-badge bank">Bank</div>
+          </div>
+          <div class="w-section">Danh ba</div>
+          <div class="w-row">
+            <div class="w-avatar vsp-color">TH</div>
+            <div class="w-info">
+              <div class="w-name">Thanh Hang</div>
+              <div class="w-sub">0912 345 678</div>
+            </div>
+            <div class="w-badge vsp">VSP</div>
+          </div>
+          <div class="w-row">
+            <div class="w-avatar">LP</div>
+            <div class="w-info">
+              <div class="w-name">Lan Phuong</div>
+              <div class="w-sub">0909 876 543</div>
+            </div>
+          </div>
+          <div class="w-row">
+            <div class="w-avatar">QT</div>
+            <div class="w-info">
+              <div class="w-name">Quang Trung</div>
+              <div class="w-sub">0977 111 222</div>
+            </div>
+          </div>
+          <div class="w-link">Chuyen bang STK ngan hang →</div>
+          <div class="home-ind"></div>
+        </div>
+      </div>
+      <div class="wireframe-caption">State 1: Default — Da luu + Danh ba</div>
+    </div>
+
+    <!-- C State 2 -->
+    <div class="wireframe-wrapper">
+      <div class="iphone">
+        <div class="notch"></div>
+        <div class="screen">
+          <div class="w-nav">
+            <span class="back">&#8249;</span>
+            <span class="title">Chuyen tien</span>
+          </div>
+          <div style="flex:1;"></div>
+          <div class="w-action-sheet">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+              <div class="w-avatar vsp-color" style="width:40px;height:40px;font-size:14px;">TH</div>
+              <div>
+                <div class="w-name" style="font-size:13px;">Thanh Hang</div>
+                <div class="w-sub">0912 345 678</div>
+              </div>
+            </div>
+            <div class="w-btn" style="margin-bottom:6px;">Chuyen qua Vi VSP</div>
+            <div class="w-btn secondary">Chuyen qua ngan hang</div>
+          </div>
+          <div class="home-ind"></div>
+        </div>
+      </div>
+      <div class="wireframe-caption">State 2: Contact tapped — action sheet</div>
+    </div>
+
+    <!-- C State 3 -->
+    <div class="wireframe-wrapper">
+      <div class="iphone">
+        <div class="notch"></div>
+        <div class="screen">
+          <div class="w-nav">
+            <span class="back">&#8249;</span>
+            <span class="title">Chuyen ngan hang</span>
+          </div>
+          <div class="w-search">
+            <span>&#128269;</span> Tim ngan hang...
+          </div>
+          <div class="w-bank-grid">
+            <div class="w-bank-item">VCB</div>
+            <div class="w-bank-item">TCB</div>
+            <div class="w-bank-item">BIDV</div>
+            <div class="w-bank-item">VTB</div>
+            <div class="w-bank-item">ACB</div>
+            <div class="w-bank-item">MB</div>
+            <div class="w-bank-item">TPB</div>
+            <div class="w-bank-item">SHB</div>
+          </div>
+          <div class="w-input">Nhap so tai khoan...</div>
+          <div style="flex:1;"></div>
+          <div class="w-btn">Tiep tuc</div>
+          <div class="home-ind"></div>
+        </div>
+      </div>
+      <div class="wireframe-caption">State 3: STK manual — bank transfer</div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== OPTION D ========== -->
+<div class="option-card">
+  <h3>Option D: Hub + Global Search</h3>
+  <div class="ref">Mo hinh: BIDV/VCB style + modern search | Closest to current implementation</div>
+  <div class="lane-row">
+    <span class="lane-badge vsp">Vi VSP: Card entry rieng</span>
+    <span class="lane-badge bank">Bank: Card entry rieng</span>
+    <span class="lane-badge search">Global Search: entry rieng</span>
+  </div>
+  <p style="font-size:14px;color:#ccc;margin-bottom:16px;">
+    Entry page co 3 ro rang: Card "Den vi VSP" (SDT) + Card "Den ngan hang" (STK) + Search bar "Tim nguoi nhan".
+    Duoi 3 entry: "Da luu" list (ca P2P + bank, tap = di thang amount).
+    Global Search khi mo: Da luu + Danh ba VSP, go STK → auto-detect bank.
+  </p>
+  <div class="pros-cons">
+    <div>
+      <div class="pc-title green">Uu diem</div>
+      <ul class="bullet-list green">
+        <li>3 lane explicit — user khong can doan</li>
+        <li>Quen thuoc user VN (BIDV/VCB style nhung modern hon)</li>
+        <li>"Da luu" tap = di thang, nhanh cho repeat transfers</li>
+        <li>Global Search la bonus, khong bat buoc</li>
+      </ul>
+    </div>
+    <div>
+      <div class="pc-title red">Nhuoc diem</div>
+      <ul class="bullet-list red">
+        <li>Nhieu element tren 1 screen (2 cards + search + list)</li>
+        <li>User phai chon 1 trong 3 entry → them 1 quyet dinh</li>
+        <li>Phuc tap hon A ve so states</li>
+      </ul>
+    </div>
+  </div>
+  <div class="use-case"><strong>3 states:</strong> Entry hub (2 cards + search + Da luu) → Global Search default (Da luu + Danh ba) → Search STK detected (auto-detect bank)</div>
+
+  <div class="wireframe-row" style="margin-top:20px;">
+    <!-- D State 1 -->
+    <div class="wireframe-wrapper">
+      <div class="iphone">
+        <div class="notch"></div>
+        <div class="screen">
+          <div class="w-nav">
+            <span class="back">&#8249;</span>
+            <span class="title">Chuyen tien</span>
+          </div>
+          <div class="w-hub-row">
+            <div class="w-hub-card">
+              <div class="hub-icon">&#128179;</div>
+              <div class="hub-label">Den vi VSP</div>
+              <div class="hub-sub">SDT</div>
+            </div>
+            <div class="w-hub-card">
+              <div class="hub-icon">&#127974;</div>
+              <div class="hub-label">Den ngan hang</div>
+              <div class="hub-sub">STK</div>
+            </div>
+          </div>
+          <div class="w-search">
+            <span>&#128269;</span> Tim nguoi nhan...
+          </div>
+          <div class="w-section">Da luu</div>
+          <div class="w-row">
+            <div class="w-avatar vsp-color">AN</div>
+            <div class="w-info">
+              <div class="w-name">Anh Nam</div>
+              <div class="w-sub">0983 882 233</div>
+            </div>
+            <div class="w-badge vsp">VSP</div>
+          </div>
+          <div class="w-row">
+            <div class="w-avatar bank-color">MT</div>
+            <div class="w-info">
+              <div class="w-name">Manh TCB</div>
+              <div class="w-sub">1903 8291 832 · TCB</div>
+            </div>
+            <div class="w-badge bank">Bank</div>
+          </div>
+          <div class="w-row">
+            <div class="w-avatar vsp-color">BM</div>
+            <div class="w-info">
+              <div class="w-name">Bo Me</div>
+              <div class="w-sub">0901 232 512</div>
+            </div>
+            <div class="w-badge vsp">VSP</div>
+          </div>
+          <div class="home-ind"></div>
+        </div>
+      </div>
+      <div class="wireframe-caption">State 1: Entry Hub — 2 cards + search + Da luu</div>
+    </div>
+
+    <!-- D State 2 -->
+    <div class="wireframe-wrapper">
+      <div class="iphone">
+        <div class="notch"></div>
+        <div class="screen">
+          <div class="w-nav">
+            <span class="back">&#8249;</span>
+            <span class="title">Tim nguoi nhan</span>
+            <span class="icon">&#10005;</span>
+          </div>
+          <div class="w-search filled">
+            <span>&#128269;</span> |
+            <span style="margin-left:auto;color:#999;">&#10005;</span>
+          </div>
+          <div class="w-section">Da luu</div>
+          <div class="w-row">
+            <div class="w-avatar vsp-color">AN</div>
+            <div class="w-info">
+              <div class="w-name">Anh Nam</div>
+              <div class="w-sub">0983 882 233</div>
+            </div>
+            <div class="w-badge vsp">VSP</div>
+          </div>
+          <div class="w-row">
+            <div class="w-avatar bank-color">MT</div>
+            <div class="w-info">
+              <div class="w-name">Manh TCB</div>
+              <div class="w-sub">1903 8291 832 · TCB</div>
+            </div>
+            <div class="w-badge bank">Bank</div>
+          </div>
+          <div class="w-section">Danh ba vi VSP</div>
+          <div class="w-row">
+            <div class="w-avatar vsp-color">TH</div>
+            <div class="w-info">
+              <div class="w-name">Thanh Hang</div>
+              <div class="w-sub">0912 345 678</div>
+            </div>
+            <div class="w-badge vsp">VSP</div>
+          </div>
+          <div class="w-row">
+            <div class="w-avatar vsp-color">DL</div>
+            <div class="w-info">
+              <div class="w-name">Duc Long</div>
+              <div class="w-sub">0987 654 321</div>
+            </div>
+            <div class="w-badge vsp">VSP</div>
+          </div>
+          <div class="home-ind"></div>
+        </div>
+      </div>
+      <div class="wireframe-caption">State 2: Global Search opened — Da luu + Danh ba</div>
+    </div>
+
+    <!-- D State 3 -->
+    <div class="wireframe-wrapper">
+      <div class="iphone">
+        <div class="notch"></div>
+        <div class="screen">
+          <div class="w-nav">
+            <span class="back">&#8249;</span>
+            <span class="title">Tim nguoi nhan</span>
+            <span class="icon">&#10005;</span>
+          </div>
+          <div class="w-search filled">
+            <span>&#128269;</span> 19038291832
+            <span style="margin-left:auto;color:#999;">&#10005;</span>
+          </div>
+          <div class="w-detect stk">STK → Ngan hang</div>
+          <div class="w-resolved">
+            <div class="w-avatar bank-color">TCB</div>
+            <div class="w-info">
+              <div class="w-name">Techcombank</div>
+              <div class="w-sub">1903 8291 832</div>
+              <div class="w-name" style="color:#16a34a;font-size:10px;">NGUYEN VAN MANH</div>
+            </div>
+            <span style="color:#16a34a;font-size:14px;margin-left:auto;">&#10003;</span>
+          </div>
+          <div style="flex:1;"></div>
+          <div class="w-btn">Tiep tuc</div>
+          <div class="home-ind"></div>
+        </div>
+      </div>
+      <div class="wireframe-caption">State 3: STK detected — auto-detect bank</div>
+    </div>
+  </div>
+</div>
+
+<!-- COMPARISON TABLE -->
+<h2 class="section-title">So sanh 4 Options</h2>
+<p class="section-subtitle">Danh gia theo cac tieu chi UX va business</p>
+
+<table class="data-table">
+  <tr>
+    <th>Tieu chi</th>
+    <th>A: Unified</th>
+    <th>B: Tab-Based</th>
+    <th>C: Contacts-First</th>
+    <th>D: Hub + Search</th>
+  </tr>
+  <tr>
+    <td><strong>So steps den amount</strong></td>
+    <td class="yes">2 (chon → nhap tien)</td>
+    <td class="partial">3 (chon tab → chon → nhap)</td>
+    <td class="yes">2 (tap contact → nhap tien)</td>
+    <td class="partial">3 (chon entry → nhap → confirm)</td>
+  </tr>
+  <tr>
+    <td><strong>3 lane ro rang (VSP/Bank/Search)</strong></td>
+    <td class="partial">Implicit — auto-detect</td>
+    <td class="yes">Explicit — 2 tabs</td>
+    <td class="no">Bank bi an</td>
+    <td class="yes">Explicit — 3 entry points</td>
+  </tr>
+  <tr>
+    <td><strong>"Da luu" integration</strong></td>
+    <td class="yes">Mixed list (P2P+bank)</td>
+    <td class="partial">Tach theo tab</td>
+    <td class="yes">Pinned section tren cung</td>
+    <td class="yes">Mixed list, tap = go amount</td>
+  </tr>
+  <tr>
+    <td><strong>Danh ba vi VSP</strong></td>
+    <td class="yes">Section rieng duoi Da luu</td>
+    <td class="yes">Trong Tab Vi</td>
+    <td class="yes">Full contact list + badge</td>
+    <td class="yes">Trong Global Search</td>
+  </tr>
+  <tr>
+    <td><strong>Auto-detect bank</strong></td>
+    <td class="yes">Co — inline</td>
+    <td class="yes">Co — trong tab Bank</td>
+    <td class="yes">Co — trong STK manual</td>
+    <td class="yes">Co — trong Global Search</td>
+  </tr>
+  <tr>
+    <td><strong>Cognitive load</strong></td>
+    <td class="yes">Thap</td>
+    <td class="partial">Trung binh</td>
+    <td class="partial">Trung binh</td>
+    <td class="partial">Trung binh</td>
+  </tr>
+  <tr>
+    <td><strong>Familiar VN users</strong></td>
+    <td class="yes">MoMo-like</td>
+    <td class="yes">ZaloPay-like</td>
+    <td class="partial">WeChat-like (la)</td>
+    <td class="yes">BIDV/VCB-like</td>
+  </tr>
+  <tr>
+    <td><strong>Scalability</strong></td>
+    <td class="yes">Cao — them loai vao auto-detect</td>
+    <td class="no">Thap — them tab = cluttered</td>
+    <td class="partial">Trung binh</td>
+    <td class="partial">Trung binh — them card</td>
+  </tr>
+  <tr>
+    <td><strong>Dev complexity</strong></td>
+    <td class="partial">Trung binh (auto-detect logic)</td>
+    <td class="yes">Thap (logic don gian)</td>
+    <td class="partial">Trung binh (contact sync)</td>
+    <td class="partial">Trung binh (3 flows)</td>
+  </tr>
+  <tr>
+    <td><strong>Prototype-ready</strong></td>
+    <td class="yes">Co — Da luu = mock data</td>
+    <td class="yes">Co — 2 tabs = 2 mock lists</td>
+    <td class="no">Khong — can contact permission</td>
+    <td class="yes">Co — 3 entries = mock flows</td>
+  </tr>
+</table>
+
+<!-- RECOMMENDATION -->
+<div class="rec-card">
+  <h3>Khuyen nghi</h3>
+
+  <p><strong>MVP:</strong> Option A (Unified Smart Search) — it step nhat, cognitive load thap nhat, phu hop mental model "gui cho ai" ma khong can phan loai. MoMo da train 40M+ user VN pattern nay.</p>
+
+  <p><strong>Note:</strong> Option D (Hub + Global Search) la gan voi implementation hien tai nhat. Neu team muon giu 3 lane explicit va khong muon user phai "kham pha" auto-detect, D la lua chon an toan. Style quen thuoc voi user bank app VN (BIDV, VCB) nhung modern hon nho Global Search.</p>
+
+  <p><strong>PO feedback da applied:</strong></p>
+  <ul class="bullet-list green">
+    <li>Bo hoan toan "Gan day" va "Thuong xuyen" — khong co data lich su trong prototype</li>
+    <li>Thay bang "Da luu" (user chu dong save) va "Danh ba vi VSP" (contacts co vi)</li>
+    <li>3 lane (VSP / Bank / Search) ro rang o moi option — danh gia trong comparison table</li>
+    <li>Logic bat buoc: Gui cho ai → Gui bao nhieu — tat ca 4 options deu follow</li>
+  </ul>
+
+  <p style="margin-top:16px;"><strong>Lo trinh:</strong></p>
+  <ul class="bullet-list">
+    <li><strong>v1 (MVP):</strong> Option A hoac D — ship nhanh voi Da luu mock data</li>
+    <li><strong>v2:</strong> Them Danh ba vi VSP (can contact sync permission)</li>
+    <li><strong>v3:</strong> AI suggestions (goi y nguoi nhan + so tien tu lich su)</li>
+  </ul>
+
+  <p style="margin-top:16px;color:#888;font-size:13px;"><strong>Decision needed from PO:</strong> Chon A (modern, it step) hay D (explicit 3 lane, gan implementation hien tai)?</p>
+</div>
+
+</div>
+
+<script>
+// Auto-open first collapsible on load
+// document.querySelectorAll('.collapsible')[0]?.classList.add('open');
+</script>
+</body>
+</html>

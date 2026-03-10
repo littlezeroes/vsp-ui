@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chuyển tiền — VN Bank Competitor Research</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: system-ui, -apple-system, sans-serif;
+    background: #f8f9fa;
+    color: #333;
+    line-height: 1.6;
+    padding: 24px 16px 80px;
+  }
+  .container { max-width: 1200px; margin: 0 auto; }
+
+  /* Header */
+  .report-header {
+    text-align: center;
+    padding: 48px 0 40px;
+    border-bottom: 1px solid #ddd;
+    margin-bottom: 40px;
+  }
+  .report-header h1 {
+    font-size: 32px;
+    font-weight: 700;
+    color: #111;
+    margin-bottom: 8px;
+  }
+  .report-header .subtitle { font-size: 15px; color: #666; margin-bottom: 4px; }
+  .report-header .date { font-size: 13px; color: #999; }
+  .report-header .badge {
+    display: inline-block;
+    background: #2563eb;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 20px;
+    margin-top: 12px;
+    letter-spacing: 0.5px;
+  }
+  .report-header .badge.green { background: #16a34a; margin-left: 6px; }
+
+  /* Section titles */
+  .section-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: #111;
+    margin-bottom: 8px;
+    margin-top: 48px;
+  }
+  .section-subtitle { font-size: 14px; color: #888; margin-bottom: 24px; }
+  .section-number { color: #2563eb; font-weight: 800; margin-right: 8px; }
+
+  /* Collapsible */
+  .collapsible {
+    background: #fff;
+    border-radius: 12px;
+    margin-bottom: 32px;
+    overflow: hidden;
+    border: 1px solid #e5e7eb;
+  }
+  .collapsible-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.15s;
+  }
+  .collapsible-header:hover { background: #f3f4f6; }
+  .collapsible-header h2 { font-size: 18px; font-weight: 600; color: #111; }
+  .collapsible-arrow { font-size: 14px; color: #999; transition: transform 0.2s; }
+  .collapsible.open .collapsible-arrow { transform: rotate(180deg); }
+  .collapsible-body { display: none; padding: 0 20px 20px; }
+  .collapsible.open .collapsible-body { display: block; }
+
+  /* Tables */
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    margin-bottom: 16px;
+    background: #fff;
+  }
+  .data-table th {
+    background: #f1f5f9;
+    color: #334155;
+    font-weight: 600;
+    text-align: left;
+    padding: 10px 12px;
+    border-bottom: 2px solid #e2e8f0;
+    white-space: nowrap;
+  }
+  .data-table td {
+    padding: 10px 12px;
+    border-bottom: 1px solid #f1f5f9;
+    vertical-align: top;
+  }
+  .data-table tbody tr:hover { background: #f8fafc; }
+  .data-table .bank-name { font-weight: 600; color: #111; white-space: nowrap; }
+
+  /* VSP highlight column */
+  .data-table th.vsp-col {
+    background: #eff6ff;
+    border-bottom-color: #2563eb;
+    color: #1d4ed8;
+  }
+  .data-table td.vsp-col {
+    background: #eff6ff;
+    border-left: 2px solid #2563eb;
+    border-right: 2px solid #2563eb;
+    font-weight: 600;
+    color: #1d4ed8;
+  }
+  .data-table tr:last-child td.vsp-col { border-bottom: 2px solid #2563eb; }
+  .data-table thead th.vsp-col {
+    border-top: 2px solid #2563eb;
+    border-left: 2px solid #2563eb;
+    border-right: 2px solid #2563eb;
+  }
+
+  /* Color helpers */
+  .pro { color: #16a34a; }
+  .con { color: #dc2626; }
+  .partial { color: #d97706; }
+  .best { color: #16a34a; font-weight: 700; }
+  .worst { color: #dc2626; }
+  .tag-yes {
+    display: inline-block;
+    background: #dcfce7;
+    color: #16a34a;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 10px;
+  }
+  .tag-no {
+    display: inline-block;
+    background: #fef2f2;
+    color: #dc2626;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 10px;
+  }
+  .tag-partial {
+    display: inline-block;
+    background: #fef3c7;
+    color: #d97706;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 10px;
+  }
+
+  /* Cards */
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+  .card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px 24px;
+    border: 1px solid #e5e7eb;
+  }
+  .card h3 { font-size: 15px; font-weight: 700; color: #111; margin-bottom: 8px; }
+  .card p { font-size: 13px; color: #555; line-height: 1.6; }
+  .card .card-arrow {
+    display: inline-block;
+    margin-top: 10px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #16a34a;
+    background: #dcfce7;
+    padding: 3px 10px;
+    border-radius: 8px;
+  }
+
+  /* VSP Position Card */
+  .vsp-card {
+    background: #eff6ff;
+    border: 2px solid #2563eb;
+    border-radius: 16px;
+    padding: 28px 28px 24px;
+    margin-bottom: 32px;
+  }
+  .vsp-card h3 { font-size: 20px; font-weight: 700; color: #1d4ed8; margin-bottom: 16px; }
+  .vsp-card .row {
+    display: grid;
+    grid-template-columns: 160px 1fr;
+    gap: 8px;
+    margin-bottom: 14px;
+    font-size: 14px;
+  }
+  .vsp-card .row-label { font-weight: 600; color: #1d4ed8; }
+  .vsp-card .row-value { color: #333; }
+  .vsp-card ul { list-style: none; padding: 0; margin: 0; }
+  .vsp-card li { padding: 3px 0 3px 16px; position: relative; font-size: 13px; color: #333; }
+  .vsp-card li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 10px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+  }
+  .vsp-card .pro-list li::before { background: #16a34a; }
+  .vsp-card .con-list li::before { background: #d97706; }
+  .vsp-card .sub-heading {
+    font-size: 13px;
+    font-weight: 700;
+    color: #111;
+    margin: 16px 0 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  /* Scroll wrapper */
+  .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; margin-bottom: 16px; }
+
+  /* Paragraph */
+  p.body-text { font-size: 14px; color: #555; line-height: 1.7; margin-bottom: 16px; }
+
+  /* Numbered badge */
+  .num-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #2563eb;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    margin-right: 8px;
+    flex-shrink: 0;
+  }
+
+  /* Step flow table */
+  .step-table td { font-size: 12px; }
+  .step-table td.step-num {
+    text-align: center;
+    font-weight: 700;
+    color: #fff;
+    width: 28px;
+  }
+  .step-table td.step-num span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #94a3b8;
+    font-size: 11px;
+  }
+  .step-table td.step-num .vsp-step {
+    background: #2563eb;
+  }
+  .step-table td.step-label {
+    font-weight: 500;
+    color: #334155;
+  }
+  .step-table .skip { color: #cbd5e1; font-style: italic; }
+  .step-table .saved { color: #16a34a; font-weight: 600; }
+
+  /* Print */
+  @media print {
+    body { padding: 12px; }
+    .collapsible-body { display: block !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- Header -->
+  <header class="report-header">
+    <h1>Chuyển tiền — VN Bank Competitor Research</h1>
+    <div class="subtitle">V-Smart Pay &nbsp;|&nbsp; Nate Research + VN Bank Benchmark</div>
+    <div class="date">2026-03-10</div>
+    <div class="badge">RESEARCH REPORT</div>
+    <div class="badge green">OPTION D CHOSEN</div>
+  </header>
+
+  <!-- ================================================================ -->
+  <!-- Section 1: Tổng quan -->
+  <!-- ================================================================ -->
+  <div class="collapsible open">
+    <div class="collapsible-header" onclick="this.parentElement.classList.toggle('open')">
+      <h2><span class="section-number">01</span> Tổng quan</h2>
+      <span class="collapsible-arrow">&#9660;</span>
+    </div>
+    <div class="collapsible-body">
+      <p class="body-text">
+        Báo cáo này so sánh luồng chuyển tiền của <strong>7 ứng dụng ngân hàng Việt Nam</strong> phổ biến nhất. Nghiên cứu đánh giá trên các tiêu chí: số lượng thao tác (click count), phương thức xác thực, tính năng nâng cao (lưu mẫu, đặt lịch), và trải nghiệm nhập liệu (auto-focus, suggestion, keyboard type).
+      </p>
+      <p class="body-text">
+        Song song đó, <strong>Nate Research</strong> mở rộng phạm vi so sánh ra <strong>15+ ứng dụng toàn cầu và khu vực</strong> (Wise, Revolut, MoMo, ZaloPay, Paytm...) để xác định xu hướng thiết kế chuyển tiền hiện đại — từ đó định vị chiến lược cho <strong>VSP Option D</strong>.
+      </p>
+      <p class="body-text">
+        <strong>7 ứng dụng được đánh giá:</strong> Techcombank (TCB), TPBank FT, TPBank Chatpay, MB Bank, LioBank, VPBank Neo, MoMo.
+      </p>
+    </div>
+  </div>
+
+  <!-- ================================================================ -->
+  <!-- Section 2: So sánh 7 banks -->
+  <!-- ================================================================ -->
+  <h2 class="section-title"><span class="section-number">02</span> So sánh 7 Banks — Ưu điểm / Nhược điểm</h2>
+  <p class="section-subtitle">Benchmark từ 7 bank/ví phổ biến nhất VN</p>
+
+  <div class="table-scroll">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th style="width:130px;">Bank</th>
+          <th>Ưu điểm</th>
+          <th>Nhược điểm</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="bank-name">MoMo</td>
+          <td><span class="pro">&#9679;</span> Gộp P2P + Bank 1 entry (auto-detect)<br><span class="pro">&#9679;</span> Auto-detect bank từ STK (BIN)<br><span class="pro">&#9679;</span> Yêu thích + gần đây + gợi ý thông minh</td>
+          <td><span class="con">&#9679;</span> Không tách rõ lane VSP vs Bank<br><span class="con">&#9679;</span> Giao diện đông đúc với nhiều promo</td>
+        </tr>
+        <tr>
+          <td class="bank-name">Techcombank</td>
+          <td><span class="pro">&#9679;</span> Face ID / Touch ID xác thực<br><span class="pro">&#9679;</span> Tối ưu thao tác xác thực</td>
+          <td><span class="con">&#9679;</span> Entry phức tạp, tốn cognitive load<br><span class="con">&#9679;</span> Chưa tối ưu keyboard type<br><span class="con">&#9679;</span> Chưa có lưu mẫu, đặt lịch</td>
+        </tr>
+        <tr>
+          <td class="bank-name">TPBank (FT)</td>
+          <td><span class="pro">&#9679;</span> Nhiều utilities: đặt lịch, lưu mẫu, CT &gt;500tr<br><span class="pro">&#9679;</span> Tối ưu thao tác xác thực<br><span class="pro">&#9679;</span> Tra cứu trạng thái GD liên NH</td>
+          <td><span class="con">&#9679;</span> Auto focus chưa triệt để<br><span class="con">&#9679;</span> App không tự process khi đủ thông tin</td>
+        </tr>
+        <tr>
+          <td class="bank-name">TPBank (Chatpay)</td>
+          <td><span class="pro">&#9679;</span> Thao tác đơn giản, ít bước nhất<br><span class="pro">&#9679;</span> Đầy đủ chức năng như FT<br><span class="pro">&#9679;</span> Tra cứu lịch sử 1v1</td>
+          <td><span class="con">&#9679;</span> Chưa sync với CT cũ, confuse<br><span class="con">&#9679;</span> Trải nghiệm khác biệt so với thị trường<br><span class="con">&#9679;</span> Không bật Face ID / Touch ID</td>
+        </tr>
+        <tr>
+          <td class="bank-name">MB Bank</td>
+          <td><span class="pro">&#9679;</span> Form field rõ ràng<br><span class="pro">&#9679;</span> Phù hợp nhiều lứa tuổi<br><span class="pro">&#9679;</span> Lưu mẫu + CT giá trị lớn nhận ngay</td>
+          <td><span class="con">&#9679;</span> Quá nhiều bước thao tác<br><span class="con">&#9679;</span> App không tự process<br><span class="con">&#9679;</span> Input field chưa auto focus<br><span class="con">&#9679;</span> Chưa đặt lịch</td>
+        </tr>
+        <tr>
+          <td class="bank-name">LioBank</td>
+          <td><span class="pro">&#9679;</span> Entry rõ ràng, ít bước<br><span class="pro">&#9679;</span> Face ID / Touch ID<br><span class="pro">&#9679;</span> Cảm giác nhanh (3-5s cancel)</td>
+          <td><span class="con">&#9679;</span> Chưa tối ưu keyboard type<br><span class="con">&#9679;</span> Input chưa auto focus<br><span class="con">&#9679;</span> Chưa lưu mẫu, đặt lịch</td>
+        </tr>
+        <tr>
+          <td class="bank-name">VPBank Neo</td>
+          <td><span class="pro">&#9679;</span> Face ID / Touch ID<br><span class="pro">&#9679;</span> Tối ưu thao tác xác thực<br><span class="pro">&#9679;</span> Nhiều utilities<br><span class="pro">&#9679;</span> Auto focus + suggestion</td>
+          <td><span class="con">&#9679;</span> Tìm kiếm NH chưa tối ưu từ khóa<br><span class="con">&#9679;</span> Auto focus chưa triệt để</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ================================================================ -->
+  <!-- Section 3: Click Count -->
+  <!-- ================================================================ -->
+  <h2 class="section-title"><span class="section-number">03</span> Số lượng thao tác (Click Count)</h2>
+  <p class="section-subtitle">So sánh số click từ Entry &rarr; Kết quả thành công. Ít hơn = tốt hơn.</p>
+
+  <div class="table-scroll">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Scenario</th>
+          <th>MoMo</th>
+          <th>TCB</th>
+          <th>TPBank FT</th>
+          <th>TPBank Chat</th>
+          <th>MB Bank</th>
+          <th>LioBank</th>
+          <th>VPBank Neo</th>
+          <th class="vsp-col">VSP (D)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="bank-name">New recipient<br><small style="color:#999">Face ID OFF</small></td>
+          <td>7</td><td>9</td><td>10</td><td>6</td><td class="worst">12</td><td>7</td><td>8</td>
+          <td class="vsp-col best">5-6</td>
+        </tr>
+        <tr>
+          <td class="bank-name">New recipient<br><small style="color:#999">Face ID ON</small></td>
+          <td>6</td><td>7</td><td>8</td><td style="color:#ccc">N/A</td><td class="worst">10</td><td>5</td><td>6</td>
+          <td class="vsp-col best">4-5</td>
+        </tr>
+        <tr>
+          <td class="bank-name">Existing recipient<br><small style="color:#999">Face ID OFF</small></td>
+          <td>5</td><td>6</td><td>6</td><td>4</td><td class="worst">8</td><td>4</td><td>5</td>
+          <td class="vsp-col best">3</td>
+        </tr>
+        <tr>
+          <td class="bank-name">Existing recipient<br><small style="color:#999">Face ID ON</small></td>
+          <td>4</td><td>4</td><td>4</td><td style="color:#ccc">N/A</td><td class="worst">6</td><td>3</td><td>3</td>
+          <td class="vsp-col best">2</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p class="body-text">
+    <span class="best">&#9679; Xanh</span> = ít click nhất &nbsp;&nbsp;
+    <span class="worst">&#9679; Đỏ</span> = nhiều click nhất &nbsp;&nbsp;
+    <span style="color:#ccc">&#9679; N/A</span> = chưa hỗ trợ Face ID
+  </p>
+
+  <!-- ================================================================ -->
+  <!-- Section 4: Step-by-Step Flow Comparison -->
+  <!-- ================================================================ -->
+  <h2 class="section-title"><span class="section-number">04</span> So sánh từng bước — New Recipient (Face ID ON)</h2>
+  <p class="section-subtitle">Chi tiết từng step cho case chuyển tiền đến người nhận mới qua STK ngân hàng</p>
+
+  <div class="table-scroll">
+    <table class="data-table step-table">
+      <thead>
+        <tr>
+          <th>Step</th>
+          <th style="min-width:180px">VSP Option D</th>
+          <th style="min-width:160px">MoMo</th>
+          <th style="min-width:160px">TCB</th>
+          <th style="min-width:160px">TPBank FT</th>
+          <th style="min-width:160px">MB Bank</th>
+          <th style="min-width:160px">LioBank</th>
+          <th style="min-width:160px">VPBank Neo</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="step-num"><span class="vsp-step">1</span></td>
+          <td class="step-label" style="background:#eff6ff"><strong>Tap "Đến ngân hàng"</strong><br>Hub card trên entry page</td>
+          <td class="step-label">Tap "Chuyển tiền"<br>Từ home</td>
+          <td class="step-label">Tap "Chuyển tiền"<br>Từ home</td>
+          <td class="step-label">Tap "Chuyển tiền"<br>Từ home</td>
+          <td class="step-label">Tap "Chuyển tiền"<br>Từ home</td>
+          <td class="step-label">Tap "Chuyển tiền"<br>Từ home</td>
+          <td class="step-label">Tap "Chuyển tiền"<br>Từ home</td>
+        </tr>
+        <tr>
+          <td class="step-num"><span class="vsp-step">2</span></td>
+          <td class="step-label" style="background:#eff6ff"><strong>Nhập STK</strong><br>Auto-detect bank + live resolve tên</td>
+          <td class="step-label">Nhập STK/SĐT<br>Unified search</td>
+          <td class="step-label">Chọn loại CK<br>Nội bộ / Liên NH / Quốc tế</td>
+          <td class="step-label">Chọn loại CK<br>Nội bộ / Liên NH</td>
+          <td class="step-label">Chọn loại CK<br>Nội bộ / Liên NH</td>
+          <td class="step-label">Nhập STK<br>+ chọn NH</td>
+          <td class="step-label">Chọn loại CK<br>Nội bộ / Liên NH</td>
+        </tr>
+        <tr>
+          <td class="step-num"><span class="vsp-step">3</span></td>
+          <td class="step-label saved" style="background:#eff6ff"><strong>Nhập số tiền</strong><br>Numpad + SwapCard</td>
+          <td class="step-label">Auto-detect bank<br>Xác minh tên</td>
+          <td class="step-label">Chọn ngân hàng<br>Từ list</td>
+          <td class="step-label">Nhập STK<br>+ chọn NH</td>
+          <td class="step-label">Chọn ngân hàng<br>Từ list</td>
+          <td class="step-label">Tap "Tiếp tục"<br>Xác minh tên</td>
+          <td class="step-label">Nhập STK<br>Auto-detect NH</td>
+        </tr>
+        <tr>
+          <td class="step-num"><span class="vsp-step">4</span></td>
+          <td class="step-label" style="background:#eff6ff"><strong>Face ID xác thực</strong><br>Confirm + biometric 1 tap</td>
+          <td class="step-label">Nhập số tiền</td>
+          <td class="step-label">Nhập STK</td>
+          <td class="step-label">Tap "Tiếp tục"<br>Xác minh tên</td>
+          <td class="step-label">Nhập STK</td>
+          <td class="step-label">Nhập số tiền</td>
+          <td class="step-label">Xác minh tên<br>Tap "Tiếp tục"</td>
+        </tr>
+        <tr>
+          <td class="step-num"><span style="background:#16a34a">&#10003;</span></td>
+          <td class="step-label saved" style="background:#dcfce7"><strong>DONE — 4 steps</strong></td>
+          <td class="step-label">Xác nhận GD</td>
+          <td class="step-label">Xác minh tên<br>Tap "Tiếp tục"</td>
+          <td class="step-label">Nhập số tiền</td>
+          <td class="step-label">Tap "Tiếp tục"<br>Xác minh tên</td>
+          <td class="step-label">Face ID<br>Xác thực</td>
+          <td class="step-label">Nhập số tiền</td>
+        </tr>
+        <tr>
+          <td class="step-num"><span>6</span></td>
+          <td class="skip" style="background:#eff6ff">—</td>
+          <td class="step-label">Nhập OTP</td>
+          <td class="step-label">Nhập số tiền</td>
+          <td class="step-label">Xác nhận GD</td>
+          <td class="step-label">Nhập số tiền</td>
+          <td class="step-label saved">DONE — 5 steps</td>
+          <td class="step-label">Xác nhận GD</td>
+        </tr>
+        <tr>
+          <td class="step-num"><span>7</span></td>
+          <td class="skip" style="background:#eff6ff">—</td>
+          <td class="step-label saved">DONE — 6 steps</td>
+          <td class="step-label">Face ID<br>Xác thực</td>
+          <td class="step-label">Nhập OTP / Face ID</td>
+          <td class="step-label">Xác nhận GD</td>
+          <td class="skip">—</td>
+          <td class="step-label">Face ID<br>Xác thực</td>
+        </tr>
+        <tr>
+          <td class="step-num"><span>8</span></td>
+          <td class="skip" style="background:#eff6ff">—</td>
+          <td class="skip">—</td>
+          <td class="step-label saved">DONE — 7 steps</td>
+          <td class="step-label saved">DONE — 7 steps</td>
+          <td class="step-label">Nhập OTP</td>
+          <td class="skip">—</td>
+          <td class="step-label saved">DONE — 7 steps</td>
+        </tr>
+        <tr>
+          <td class="step-num"><span>9</span></td>
+          <td class="skip" style="background:#eff6ff">—</td>
+          <td class="skip">—</td>
+          <td class="skip">—</td>
+          <td class="skip">—</td>
+          <td class="step-label">Xác nhận OTP</td>
+          <td class="skip">—</td>
+          <td class="skip">—</td>
+        </tr>
+        <tr>
+          <td class="step-num"><span>10</span></td>
+          <td class="skip" style="background:#eff6ff">—</td>
+          <td class="skip">—</td>
+          <td class="skip">—</td>
+          <td class="skip">—</td>
+          <td class="step-label saved">DONE — 10 steps</td>
+          <td class="skip">—</td>
+          <td class="skip">—</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p class="body-text"><strong>VSP Option D giảm steps nhờ:</strong></p>
+  <ul style="list-style:none;padding:0;margin:0 0 32px;">
+    <li style="padding:4px 0 4px 16px;position:relative;font-size:14px;color:#333;">
+      <span style="position:absolute;left:0;top:11px;width:6px;height:6px;border-radius:50%;background:#16a34a;"></span>
+      <strong>Bỏ bước "Chọn loại CK"</strong> — Hub card = implicit choice, không cần thêm screen
+    </li>
+    <li style="padding:4px 0 4px 16px;position:relative;font-size:14px;color:#333;">
+      <span style="position:absolute;left:0;top:11px;width:6px;height:6px;border-radius:50%;background:#16a34a;"></span>
+      <strong>Auto-detect bank từ STK</strong> — không cần bước "Chọn ngân hàng"
+    </li>
+    <li style="padding:4px 0 4px 16px;position:relative;font-size:14px;color:#333;">
+      <span style="position:absolute;left:0;top:11px;width:6px;height:6px;border-radius:50%;background:#16a34a;"></span>
+      <strong>Live resolve tên</strong> — xác minh tên ngay khi nhập, không cần tap "Tiếp tục" rồi chờ
+    </li>
+    <li style="padding:4px 0 4px 16px;position:relative;font-size:14px;color:#333;">
+      <span style="position:absolute;left:0;top:11px;width:6px;height:6px;border-radius:50%;background:#16a34a;"></span>
+      <strong>Face ID thay OTP</strong> — 1 action thay vì nhập 6 số + confirm
+    </li>
+  </ul>
+
+  <!-- ================================================================ -->
+  <!-- Section 5: Existing Recipient Step Comparison -->
+  <!-- ================================================================ -->
+  <h2 class="section-title"><span class="section-number">05</span> So sánh từng bước — Existing Recipient (Face ID ON)</h2>
+  <p class="section-subtitle">Chuyển tiền cho người đã lưu — repeat transfer</p>
+
+  <div class="table-scroll">
+    <table class="data-table step-table">
+      <thead>
+        <tr>
+          <th>Step</th>
+          <th style="min-width:180px">VSP Option D</th>
+          <th style="min-width:160px">MoMo</th>
+          <th style="min-width:160px">TCB</th>
+          <th style="min-width:160px">LioBank</th>
+          <th style="min-width:160px">VPBank Neo</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="step-num"><span class="vsp-step">1</span></td>
+          <td class="step-label" style="background:#eff6ff"><strong>Tap người "Đã lưu"</strong><br>1 tap trên entry page</td>
+          <td class="step-label">Tap "Chuyển tiền"<br>Từ home</td>
+          <td class="step-label">Tap "Chuyển tiền"<br>Từ home</td>
+          <td class="step-label">Tap "Chuyển tiền"<br>Từ home</td>
+          <td class="step-label">Tap "Chuyển tiền"<br>Từ home</td>
+        </tr>
+        <tr>
+          <td class="step-num"><span class="vsp-step">2</span></td>
+          <td class="step-label" style="background:#eff6ff"><strong>Nhập số tiền + Face ID</strong><br>Confirm + biometric</td>
+          <td class="step-label">Chọn "Người đã lưu"<br>Từ danh sách</td>
+          <td class="step-label">Chọn "Người đã lưu"<br>Từ danh sách</td>
+          <td class="step-label">Chọn "Người đã lưu"</td>
+          <td class="step-label">Chọn "Người đã lưu"</td>
+        </tr>
+        <tr>
+          <td class="step-num"><span style="background:#16a34a;color:#fff">&#10003;</span></td>
+          <td class="step-label saved" style="background:#dcfce7"><strong>DONE — 2 steps</strong></td>
+          <td class="step-label">Nhập số tiền</td>
+          <td class="step-label">Nhập số tiền</td>
+          <td class="step-label">Nhập số tiền</td>
+          <td class="step-label">Nhập số tiền</td>
+        </tr>
+        <tr>
+          <td class="step-num"><span>4</span></td>
+          <td class="skip" style="background:#eff6ff">—</td>
+          <td class="step-label">Face ID</td>
+          <td class="step-label">Face ID</td>
+          <td class="step-label saved">DONE — 3 steps<br><small>Face ID tích hợp</small></td>
+          <td class="step-label saved">DONE — 3 steps<br><small>Face ID tích hợp</small></td>
+        </tr>
+        <tr>
+          <td class="step-num"><span>5</span></td>
+          <td class="skip" style="background:#eff6ff">—</td>
+          <td class="step-label saved">DONE — 4 steps</td>
+          <td class="step-label saved">DONE — 4 steps</td>
+          <td class="skip">—</td>
+          <td class="skip">—</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p class="body-text">
+    <strong>VSP = 2 steps</strong> cho existing recipient vì "Đã lưu" hiện ngay trên entry page — tap = skip thẳng đến Amount + Face ID. Các bank khác phải mở chuyển tiền &rarr; tìm danh sách &rarr; chọn &rarr; nhập tiền &rarr; xác thực = 3-4 steps.
+  </p>
+
+  <!-- ================================================================ -->
+  <!-- Section 6: Key Takeaways -->
+  <!-- ================================================================ -->
+  <h2 class="section-title"><span class="section-number">06</span> Key Takeaways từ Research</h2>
+  <p class="section-subtitle">4 bài học quan trọng nhất cho VSP</p>
+
+  <div class="card-grid">
+    <div class="card">
+      <div style="display:flex;align-items:center;margin-bottom:12px;">
+        <span class="num-badge">1</span>
+        <h3 style="margin-bottom:0;">Auto Focus</h3>
+      </div>
+      <p>Auto focus input giúp tiết kiệm thao tác. <strong>TPBank Chatpay</strong> áp dụng triệt để nhất.</p>
+      <div class="card-arrow">VSP: Áp dụng cho mọi input field</div>
+    </div>
+    <div class="card">
+      <div style="display:flex;align-items:center;margin-bottom:12px;">
+        <span class="num-badge">2</span>
+        <h3 style="margin-bottom:0;">Suggestions</h3>
+      </div>
+      <p>Nhập STK cho người đã lưu &rarr; suggest ngay. Gợi ý NH + người nhận giúp rút ngắn flow.</p>
+      <div class="card-arrow">VSP: "Đã lưu" on entry = pre-built suggestion</div>
+    </div>
+    <div class="card">
+      <div style="display:flex;align-items:center;margin-bottom:12px;">
+        <span class="num-badge">3</span>
+        <h3 style="margin-bottom:0;">Smart OTP</h3>
+      </div>
+      <p>TCB, LioBank, TPBank đã bỏ hiển thị OTP — silent verify đang là trend.</p>
+      <div class="card-arrow">VSP: Face ID thay OTP</div>
+    </div>
+    <div class="card">
+      <div style="display:flex;align-items:center;margin-bottom:12px;">
+        <span class="num-badge">4</span>
+        <h3 style="margin-bottom:0;">Auto Process</h3>
+      </div>
+      <p>Khi đủ thông tin, app nên tự process — nhiều bank vẫn bắt bấm "Tiếp tục" thủ công.</p>
+      <div class="card-arrow">VSP: Live resolve khi nhập đủ SĐT/STK</div>
+    </div>
+  </div>
+
+  <!-- ================================================================ -->
+  <!-- Section 7: VSP Option D Position -->
+  <!-- ================================================================ -->
+  <h2 class="section-title"><span class="section-number">07</span> VSP Option D — Vị trí trong bức tranh</h2>
+  <p class="section-subtitle">Tổng hợp vị thế của VSP so với thị trường VN</p>
+
+  <div class="vsp-card">
+    <h3>VSP Option D — Competitive Position</h3>
+
+    <div class="row">
+      <div class="row-label">Architecture</div>
+      <div class="row-value">2 Hub Cards + Global Search + Đã lưu — closest to modern trend</div>
+    </div>
+    <div class="row">
+      <div class="row-label">New Recipient</div>
+      <div class="row-value"><span class="best">4-5 steps</span> (Face ID ON) — vs market avg 7-8 steps</div>
+    </div>
+    <div class="row">
+      <div class="row-label">Existing Recipient</div>
+      <div class="row-value"><span class="best">2 steps</span> (Face ID ON) — vs market avg 3-4 steps</div>
+    </div>
+
+    <div class="sub-heading"><span class="pro">&#9679;</span> Key Advantages over VN Banks</div>
+    <ul class="pro-list">
+      <li>Live resolve — nhập đủ &rarr; hiện kết quả ngay, không cần bấm "Tìm"</li>
+      <li>Auto-detect bank từ STK (like MoMo / BIDV)</li>
+      <li>Face ID xác thực (no OTP) — tiết kiệm 2-3 steps vs OTP flow</li>
+      <li>Đã lưu 1-tap &rarr; Amount page (fastest repeat transfer — 2 steps)</li>
+      <li>3 lanes rõ ràng (VSP / Bank / Search) — không như TCB's confusing entry</li>
+      <li>Hub card = implicit "chọn loại CK" — bỏ 1 screen so với BIDV/VCB/MB</li>
+    </ul>
+
+    <div class="sub-heading"><span class="partial">&#9679;</span> Still Missing vs Best-in-Class</div>
+    <ul class="con-list">
+      <li>Lưu mẫu giao dịch (TPBank FT có)</li>
+      <li>Đặt lịch chuyển tiền tự động</li>
+      <li>Chuyển tiền theo lô (VPBank Neo)</li>
+      <li>QR scan (future roadmap)</li>
+    </ul>
+  </div>
+
+  <!-- ================================================================ -->
+  <!-- Section 8: Nate Research — 15 Apps -->
+  <!-- ================================================================ -->
+  <div class="collapsible">
+    <div class="collapsible-header" onclick="this.parentElement.classList.toggle('open')">
+      <h2><span class="section-number">08</span> Nate Research — 15 Apps Global + VN</h2>
+      <span class="collapsible-arrow">&#9660;</span>
+    </div>
+    <div class="collapsible-body">
+      <p class="body-text">
+        So sánh 15 ứng dụng chuyển tiền trên toàn cầu và khu vực — xác định pattern phổ biến nhất.
+      </p>
+
+      <div class="table-scroll">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>App</th>
+              <th>Region</th>
+              <th>P2P vs Bank</th>
+              <th>Search</th>
+              <th>Auto-detect</th>
+              <th>Saved / Recent</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td class="bank-name">Wise</td><td>Global</td><td>Tách (cùng screen)</td><td>Full-screen</td><td><span class="tag-no">Không</span></td><td>Existing recipients</td></tr>
+            <tr><td class="bank-name">Revolut</td><td>EU</td><td>Gộp (auto-detect)</td><td>Full-screen</td><td><span class="tag-no">Không</span></td><td>Recent + friends</td></tr>
+            <tr><td class="bank-name">Venmo</td><td>US</td><td>P2P only</td><td>Full-screen</td><td style="color:#ccc">N/A</td><td>Recent contacts</td></tr>
+            <tr><td class="bank-name">PayPal</td><td>Global</td><td>Gộp</td><td>Inline</td><td><span class="tag-no">Không</span></td><td>Contact + recent</td></tr>
+            <tr><td class="bank-name">Zelle</td><td>US</td><td>P2P only</td><td>Inline</td><td><span class="tag-yes">Tự detect Zelle</span></td><td>Recent + badge</td></tr>
+            <tr><td class="bank-name">MoMo</td><td>VN</td><td>Gộp</td><td>Full-screen</td><td><span class="tag-yes">Có (BIN)</span></td><td>Yêu thích + gần đây</td></tr>
+            <tr><td class="bank-name">ZaloPay</td><td>VN</td><td>Tách 2 flow</td><td>Full-screen</td><td><span class="tag-partial">Không rõ</span></td><td>Zalo friends</td></tr>
+            <tr><td class="bank-name">ViettelMoney</td><td>VN</td><td>Tách 2 menu</td><td>SĐT</td><td><span class="tag-partial">Không rõ</span></td><td>Người nhận thường xuyên</td></tr>
+            <tr><td class="bank-name">BIDV</td><td>VN</td><td>Tách 3 entry</td><td>STK/SĐT + đã lưu</td><td><span class="tag-yes">Có (Napas)</span></td><td>Lưu người thụ hưởng</td></tr>
+            <tr><td class="bank-name">VCB</td><td>VN</td><td>Tách 2 entry</td><td>STK + đã lưu</td><td><span class="tag-yes">Có</span></td><td>Lưu người thụ hưởng</td></tr>
+            <tr><td class="bank-name">Monzo</td><td>UK</td><td>Gộp (auto-detect)</td><td>Full-screen</td><td><span class="tag-yes">CoP verify</span></td><td>Recent + contacts</td></tr>
+            <tr><td class="bank-name">N26</td><td>EU</td><td>Tách (MoneyBeam vs Bank)</td><td>Contact list</td><td><span class="tag-no">Không</span></td><td>Contact sync</td></tr>
+            <tr><td class="bank-name">Paytm</td><td>IN</td><td>Gộp 3 entry</td><td>Inline</td><td><span class="tag-yes">UPI auto</span></td><td>Recent on home</td></tr>
+            <tr><td class="bank-name">GrabPay</td><td>SEA</td><td>P2P only</td><td>Phone</td><td style="color:#ccc">N/A</td><td><span class="tag-partial">Không rõ</span></td></tr>
+            <tr><td class="bank-name">WeChat Pay</td><td>CN</td><td>P2P only</td><td>Chat list</td><td style="color:#ccc">N/A</td><td>Chat = recent</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p class="body-text">
+        <strong>Xu hướng:</strong> Full-screen search (9/15). Auto-detect bank phổ biến ở VN + fintech lớn. Gộp P2P + Bank là hướng hiện đại (Revolut, Monzo, MoMo). Saved/Recent hiện diện 100%.
+      </p>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>
