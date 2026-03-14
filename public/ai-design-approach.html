@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI in Design — High-level Approach</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, 'Helvetica Neue', sans-serif;
+    background: #fff;
+    color: #111;
+    line-height: 1.7;
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 48px 24px 64px;
+  }
+
+  h1 { font-size: 28px; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 6px; }
+  .meta { font-size: 13px; color: #999; margin-bottom: 48px; padding-bottom: 24px; border-bottom: 1px solid #e5e5e5; }
+
+  h2 { font-size: 20px; font-weight: 700; margin-top: 48px; margin-bottom: 16px; letter-spacing: -0.3px; }
+  h3 { font-size: 15px; font-weight: 600; margin-top: 24px; margin-bottom: 6px; }
+
+  p { font-size: 15px; color: #333; line-height: 1.8; margin-bottom: 12px; }
+
+  .big { font-size: 22px; font-weight: 700; letter-spacing: -0.3px; line-height: 1.5; margin: 24px 0; color: #111; }
+
+  blockquote {
+    border-left: 3px solid #111;
+    padding: 12px 0 12px 20px;
+    margin: 20px 0;
+    font-style: italic;
+    color: #444;
+    font-size: 15px;
+    line-height: 1.8;
+  }
+
+  hr { border: none; border-top: 1px solid #e5e5e5; margin: 48px 0; }
+
+  .flow {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 16px 0 24px;
+    font-size: 13px;
+    font-weight: 500;
+    flex-wrap: wrap;
+  }
+  .flow span { padding: 6px 12px; border: 1px solid #ddd; border-radius: 6px; }
+  .flow .arrow { border: none; color: #999; padding: 0; }
+  .flow .ai { background: #111; color: #fff; border-color: #111; }
+
+  .compare {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 20px 0;
+  }
+  .compare-col { padding: 16px 20px; border: 1px solid #e5e5e5; border-radius: 8px; }
+  .compare-col.old { opacity: 0.5; }
+  .compare-label { font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #999; margin-bottom: 8px; }
+  .compare-col p { font-size: 13px; margin-bottom: 6px; }
+
+  .item { margin-bottom: 16px; }
+  .item strong { font-size: 14px; }
+  .item p { font-size: 14px; color: #555; margin-bottom: 0; }
+
+  .math {
+    font-size: 18px;
+    font-weight: 700;
+    text-align: center;
+    padding: 20px;
+    margin: 20px 0;
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+    letter-spacing: -0.5px;
+  }
+  .math span { color: #999; font-weight: 400; font-size: 14px; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0 24px;
+    font-size: 14px;
+  }
+  th { text-align: left; padding: 10px 12px; border-bottom: 2px solid #111; font-weight: 600; font-size: 13px; }
+  td { padding: 10px 12px; border-bottom: 1px solid #e5e5e5; vertical-align: top; color: #333; line-height: 1.6; }
+  td:first-child { font-weight: 600; color: #111; }
+
+  .footer { margin-top: 48px; padding-top: 16px; border-top: 1px solid #e5e5e5; font-size: 12px; color: #bbb; }
+</style>
+</head>
+<body>
+
+<h1>AI in Design &mdash; High-level Approach</h1>
+<div class="meta">V-Smart Pay &middot; Internal &middot; 2026</div>
+
+
+<!-- ═══ 1 ═══ -->
+<h2>1. Luận điểm chính</h2>
+
+<p class="big">AI không thay Designer. AI xóa khoảng cách giữa "nghĩ" và "thấy".</p>
+
+<p>Trước đây, Designer nghĩ ra ý tưởng &rarr; mất 2-3 ngày để vẽ ra &rarr; mới biết nó đúng hay sai. Với AI, vòng lặp đó rút xuống còn <strong>vài phút.</strong></p>
+
+<p>Điều này thay đổi tất cả. Không phải vì AI vẽ giỏi hơn người &mdash; mà vì <strong>chi phí thử nghiệm giảm về gần 0.</strong> Khi thử không tốn gì, người ta dám thử nhiều hơn. Dám thử nhiều hơn = tìm ra phương án tốt hơn. Đây chính xác là công thức "iterate sớm &rarr; đẻ ra thứ điên".</p>
+
+<blockquote>AI biến iteration từ xa xỉ phẩm thành hàng tiêu dùng. Và khi iterate gần như miễn phí, chất lượng output tăng theo cấp số nhân.</blockquote>
+
+<hr>
+
+
+<!-- ═══ 2 ═══ -->
+<h2>2. Quy trình cũ vs. Quy trình có AI</h2>
+
+<h3>Cũ: Sản xuất tuần tự</h3>
+<div class="flow">
+  <span>Idea</span>
+  <span class="arrow">&rarr;</span>
+  <span>Sketch</span>
+  <span class="arrow">&rarr;</span>
+  <span>Wireframe</span>
+  <span class="arrow">&rarr;</span>
+  <span>Hi-fi</span>
+  <span class="arrow">&rarr;</span>
+  <span>Review</span>
+  <span class="arrow">&rarr;</span>
+  <span>Handoff</span>
+</div>
+<p>Mỗi bước mất 1-3 ngày. Tổng: 2-4 tuần cho 1 feature. Sai ở bước 4 thì quay lại bước 2. Đau.</p>
+
+<h3>Mới: Explore &rarr; Curate &rarr; Refine</h3>
+<div class="flow">
+  <span>Idea</span>
+  <span class="arrow">&rarr;</span>
+  <span class="ai">AI tạo 5-10 options</span>
+  <span class="arrow">&rarr;</span>
+  <span>Designer chọn hướng</span>
+  <span class="arrow">&rarr;</span>
+  <span>Thread cọ xát</span>
+  <span class="arrow">&rarr;</span>
+  <span class="ai">AI refine</span>
+  <span class="arrow">&rarr;</span>
+  <span>Ship</span>
+</div>
+<p>Bước "AI tạo options" mất vài phút, không phải vài ngày. Designer không tốn thời gian vẽ &mdash; <strong>tốn thời gian chọn và quyết định.</strong> Đó mới là việc đáng làm.</p>
+
+<hr>
+
+
+<!-- ═══ 3 ═══ -->
+<h2>3. Vai trò thay đổi thế nào</h2>
+
+<p class="big">Designer chuyển từ "người sản xuất" sang "người curate".</p>
+
+<div class="compare">
+  <div class="compare-col old">
+    <div class="compare-label">Trước</div>
+    <p>80% thời gian: vẽ, dựng layout, chỉnh pixel</p>
+    <p>20% thời gian: nghĩ, thử nghiệm, quyết định</p>
+  </div>
+  <div class="compare-col">
+    <div class="compare-label">Với AI</div>
+    <p>20% thời gian: prompt, review output AI</p>
+    <p>80% thời gian: nghĩ, thử nghiệm, quyết định</p>
+  </div>
+</div>
+
+<p>Tỷ lệ đảo ngược hoàn toàn. Designer có 80% thời gian để làm việc thực sự quan trọng: <strong>suy nghĩ về trải nghiệm người dùng.</strong></p>
+
+<div class="math">
+  1 Designer + AI = Output của 3&ndash;4 Designer <span>(về mặt lượng)</span>
+</div>
+
+<p>Nhưng đây không phải về lượng. Đây là về chất. Khi một Designer có thể thử 20 phương án trong 1 ngày thay vì 2 phương án trong 1 tuần, phương án cuối cùng sẽ <strong>tốt hơn hẳn.</strong></p>
+
+<hr>
+
+
+<!-- ═══ 4 ═══ -->
+<h2>4. AI vào đâu trong quy trình Design-led</h2>
+
+<p>Ghép AI vào mô hình Design-led + Thread đã nói trước đó:</p>
+
+<table>
+  <thead>
+    <tr><th>Giai đoạn</th><th>Không AI</th><th>Có AI</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Explore</td>
+      <td>Designer tự sketch 2-3 hướng, mất 2-3 ngày</td>
+      <td>AI generate 10 hướng trong 30 phút. Designer chọn 2-3 hướng hay nhất</td>
+    </tr>
+    <tr>
+      <td>Cọ xát</td>
+      <td>Đưa lên thread, chờ feedback, sửa tay, đưa lại</td>
+      <td>Đưa lên thread, nhận feedback, AI sửa ngay, đưa lại trong vài phút</td>
+    </tr>
+    <tr>
+      <td>Iterate</td>
+      <td>Mỗi vòng iterate: 1-2 ngày</td>
+      <td>Mỗi vòng iterate: 1-2 giờ. Một ngày đi qua 5-8 vòng</td>
+    </tr>
+    <tr>
+      <td>Research</td>
+      <td>1-2 tuần competitor analysis, user interviews</td>
+      <td>AI scan 50 competitors trong 1 ngày. Designer focus phân tích sâu</td>
+    </tr>
+    <tr>
+      <td>Content</td>
+      <td>Writer viết, review, sửa, review lại</td>
+      <td>AI draft, Writer curate tone & voice, iterate nhanh</td>
+    </tr>
+    <tr>
+      <td>Handoff</td>
+      <td>Spec tay, redline, đo đạc</td>
+      <td>AI generate code trực tiếp từ design. Dev review, không dịch lại</td>
+    </tr>
+  </tbody>
+</table>
+
+<hr>
+
+
+<!-- ═══ 5 ═══ -->
+<h2>5. Áp dụng theo từng mảng</h2>
+
+<div class="item">
+  <strong>Lead &mdash; Principle &amp; Guideline</strong>
+  <p>AI giúp enforce design system tự động. Mỗi output của designer chạy qua AI check token, spacing, typography. Lead không cần review thủ công từng màn &mdash; chỉ review quyết định lớn.</p>
+</div>
+
+<div class="item">
+  <strong>Core Ví &middot; Authentication &middot; Payment Hub</strong>
+  <p>Flow-heavy, nhiều edge case. AI generate tất cả state variations (empty, loading, error, success) trong vài phút thay vì designer vẽ tay từng state. Designer focus vào happy path và logic flow.</p>
+</div>
+
+<div class="item">
+  <strong>Management &middot; Billing Hub</strong>
+  <p>Nhiều màn hình lặp lại pattern (list, detail, form). AI dựng nhanh từ pattern library. Designer chỉ customize những điểm khác biệt. Tiết kiệm 60-70% thời gian production.</p>
+</div>
+
+<div class="item">
+  <strong>Research &amp; Writer</strong>
+  <p>AI thay đổi mảng này nhiều nhất. Competitive scan, trend analysis, user persona synthesis &mdash; AI làm bản draft đầu tiên. Researcher/Writer chuyển từ "viết từ đầu" sang "curate và thêm insight". UX copy iterate ngay trên thread với nhiều PO.</p>
+</div>
+
+<div class="item">
+  <strong>RWA</strong>
+  <p>Sản phẩm mới, cần explore nhiều. AI là lợi thế lớn nhất ở đây &mdash; thử 10 concept trong thời gian trước đây chỉ thử được 2. Team 5-6 người + AI hoạt động như team 15-20 người về mặt output exploration.</p>
+</div>
+
+<hr>
+
+
+<!-- ═══ 6 ═══ -->
+<h2>6. Rủi ro cần kiểm soát</h2>
+
+<div class="item">
+  <strong>AI output không có taste = generic</strong>
+  <p>AI tạo ra thứ "ổn" rất nhanh. Nhưng "ổn" không phải "tốt". Nếu không có người có taste curate, output sẽ trông giống mọi app khác. Vai trò của Lead càng quan trọng hơn.</p>
+</div>
+
+<div class="item">
+  <strong>AI khuếch đại &mdash; cả tốt lẫn xấu</strong>
+  <p>Designer giỏi + AI = output phi thường. Designer yếu + AI = rác sinh ra nhanh hơn. AI không san phẳng khoảng cách &mdash; nó nới rộng khoảng cách. Cần đầu tư vào training taste, không phải training tool.</p>
+</div>
+
+<div class="item">
+  <strong>Đừng để AI thay thế sự cọ xát</strong>
+  <p>AI giúp iterate nhanh, nhưng vòng cọ xát giữa Tech-Product-Design vẫn phải do người với người. AI là công cụ trong vòng lặp, không phải thay thế vòng lặp.</p>
+</div>
+
+<hr>
+
+
+<!-- ═══ 7 ═══ -->
+<div style="margin-top:48px; padding-top:24px; border-top:1px solid #e5e5e5;">
+  <h2 style="margin-top:0">7. Tóm lại</h2>
+
+  <p class="big">AI không thay đổi "ai làm gì". AI thay đổi "mất bao lâu để thử".</p>
+
+  <p>Khi chi phí thử nghiệm giảm về 0, mọi thứ khác thay đổi theo:</p>
+
+  <p>&bull; Designer dám thử hướng điên hơn &mdash; vì thử rồi bỏ không tốn gì<br>
+  &bull; PO/Sếp thấy options nhiều hơn &mdash; quyết định tốt hơn<br>
+  &bull; Thread cọ xát nhanh hơn &mdash; vì có thứ nhìn thấy được ngay lập tức<br>
+  &bull; Output tệ chết nhanh hơn &mdash; vì thay thế nó chỉ mất vài phút<br>
+  &bull; Sản phẩm cuối cùng tốt hơn &mdash; vì đã qua nhiều vòng iterate hơn</p>
+
+  <blockquote>Công thức không đổi: Cọ xát sớm &rarr; Iterate từ sớm &rarr; Đẻ ra thứ điên.<br>AI chỉ làm mỗi vòng iterate nhanh hơn 10 lần.</blockquote>
+</div>
+
+<div class="footer">V-Smart Pay &middot; Internal Documentation &middot; 2026</div>
+
+</body>
+</html>

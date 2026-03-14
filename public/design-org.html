@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design Team — Org Chart</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, 'Helvetica Neue', sans-serif;
+    background: #fff;
+    color: #111;
+    line-height: 1.7;
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 48px 24px 64px;
+  }
+
+  h1 { font-size: 28px; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 6px; }
+  h2 { font-size: 18px; font-weight: 700; margin-top: 40px; margin-bottom: 16px; }
+  .meta { font-size: 13px; color: #999; margin-bottom: 48px; padding-bottom: 24px; border-bottom: 1px solid #e5e5e5; }
+
+  .lead {
+    border: 2px solid #111;
+    border-radius: 8px;
+    padding: 20px 24px;
+    text-align: center;
+    margin-bottom: 8px;
+  }
+  .lead-title { font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #999; margin-bottom: 4px; }
+  .lead-name { font-size: 20px; font-weight: 700; }
+  .lead-desc { font-size: 13px; color: #666; }
+
+  .connector { width: 2px; height: 32px; background: #ddd; margin: 0 auto; }
+
+  /* ── Two columns ── */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 8px;
+  }
+
+  /* ── Designer cards ── */
+  .designer {
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 12px;
+  }
+  .designer-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  .avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 2px solid #111;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .designer-name { font-size: 16px; font-weight: 700; }
+  .designer-sub { font-size: 12px; color: #999; }
+
+  .scope-list { display: flex; flex-wrap: wrap; gap: 6px; }
+  .scope-tag {
+    padding: 4px 12px;
+    border: 1px solid #ddd;
+    border-radius: 100px;
+    font-size: 12px;
+    font-weight: 500;
+    color: #555;
+  }
+
+  /* ── Workflow cards ── */
+  .workflow {
+    border: 1px solid #111;
+    border-radius: 8px;
+    padding: 16px 20px;
+  }
+  .wf-name { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+  .wf-desc { font-size: 13px; color: #555; line-height: 1.6; }
+
+  /* ── Summary ── */
+  hr { border: none; border-top: 1px solid #e5e5e5; margin: 40px 0; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    margin-top: 16px;
+  }
+  th { text-align: left; padding: 10px 12px; border-bottom: 2px solid #111; font-weight: 600; font-size: 13px; }
+  td { padding: 10px 12px; border-bottom: 1px solid #e5e5e5; color: #333; line-height: 1.6; }
+  td:first-child { font-weight: 600; color: #111; }
+
+  .total {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 24px;
+    padding: 16px 20px;
+    border: 2px solid #111;
+    border-radius: 8px;
+    font-size: 18px;
+    font-weight: 700;
+  }
+
+  .section-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #999;
+    margin-bottom: 12px;
+    margin-top: 32px;
+  }
+
+  .footer { margin-top: 48px; padding-top: 16px; border-top: 1px solid #e5e5e5; font-size: 12px; color: #bbb; }
+</style>
+</head>
+<body>
+
+<h1>Design Team &mdash; Quy hoạch nhân sự &amp; Workflow</h1>
+<div class="meta">V-Smart Pay &middot; Internal &middot; 2026</div>
+
+<!-- ═══ LEAD ═══ -->
+<div class="lead">
+  <div class="lead-title">Design Lead</div>
+  <div class="lead-name">Principle &amp; Guideline</div>
+  <div class="lead-desc">Định hướng nghệ thuật, chuẩn mực thiết kế, design system</div>
+</div>
+
+<div class="connector"></div>
+
+<!-- ═══ PEOPLE ═══ -->
+<div class="section-label">People &mdash; 5 Designers</div>
+
+<div class="designer">
+  <div class="designer-header">
+    <div class="avatar">A</div>
+    <div>
+      <div class="designer-name">Designer A</div>
+      <div class="designer-sub">2 mảng</div>
+    </div>
+  </div>
+  <div class="scope-list">
+    <div class="scope-tag">Core Ví (Nạp &middot; Chuyển &middot; Rút &middot; KYC)</div>
+    <div class="scope-tag">Authentication</div>
+  </div>
+</div>
+
+<div class="designer">
+  <div class="designer-header">
+    <div class="avatar">B</div>
+    <div>
+      <div class="designer-name">Designer B</div>
+      <div class="designer-sub">3 mảng</div>
+    </div>
+  </div>
+  <div class="scope-list">
+    <div class="scope-tag">Payment Hub</div>
+    <div class="scope-tag">Management</div>
+    <div class="scope-tag">Billing Hub</div>
+  </div>
+</div>
+
+<div class="designer">
+  <div class="designer-header">
+    <div class="avatar">C</div>
+    <div>
+      <div class="designer-name">Designer C</div>
+      <div class="designer-sub">1 mảng</div>
+    </div>
+  </div>
+  <div class="scope-list">
+    <div class="scope-tag">Research &amp; Writer</div>
+  </div>
+</div>
+
+<div class="two-col">
+  <div class="designer" style="margin-bottom:0">
+    <div class="designer-header">
+      <div class="avatar">D</div>
+      <div>
+        <div class="designer-name">Designer D</div>
+        <div class="designer-sub">1 mảng</div>
+      </div>
+    </div>
+    <div class="scope-list">
+      <div class="scope-tag">RWA</div>
+    </div>
+  </div>
+  <div class="designer" style="margin-bottom:0">
+    <div class="designer-header">
+      <div class="avatar">E</div>
+      <div>
+        <div class="designer-name">Designer E</div>
+        <div class="designer-sub">1 mảng</div>
+      </div>
+    </div>
+    <div class="scope-list">
+      <div class="scope-tag">RWA</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ AI THESIS ═══ -->
+<div class="section-label">AI Approach</div>
+
+<div style="border:1px solid #e5e5e5; border-radius:8px; padding:20px; margin-bottom:16px;">
+  <div style="font-size:15px; font-weight:700; margin-bottom:8px;">AI = Data &amp; Knowledge. Con người = Taste &amp; Wisdom.</div>
+  <div style="font-size:13px; color:#555; line-height:1.7;">AI giỏi tổng hợp data, scan pattern, generate options. Nhưng taste &mdash; biết cái nào đẹp, cái nào đúng, cái nào có soul &mdash; vẫn là của con người. Approach: <strong>dùng AI iterate solution nhanh nhất có thể, đưa lên bàn cho người có taste bàn luận và quyết định.</strong></div>
+</div>
+
+<!-- ═══ WORKFLOW ═══ -->
+<div class="section-label">Workflow &mdash; 4 Pillars</div>
+
+<div class="two-col">
+  <div class="workflow">
+    <div class="wf-name">Design Ops</div>
+    <div class="wf-desc">AI iterate solution nhanh &rarr; đưa lên thread bàn luận &rarr; người quyết định &rarr; AI cập nhật knowledge base. Vòng lặp liên tục.</div>
+  </div>
+  <div class="workflow">
+    <div class="wf-name">AI Tone of Voice</div>
+    <div class="wf-desc">AI draft UX copy, microcopy nhanh. Writer/Designer curate tone &amp; giọng văn &mdash; vì giọng là taste, không phải data.</div>
+  </div>
+  <div class="workflow">
+    <div class="wf-name">Research Input</div>
+    <div class="wf-desc">AI scan competitor, trend, user insight &rarr; tổng hợp thành options. Designer dùng wisdom chọn hướng đi đúng.</div>
+  </div>
+  <div class="workflow">
+    <div class="wf-name">UI Focus</div>
+    <div class="wf-desc">AI generate nhiều phương án UI nhanh, benchmark world-class. Designer dùng taste chọn cái có soul.</div>
+  </div>
+</div>
+
+<hr>
+
+<!-- ═══ SUMMARY ═══ -->
+<h2>Tổng quan</h2>
+
+<table>
+  <thead>
+    <tr><th>Mảng</th><th>Designer</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Core Ví</td><td>A</td></tr>
+    <tr><td>Authentication</td><td>A</td></tr>
+    <tr><td>Payment Hub</td><td>B</td></tr>
+    <tr><td>Management</td><td>B</td></tr>
+    <tr><td>Billing Hub</td><td>B</td></tr>
+    <tr><td>Research &amp; Writer</td><td>C</td></tr>
+    <tr><td>RWA</td><td>D, E</td></tr>
+  </tbody>
+</table>
+
+<table style="margin-top:24px">
+  <thead>
+    <tr><th>Workflow</th><th>Mục đích</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Design Ops</td><td>AI iterate nhanh &rarr; thread bàn luận &rarr; người quyết định</td></tr>
+    <tr><td>AI Tone of Voice</td><td>AI draft, người curate tone &amp; taste</td></tr>
+    <tr><td>Research Input</td><td>AI tổng hợp options, người chọn hướng đúng</td></tr>
+    <tr><td>UI Focus</td><td>AI generate phương án, người chọn cái có soul</td></tr>
+  </tbody>
+</table>
+
+<div class="total">
+  <span>Team</span>
+  <span>1 Lead + 5 Designers + 4 Workflows</span>
+</div>
+
+<div class="footer">V-Smart Pay &middot; Internal Documentation &middot; 2026</div>
+
+</body>
+</html>
