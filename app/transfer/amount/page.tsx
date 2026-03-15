@@ -3,8 +3,7 @@
 import * as React from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useState } from "react"
-import { ChevronLeft, ArrowDownUp, Loader2, ShieldCheck, ScanFace, X, Search, Check } from "lucide-react"
-import { Header } from "@/components/ui/header"
+import { ChevronLeft, Loader2, ShieldCheck, ScanFace, X, Search, Check, Wallet } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { BottomSheet } from "@/components/ui/bottom-sheet"
 import { ItemList, ItemListItem } from "@/components/ui/item-list"
@@ -63,48 +62,9 @@ function SaveToggle({ checked }: { checked: boolean }) {
   )
 }
 
-/* ── Swap Card ───────────────────────────────────────────────── */
-function SwapCard({
-  from,
-  to,
-}: {
-  from: { label: string; sublabel: string; icon: React.ReactNode }
-  to: { label: string; sublabel: string; icon: React.ReactNode }
-}) {
-  return (
-    <div className="mx-[22px] bg-secondary rounded-[28px] p-[16px] relative">
-      <div className="flex items-center gap-3 pb-[12px]">
-        <div className="w-[40px] h-[40px] rounded-full bg-background flex items-center justify-center shrink-0">
-          {from.icon}
-        </div>
-        <div className="flex-1 min-w-0">
-          <p className="text-xs font-normal leading-5 text-foreground-secondary">Từ</p>
-          <p className="text-sm font-semibold leading-5 text-foreground truncate">{from.label}</p>
-          <p className="text-xs font-normal leading-4 text-foreground-secondary">{from.sublabel}</p>
-        </div>
-      </div>
-      <div className="relative border-t border-border">
-        <div className="absolute right-[16px] top-1/2 -translate-y-1/2 w-[32px] h-[32px] rounded-full bg-background border border-border flex items-center justify-center">
-          <ArrowDownUp size={16} className="text-foreground" />
-        </div>
-      </div>
-      <div className="flex items-center gap-3 pt-[12px]">
-        <div className="w-[40px] h-[40px] rounded-full bg-background flex items-center justify-center shrink-0">
-          {to.icon}
-        </div>
-        <div className="flex-1 min-w-0">
-          <p className="text-xs font-normal leading-5 text-foreground-secondary">Đến</p>
-          <p className="text-sm font-semibold leading-5 text-foreground truncate">{to.label}</p>
-          <p className="text-xs font-normal leading-4 text-foreground-secondary">{to.sublabel}</p>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-/* ── Numpad ───────────────────────────────────────────────────── */
+/* ── Numpad (Cash App style — clean, no borders) ─────────────── */
 function Numpad({ onKey }: { onKey: (key: string) => void }) {
-  const keys = ["1", "2", "3", "4", "5", "6", "7", "8", "9", ".", "0", "⌫"]
+  const keys = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "000", "0", "⌫"]
   return (
     <div className="grid grid-cols-3 gap-0">
       {keys.map((key) => (
@@ -112,22 +72,13 @@ function Numpad({ onKey }: { onKey: (key: string) => void }) {
           key={key}
           type="button"
           onClick={() => onKey(key)}
-          className="h-[52px] flex items-center justify-center text-xl font-semibold leading-7 text-foreground active:bg-secondary transition-colors"
+          className="h-[56px] flex items-center justify-center text-[22px] font-semibold leading-7 text-foreground active:bg-secondary/50 rounded-[8px] transition-colors"
         >
           {key}
         </button>
       ))}
     </div>
   )
-}
-
-/* ── Logo placeholders ────────────────────────────────────────── */
-function VspLogo() {
-  return <span className="text-sm font-bold text-foreground">V</span>
-}
-
-function BankLogoText({ bank }: { bank: string }) {
-  return <span className="text-[10px] font-bold text-foreground leading-none">{bank}</span>
 }
 
 /* ══════════════════════════════════════════════════════════════
@@ -159,10 +110,8 @@ function P2PSheetContent({ state, onSelect }: { state: string; onSelect: (name: 
   const resolvedName = liveResolved ? "NGUYỄN MINH TUẤN" : "PHẠM VĂN NAM"
   const resolvedPhone = liveResolved ? phone : "0983 882 233"
 
-  /* Show phone input when user has typed something, or state-driven */
   const showInput = state.startsWith("sheet-p2p-") && state !== "sheet-p2p"
 
-  /* Filter contacts */
   const filteredContacts = contactFilter
     ? DANHBA_VSP.filter((c) =>
         c.name.toLowerCase().includes(contactFilter.toLowerCase()) ||
@@ -180,7 +129,6 @@ function P2PSheetContent({ state, onSelect }: { state: string; onSelect: (name: 
     <>
       <p className="text-[18px] font-bold leading-[26px] text-foreground mb-[16px]">Đến ví VSP</p>
 
-      {/* Search / filter bar */}
       <div className="flex items-center gap-[10px] bg-secondary rounded-[12px] px-[14px] py-[10px] mb-[16px]">
         <Search size={16} className="shrink-0 text-foreground-secondary" />
         <input
@@ -198,12 +146,10 @@ function P2PSheetContent({ state, onSelect }: { state: string; onSelect: (name: 
         )}
       </div>
 
-      {/* Error */}
       {getError() && (
         <p className="text-[13px] text-danger mb-[12px]">{getError()}</p>
       )}
 
-      {/* Resolving spinner */}
       {isResolving && (
         <div className="flex items-center justify-center gap-[8px] py-[24px]">
           <Loader2 size={20} className="animate-spin text-foreground" />
@@ -211,7 +157,6 @@ function P2PSheetContent({ state, onSelect }: { state: string; onSelect: (name: 
         </div>
       )}
 
-      {/* Resolved card */}
       {isResolved && (
         <div className="mb-[16px]">
           <div className="flex items-center gap-[12px] bg-secondary rounded-[20px] px-[16px] py-[14px]">
@@ -226,7 +171,6 @@ function P2PSheetContent({ state, onSelect }: { state: string; onSelect: (name: 
         </div>
       )}
 
-      {/* Contact list — show when not in resolved/error states */}
       {!showInput && (
         <div className="max-h-[400px] overflow-y-auto">
           <p className="text-[13px] font-semibold leading-[18px] text-foreground-secondary mb-[8px]">
@@ -253,7 +197,6 @@ function P2PSheetContent({ state, onSelect }: { state: string; onSelect: (name: 
         </div>
       )}
 
-      {/* Not found */}
       {isNotFound && (
         <div className="flex flex-col items-center pt-[24px]">
           <div className="w-[56px] h-[56px] rounded-full bg-secondary flex items-center justify-center mb-[12px]">
@@ -307,7 +250,6 @@ function BankSheetContent({ state, onSelect }: { state: string; onSelect: (name:
     ? BANKS.filter((b) => b.name.toLowerCase().includes(bankFilter.toLowerCase()) || b.short.toLowerCase().includes(bankFilter.toLowerCase()))
     : BANKS
 
-  /* ── Step 1: Bank List ── */
   if (!selectedBank) {
     return (
       <>
@@ -357,7 +299,6 @@ function BankSheetContent({ state, onSelect }: { state: string; onSelect: (name:
     )
   }
 
-  /* ── Step 2: Enter STK ── */
   return (
     <>
       <div className="flex items-center gap-[8px] mb-[16px]">
@@ -371,7 +312,6 @@ function BankSheetContent({ state, onSelect }: { state: string; onSelect: (name:
         <p className="text-[18px] font-bold leading-[26px] text-foreground">Đến ngân hàng</p>
       </div>
 
-      {/* Selected bank card */}
       <div className="flex items-center gap-[12px] bg-secondary rounded-[16px] px-[14px] py-[12px] mb-[20px]">
         <div
           className="w-[36px] h-[36px] rounded-full flex items-center justify-center text-[11px] font-bold text-white shrink-0"
@@ -443,149 +383,21 @@ function BankSheetContent({ state, onSelect }: { state: string; onSelect: (name:
 }
 
 /* ══════════════════════════════════════════════════════════════
-   Confirm + FaceID Sheet Content
+   Page — Cash App pattern:
+
+   Mode 1: NUMPAD (full screen, green-ish)
+     - Hero amount centered, big
+     - Quick chips
+     - Numpad
+     - "Tiếp tục" CTA
+
+   Mode 2: CONFIRM (single page, like Cash App's Pay page)
+     - Top bar: ← back | amount small | "Chuyển" pill
+     - To: Recipient (read-only)
+     - For: Note input
+     - Detail card
+     - All on ONE view — no multi-step
    ══════════════════════════════════════════════════════════════ */
-function ConfirmSheetContent({ state }: { state: string }) {
-  const router = useRouter()
-
-  const isReview = state === "confirm-review"
-  const isBiometricPrompt = state === "confirm-biometric"
-  const isBiometricScanning = state === "confirm-biometric-scanning"
-  const isBiometricSuccess = state === "confirm-biometric-success"
-  const isBiometricFail = state === "confirm-biometric-fail"
-  const isLoading = state === "confirm-loading"
-
-  return (
-    <>
-      {/* Amount */}
-      <div className="flex flex-col items-center pt-[8px] pb-[24px]">
-        <p className="text-sm font-normal leading-5 text-foreground-secondary">Số tiền chuyển</p>
-        <p className="text-[28px] font-bold leading-[36px] tracking-[-0.3px] text-foreground mt-[4px]">
-          100.000 ₫
-        </p>
-      </div>
-
-      {/* Confirm detail card */}
-      <div className="bg-secondary rounded-[28px] overflow-hidden">
-        <div className="px-[20px] py-[16px]">
-          <ItemList>
-            <ItemListItem label="Người nhận" metadata="LÊ VĂN HÙNG" divider />
-            <ItemListItem label="SĐT" metadata="0987 654 321" divider />
-            <ItemListItem label="Loại" metadata="Ví → Ví" divider />
-            <ItemListItem label="Nội dung" metadata="Chuyển tiền" divider />
-            <ItemListItem label="Phí" metadata="Miễn phí" />
-          </ItemList>
-        </div>
-      </div>
-
-      {/* ── FaceID Section ── */}
-      <div className="pt-[32px]">
-        <div className="flex flex-col items-center gap-[16px]">
-
-          {/* Review — show button to trigger FaceID */}
-          {isReview && (
-            <>
-              <div className="w-[56px] h-[56px] rounded-full bg-secondary flex items-center justify-center">
-                <ShieldCheck size={24} className="text-foreground" />
-              </div>
-              <p className="text-sm font-medium leading-5 text-foreground-secondary text-center">
-                Xác nhận thông tin rồi bấm xác thực
-              </p>
-              <div className="w-full pt-[8px]">
-                <Button variant="primary" size="48" className="w-full">
-                  Xác thực Face ID
-                </Button>
-              </div>
-            </>
-          )}
-
-          {/* Biometric prompt — waiting for user to look */}
-          {isBiometricPrompt && (
-            <>
-              <div className="w-[72px] h-[72px] rounded-full bg-secondary flex items-center justify-center">
-                <ScanFace size={36} className="text-foreground" />
-              </div>
-              <p className="text-[16px] font-semibold leading-[24px] text-foreground text-center">
-                Face ID
-              </p>
-              <p className="text-sm font-normal leading-5 text-foreground-secondary text-center">
-                Nhìn vào camera để xác thực
-              </p>
-            </>
-          )}
-
-          {/* Biometric scanning — animation */}
-          {isBiometricScanning && (
-            <>
-              <div className="w-[72px] h-[72px] rounded-full bg-secondary flex items-center justify-center relative">
-                <ScanFace size={36} className="text-brand-secondary" />
-                <div className="absolute inset-0 rounded-full border-2 border-brand-secondary animate-ping opacity-30" />
-              </div>
-              <p className="text-[16px] font-semibold leading-[24px] text-foreground text-center">
-                Đang xác thực...
-              </p>
-              <Loader2 size={20} className="animate-spin text-foreground-secondary" />
-            </>
-          )}
-
-          {/* Biometric success */}
-          {isBiometricSuccess && (
-            <>
-              <div className="w-[72px] h-[72px] rounded-full bg-success/10 flex items-center justify-center">
-                <ShieldCheck size={36} className="text-success" />
-              </div>
-              <p className="text-[16px] font-semibold leading-[24px] text-success text-center">
-                Xác thực thành công
-              </p>
-              <div className="flex items-center gap-[8px]">
-                <Loader2 size={16} className="animate-spin text-foreground-secondary" />
-                <p className="text-sm font-normal leading-5 text-foreground-secondary">Đang xử lý giao dịch...</p>
-              </div>
-            </>
-          )}
-
-          {/* Biometric fail */}
-          {isBiometricFail && (
-            <>
-              <div className="w-[72px] h-[72px] rounded-full bg-danger/10 flex items-center justify-center">
-                <X size={36} className="text-danger" />
-              </div>
-              <p className="text-[16px] font-semibold leading-[24px] text-danger text-center">
-                Face ID thất bại
-              </p>
-              <p className="text-sm font-normal leading-5 text-foreground-secondary text-center">
-                Không nhận diện được. Vui lòng thử lại.
-              </p>
-              <div className="flex gap-[8px] w-full pt-[8px]">
-                <Button variant="secondary" size="48" className="flex-1">
-                  Hủy
-                </Button>
-                <Button variant="primary" size="48" className="flex-1">
-                  Thử lại
-                </Button>
-              </div>
-            </>
-          )}
-
-          {/* Loading — processing transaction */}
-          {isLoading && (
-            <>
-              <Loader2 size={40} className="animate-spin text-foreground" />
-              <p className="text-[16px] font-semibold leading-[24px] text-foreground text-center">
-                Đang xử lý giao dịch...
-              </p>
-              <p className="text-sm font-normal leading-5 text-foreground-secondary text-center">
-                Vui lòng không tắt ứng dụng
-              </p>
-            </>
-          )}
-        </div>
-      </div>
-    </>
-  )
-}
-
-/* ── Page ──────────────────────────────────────────────────────── */
 function TransferAmountContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -593,49 +405,55 @@ function TransferAmountContent() {
 
   const MOCK_BALANCE = 1250000
 
-  /* Sheet states */
+  /* Determine mode */
   const isP2PSheet = state.startsWith("sheet-p2p")
   const isBankSheet = state.startsWith("sheet-bank")
-  const isConfirmSheet = state.startsWith("confirm-")
+  const isConfirmMode = state.startsWith("confirm-")
+  const isNumpadMode = !isConfirmMode
 
   const getAmount = () => {
     switch (state) {
-      case "typing": return "50.0"
+      case "typing": return "50.000"
       case "filled": return "100.000"
       case "over-balance": return "2.000.000"
       case "p2p-saved": return "100.000"
       case "bank-new": return "100.000"
       default:
-        if (isConfirmSheet) return "100.000"
+        if (isConfirmMode) return "100.000"
         return "0"
     }
   }
 
-  const isOverBalance = state === "over-balance"
-  const hasCTA = ["filled", "p2p-saved", "bank-new"].includes(state)
   const amount = getAmount()
+  const isOverBalance = state === "over-balance"
+  const isEmpty = amount === "0"
+  const hasCTA = ["filled", "p2p-saved", "bank-new"].includes(state)
+  const isBank = state === "bank-new" || state === "confirm-review-bank"
 
-  const getSwapTo = () => {
-    if (state === "bank-new") {
-      return {
-        label: "NGUYEN VAN MANH",
-        sublabel: "19038291832 · Techcombank",
-        icon: <BankLogoText bank="TCB" />,
-      }
+  const getRecipient = () => {
+    if (isBank) {
+      return { name: "NGUYEN VAN MANH", sub: "19038291832 · Techcombank", avatar: "NM" }
     }
-    return {
-      label: "LÊ VĂN HÙNG",
-      sublabel: "0987 654 321 · Ví VSP",
-      icon: <VspLogo />,
-    }
+    return { name: "LÊ VĂN HÙNG", sub: "0987 654 321 · Ví VSP", avatar: "LH" }
   }
 
-  return (
-    <div className="relative w-full max-w-[390px] min-h-screen bg-background text-foreground flex flex-col">
-      <Header
-        variant="large-title"
-        largeTitle="Chuyển tiền"
-        leading={
+  const recipient = getRecipient()
+
+  const isReview = state === "confirm-review" || state === "confirm-review-bank"
+  const isBiometricPrompt = state === "confirm-biometric"
+  const isBiometricScanning = state === "confirm-biometric-scanning"
+  const isBiometricSuccess = state === "confirm-biometric-success"
+  const isBiometricFail = state === "confirm-biometric-fail"
+  const isLoading = state === "confirm-loading"
+  const noteText = isConfirmMode ? "Tiền nhà tháng 3" : ""
+
+  /* ── NUMPAD MODE ── */
+  if (isNumpadMode) {
+    return (
+      <div className="relative w-full max-w-[390px] min-h-screen bg-background text-foreground flex flex-col">
+
+        {/* Top bar */}
+        <div className="flex items-center justify-between px-[16px] pt-[50px] pb-[0px]">
           <button
             type="button"
             onClick={() => router.push("/transfer/entry")}
@@ -643,120 +461,271 @@ function TransferAmountContent() {
           >
             <ChevronLeft size={18} className="text-foreground" />
           </button>
-        }
-      />
+          <div className="flex items-center gap-[6px] px-[12px] py-[4px] rounded-full bg-secondary">
+            <Avatar initials={recipient.avatar} size={20} />
+            <span className="text-[12px] font-semibold leading-[16px] text-foreground">{recipient.name}</span>
+          </div>
+          <div className="w-[44px]" />
+        </div>
 
-      <div className="flex-1 overflow-y-auto">
-        <SwapCard
-          from={{
-            label: "Ví VSP",
-            sublabel: `Số dư: ${MOCK_BALANCE.toLocaleString("vi-VN")} ₫`,
-            icon: <VspLogo />,
-          }}
-          to={getSwapTo()}
-        />
-
-        {/* Amount display */}
-        <div className="flex flex-col items-center pt-[32px] px-[22px]">
+        {/* Hero amount — centered, fills available space */}
+        <div className="flex-1 flex flex-col items-center justify-center px-[22px]">
           <p
-            className={`text-[36px] font-bold leading-[44px] tracking-[-0.5px] ${
-              isOverBalance ? "text-danger" : "text-foreground"
+            className={`text-[56px] font-bold leading-[64px] tracking-[-2px] ${
+              isOverBalance ? "text-danger" : isEmpty ? "text-foreground/20" : "text-foreground"
             }`}
           >
-            {amount} ₫
+            {amount}<span className="text-[32px] ml-[2px]">₫</span>
           </p>
+
           {isOverBalance && (
             <div className="flex items-center gap-[6px] mt-[8px]">
-              <p className="text-sm font-normal leading-5 text-danger">Số dư không đủ</p>
-              <span className="text-sm font-semibold leading-5 text-success">·</span>
-              <button type="button" className="text-sm font-semibold leading-5 text-success">
-                Nạp tiền ngay
+              <p className="text-[13px] font-normal leading-[18px] text-danger">Số dư không đủ</p>
+              <span className="text-foreground-secondary">·</span>
+              <button type="button" className="text-[13px] font-semibold leading-[18px] text-success">
+                Nạp tiền
               </button>
             </div>
           )}
-          {!isOverBalance && state !== "empty" && !isConfirmSheet && (
-            <p className="text-sm font-normal leading-5 text-foreground-secondary mt-[4px]">
-              Số dư: {MOCK_BALANCE.toLocaleString("vi-VN")} ₫
-            </p>
-          )}
         </div>
 
-        {/* Quick amount chips */}
-        <div className="flex items-center justify-center gap-[8px] pt-[16px] px-[22px]">
-          {["100K", "200K", "500K"].map((chip) => (
-            <button
-              key={chip}
-              type="button"
-              className="px-[16px] py-[8px] rounded-full bg-secondary text-sm font-semibold leading-5 text-foreground"
+        {/* Bottom area — chips + numpad + CTA */}
+        <div className="shrink-0 px-[22px] pb-[34px]">
+          {/* Quick chips */}
+          <div className="flex items-center justify-center gap-[8px] pb-[12px]">
+            {["100K", "200K", "500K", "1M"].map((chip) => (
+              <button
+                key={chip}
+                type="button"
+                className="px-[14px] py-[6px] rounded-full bg-secondary text-[13px] font-semibold leading-[18px] text-foreground active:bg-grey-200 transition-colors"
+              >
+                {chip}
+              </button>
+            ))}
+          </div>
+
+          {/* Numpad */}
+          <div className="px-[10px]">
+            <Numpad onKey={() => {}} />
+          </div>
+
+          {/* CTA */}
+          <div className="pt-[12px]">
+            <Button
+              variant="primary"
+              size="48"
+              className="w-full"
+              disabled={!hasCTA}
+              onClick={() => router.push("/transfer/amount?state=confirm-review")}
             >
-              {chip}
-            </button>
-          ))}
+              {isOverBalance ? "Số dư không đủ" : "Tiếp tục"}
+            </Button>
+          </div>
         </div>
 
-        {/* Note field */}
-        <div className="pt-[24px] px-[22px]">
-          <div className="flex items-center gap-[12px] bg-secondary rounded-[14px] px-[14px] py-[12px]">
+        {/* Home indicator */}
+        <div className="absolute bottom-0 inset-x-0 h-[21px] flex items-end justify-center pb-[4px] pointer-events-none">
+          <div className="w-[139px] h-[5px] rounded-full bg-foreground" />
+        </div>
+
+        {/* P2P BottomSheet */}
+        <BottomSheet
+          open={isP2PSheet}
+          onClose={() => router.push("/transfer/amount?state=empty")}
+        >
+          <P2PSheetContent
+            state={state}
+            onSelect={() => router.push("/transfer/amount?state=p2p-saved")}
+          />
+        </BottomSheet>
+
+        {/* Bank BottomSheet */}
+        <BottomSheet
+          open={isBankSheet}
+          onClose={() => router.push("/transfer/amount?state=empty")}
+        >
+          <BankSheetContent
+            state={state}
+            onSelect={() => router.push("/transfer/amount?state=bank-new")}
+          />
+        </BottomSheet>
+      </div>
+    )
+  }
+
+  /* ── CONFIRM MODE — Single page (Cash App "Pay" page pattern) ── */
+  return (
+    <div className="relative w-full max-w-[390px] min-h-screen bg-background text-foreground flex flex-col">
+
+      {/* Top bar: ← | amount | "Chuyển" pill (like Cash App: X | $10 | Pay) */}
+      <div className="flex items-center justify-between px-[16px] pt-[50px] pb-[12px] border-b border-border">
+        <button
+          type="button"
+          onClick={() => router.push("/transfer/amount?state=filled")}
+          className="w-[44px] h-[44px] flex items-center justify-center rounded-full"
+        >
+          <ChevronLeft size={18} className="text-foreground" />
+        </button>
+        <p className="text-[16px] font-bold leading-[22px] text-foreground">
+          {amount} ₫
+        </p>
+        {isReview ? (
+          <button
+            type="button"
+            onClick={() => router.push("/transfer/confirm?state=review")}
+            className="px-[16px] py-[8px] rounded-full bg-foreground"
+          >
+            <span className="text-[13px] font-bold leading-[18px] text-background">Chuyển</span>
+          </button>
+        ) : (
+          <div className="w-[44px]" />
+        )}
+      </div>
+
+      {/* Scrollable content */}
+      <div className="flex-1 overflow-y-auto">
+
+        {/* To: Recipient (read-only, like Cash App "To" field) */}
+        <div className="px-[22px] py-[16px] border-b border-border">
+          <div className="flex items-center gap-[12px]">
+            <p className="text-[14px] font-medium leading-[20px] text-foreground-secondary shrink-0">Đến</p>
+            <div className="flex items-center gap-[8px] flex-1 min-w-0">
+              <Avatar initials={recipient.avatar} size={32} />
+              <div className="flex-1 min-w-0">
+                <p className="text-[15px] font-semibold leading-[20px] text-foreground truncate">{recipient.name}</p>
+                <p className="text-[12px] font-normal leading-[16px] text-foreground-secondary">{recipient.sub}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* For: Note input (like Cash App "For" field) */}
+        <div className="px-[22px] py-[16px] border-b border-border">
+          <div className="flex items-center gap-[12px]">
+            <p className="text-[14px] font-medium leading-[20px] text-foreground-secondary shrink-0">Cho</p>
             <input
               type="text"
-              placeholder="Nhập nội dung chuyển tiền"
-              className="flex-1 min-w-0 bg-transparent outline-none text-sm font-medium leading-5 text-foreground placeholder:text-foreground-secondary"
-              readOnly
+              placeholder="Nội dung chuyển tiền"
+              defaultValue={noteText}
+              className="flex-1 min-w-0 bg-transparent outline-none text-[15px] font-medium leading-[20px] text-foreground placeholder:text-foreground-secondary"
             />
           </div>
         </div>
+
+        {/* Source: Wallet balance */}
+        <div className="px-[22px] py-[16px] border-b border-border">
+          <div className="flex items-center gap-[12px]">
+            <p className="text-[14px] font-medium leading-[20px] text-foreground-secondary shrink-0">Từ</p>
+            <div className="flex items-center gap-[8px] flex-1 min-w-0">
+              <div className="w-[32px] h-[32px] rounded-full bg-success/10 flex items-center justify-center shrink-0">
+                <Wallet size={16} className="text-success" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-[15px] font-semibold leading-[20px] text-foreground">Ví VSP</p>
+                <p className="text-[12px] font-normal leading-[16px] text-foreground-secondary">
+                  Số dư: {MOCK_BALANCE.toLocaleString("vi-VN")} ₫
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Detail card */}
+        <div className="px-[22px] pt-[32px]">
+          <div className="bg-secondary rounded-[28px] overflow-hidden">
+            <div className="px-[20px] py-[16px]">
+              <ItemList>
+                <ItemListItem label="Loại" metadata={isBank ? "Ví → Ngân hàng" : "Ví → Ví"} divider />
+                <ItemListItem label="Nội dung" metadata={noteText || "Chuyển tiền"} divider />
+                <ItemListItem label="Phí" metadata="Miễn phí" />
+              </ItemList>
+            </div>
+          </div>
+        </div>
+
+        {/* Biometric / Loading states */}
+        {!isReview && (
+          <div className="px-[22px] pt-[32px]">
+            <div className="flex flex-col items-center gap-[16px] py-[24px]">
+              {isBiometricPrompt && (
+                <>
+                  <div className="w-[72px] h-[72px] rounded-full bg-secondary flex items-center justify-center">
+                    <ScanFace size={36} className="text-foreground" />
+                  </div>
+                  <p className="text-[16px] font-semibold leading-[24px] text-foreground">Face ID</p>
+                  <p className="text-sm font-normal leading-5 text-foreground-secondary text-center">
+                    Nhìn vào camera để xác thực
+                  </p>
+                </>
+              )}
+
+              {isBiometricScanning && (
+                <>
+                  <div className="w-[72px] h-[72px] rounded-full bg-secondary flex items-center justify-center relative">
+                    <ScanFace size={36} className="text-brand-secondary" />
+                    <div className="absolute inset-0 rounded-full border-2 border-brand-secondary animate-ping opacity-30" />
+                  </div>
+                  <p className="text-[16px] font-semibold leading-[24px] text-foreground">Đang xác thực...</p>
+                  <Loader2 size={20} className="animate-spin text-foreground-secondary" />
+                </>
+              )}
+
+              {isBiometricSuccess && (
+                <>
+                  <div className="w-[72px] h-[72px] rounded-full bg-success/10 flex items-center justify-center">
+                    <ShieldCheck size={36} className="text-success" />
+                  </div>
+                  <p className="text-[16px] font-semibold leading-[24px] text-success">Xác thực thành công</p>
+                  <div className="flex items-center gap-[8px]">
+                    <Loader2 size={16} className="animate-spin text-foreground-secondary" />
+                    <p className="text-sm font-normal leading-5 text-foreground-secondary">Đang xử lý giao dịch...</p>
+                  </div>
+                </>
+              )}
+
+              {isBiometricFail && (
+                <>
+                  <div className="w-[72px] h-[72px] rounded-full bg-danger/10 flex items-center justify-center">
+                    <X size={36} className="text-danger" />
+                  </div>
+                  <p className="text-[16px] font-semibold leading-[24px] text-danger">Face ID thất bại</p>
+                  <p className="text-sm font-normal leading-5 text-foreground-secondary text-center">
+                    Không nhận diện được. Vui lòng thử lại.
+                  </p>
+                  <div className="flex gap-[8px] w-full pt-[8px]">
+                    <Button variant="secondary" size="48" className="flex-1">Hủy</Button>
+                    <Button variant="primary" size="48" className="flex-1">Thử lại</Button>
+                  </div>
+                </>
+              )}
+
+              {isLoading && (
+                <>
+                  <Loader2 size={40} className="animate-spin text-foreground" />
+                  <p className="text-[16px] font-semibold leading-[24px] text-foreground">Đang xử lý giao dịch...</p>
+                  <p className="text-sm font-normal leading-5 text-foreground-secondary text-center">
+                    Vui lòng không tắt ứng dụng
+                  </p>
+                </>
+              )}
+            </div>
+          </div>
+        )}
       </div>
 
-      {/* Numpad + CTA */}
-      <div className="shrink-0">
-        <Numpad onKey={() => {}} />
-        <div className="px-[22px] pb-[34px] pt-[8px]">
-          <Button
-            variant="primary"
-            size="48"
-            className="w-full"
-            disabled={!hasCTA}
-            onClick={() => router.push("/transfer/amount?state=confirm-review")}
-          >
-            {isOverBalance ? "Số dư không đủ" : "Tiếp tục"}
-          </Button>
+      {/* Bottom disclaimer (review mode) */}
+      {isReview && (
+        <div className="shrink-0 px-[22px] pb-[34px] pt-[12px]">
+          <p className="text-[11px] font-normal leading-[16px] text-foreground-secondary text-center">
+            Giao dịch không thể hoàn tác sau khi gửi
+          </p>
         </div>
-      </div>
+      )}
 
       {/* Home indicator */}
       <div className="absolute bottom-0 inset-x-0 h-[21px] flex items-end justify-center pb-[4px] pointer-events-none">
         <div className="w-[139px] h-[5px] rounded-full bg-foreground" />
       </div>
-
-      {/* ═══ P2P BottomSheet — danh bạ ví VSP ═══ */}
-      <BottomSheet
-        open={isP2PSheet}
-        onClose={() => router.push("/transfer/amount?state=empty")}
-      >
-        <P2PSheetContent
-          state={state}
-          onSelect={(name, phone) => router.push(`/transfer/amount?state=p2p-saved`)}
-        />
-      </BottomSheet>
-
-      {/* ═══ Bank BottomSheet — chọn NH → nhập STK ═══ */}
-      <BottomSheet
-        open={isBankSheet}
-        onClose={() => router.push("/transfer/amount?state=empty")}
-      >
-        <BankSheetContent
-          state={state}
-          onSelect={() => router.push(`/transfer/amount?state=bank-new`)}
-        />
-      </BottomSheet>
-
-      {/* ═══ Confirm + FaceID BottomSheet ═══ */}
-      <BottomSheet
-        open={isConfirmSheet}
-        onClose={() => router.push("/transfer/amount?state=filled")}
-      >
-        <ConfirmSheetContent state={state} />
-      </BottomSheet>
     </div>
   )
 }

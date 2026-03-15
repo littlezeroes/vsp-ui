@@ -25,10 +25,29 @@
 9. **Dark mode via semantic tokens only** — never raw CSS invert
 10. **`text-muted-foreground` is banned** — use `text-foreground-secondary`
 
-## Pipeline
-See `.claude/pipeline.md` for the full Figma → Code → QC → Ship workflow.
+## Pipelines
 
-## Agents
+### UXUI Pipeline (Feature Design → Code)
+See `.claude/workflows/uxui-pipeline/workflow.md` — full BRD → Flow → Screen → Code → QC.
+
+**Team:**
+| Agent | Name | Role | Platform |
+|---|---|---|---|
+| 🤖 VI | Vi | Design Lead / Orchestrator | OpenClaw |
+| 🔍 Nate | Nate | UX Researcher | Claude Code |
+| 👹 Đức | Đức | Senior UX Reviewer | Claude Code |
+| 🎨 Ivy | Ivy | UI Designer / Builder | Claude Code |
+| 📋 Khoa | Khoa | QA Design | Claude Code |
+
+**Trigger:** "pipeline", "new feature", "start flow", "bắt đầu feature"
+**Steps:** `.claude/workflows/uxui-pipeline/steps/step-01..11`
+**Edge cases:** `.claude/edge-case-library.md`
+**Feature output:** `.claude/features/[name]/`
+
+### Code Pipeline (Figma → Code → QC)
+See `.claude/pipeline.md` for the Figma → Code → QC → Ship workflow.
+
+## Agents (Code Pipeline — existing)
 | Agent | File | Trigger |
 |---|---|---|
 | VSP Designer | `.claude/agents/vsp-designer.md` | "design", "screen", "page", "implement" |
@@ -36,6 +55,15 @@ See `.claude/pipeline.md` for the full Figma → Code → QC → Ship workflow.
 | Token Fix Loop | `.claude/agents/token-check-fix.md` | "fix tokens", "token loop", "auto fix" |
 | Pipeline | `.claude/agents/vsp-pipeline.md` | "pipeline", "full flow", "build and check" |
 | UX Review | `.claude/agents/ux-review.md` | paste Figma URL + "review", "ux review", "audit ux" |
+
+## Agents (UXUI Pipeline — team)
+| Agent | File | Trigger |
+|---|---|---|
+| 🤖 Vi — Lead | `.claude/agents/vi-lead.md` | Orchestrator (OpenClaw) |
+| 🔍 Nate — Researcher | `.claude/agents/nate-researcher.md` | BRD analysis, flow design |
+| 👹 Đức — Reviewer | `.claude/agents/duc-reviewer.md` | Flow/UX review, adversarial |
+| 🎨 Ivy — Designer | `.claude/agents/ivy-designer.md` | Screen breakdown, code gen |
+| 📋 Khoa — QA | `.claude/agents/khoa-qa.md` | State coverage, token check |
 
 ## Commands
 ```

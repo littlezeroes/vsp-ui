@@ -22,7 +22,7 @@ const EPICS: Epic[] = [
   {
     id: "e1",
     title: "Epic 1 — Lien ket BIDV",
-    desc: "S1 → S2 → S3 → S4",
+    desc: "S1 → S2 → Deeplink/OTP → S3/S3-OTP → S4",
     color: "#6366f1",
     screens: [
       {
@@ -69,6 +69,19 @@ const EPICS: Epic[] = [
           { label: "cancelled", param: "?state=cancelled" },
           { label: "network-lost", param: "?state=network-lost" },
           { label: "app-resume", param: "?state=app-resume" },
+        ],
+      },
+      {
+        screen: "S3-OTP: Xac thuc OTP",
+        route: "/bidv-link/bidv-otp",
+        states: [
+          { label: "waiting-otp", param: "" },
+          { label: "typing", param: "?state=typing" },
+          { label: "filled", param: "?state=filled" },
+          { label: "loading", param: "?state=loading" },
+          { label: "error-wrong", param: "?state=error-wrong" },
+          { label: "error-expired", param: "?state=error-expired" },
+          { label: "error-max-attempts", param: "?state=error-max-attempts" },
         ],
       },
       {
@@ -120,6 +133,7 @@ const EPICS: Epic[] = [
           { label: "pin-locked", param: "?state=pin-locked" },
           { label: "redirect-store", param: "?state=redirect-store" },
           { label: "resume-store", param: "?state=resume-store" },
+          { label: "type-a-direct", param: "?state=type-a-direct" },
           { label: "session-timeout", param: "?state=session-timeout" },
           { label: "fee-changed", param: "?state=fee-changed" },
         ],
@@ -207,7 +221,7 @@ const EPICS: Epic[] = [
   {
     id: "e4",
     title: "Epic 4 — Huy lien ket",
-    desc: "S12 → S13 → S14",
+    desc: "S12 → BIDV app → S13 → S14",
     color: "#ef4444",
     screens: [
       {
@@ -299,44 +313,94 @@ const EPICS: Epic[] = [
 /* ── Flow charts per epic (simplified happy paths) ────────────── */
 const FLOW_CHARTS: Record<string, string> = {
   e1: `flowchart LR
-  S1[S1: Chon ngan hang] --> S2[S2: Nhap STK\\n+ Dieu khoan]
-  S2 --> STORE[Mo BIDV app]
+  PRE[User da eKYC] --> HOME[Home]
+  HOME -->|Lien ket ngay| S1[S1: Chon\\nngan hang]
+  HOME -->|Nap/Rut\\nchua co NH| POPUP[Popup: Chua\\nlien ket NH]
+  POPUP -->|Them ngan hang| S1
+  POPUP -->|De sau| HOME
+  S1 --> S2[S2: Nhap STK\\n+ Dong y TnC]
+  S2 --> D1{STK\\ndung?}
+  D1 -->|No| ERR1[Loi STK\\ninline error]
+  ERR1 --> S2
+  D1 -->|Yes| D2{CCCD\\nkhop?}
+  D2 -->|No| ERR2[Bottom sheet\\nCCCD chua khop]
+  ERR2 -->|Lien ket NH khac| S1
+  D2 -->|Yes| D3{NH yeu cau\\nxac thuc gi?}
+  D3 -->|Deeplink| STORE[Mo app NH]
   STORE --> S3[S3: Cho xac thuc]
-  S3 --> S4[S4: Ket qua]
+  S3 -->|OK| S4OK[S4: Thanh cong]
+  S3 -->|Fail| S4FL[S4: That bai]
+  S3 -->|Timeout| S4PD[S4: Dang xu ly]
+  S3 -->|User huy| S2
+  D3 -->|OTP| OTP[S3-OTP: Nhap OTP\\ndo NH gui]
+  OTP -->|Dung| S4OK
+  OTP -->|Sai/Het han| OTP
+  S4OK -->|Nap tien vao vi| S5[S5: Nap tien]
+  S4OK -->|Ve trang chu| HOME2[Home]
+  S4FL -->|Thuc hien lai| S2
+  S4FL -->|Dong| HOME2
   classDef sc fill:#1a1a2e,stroke:#6366f1,color:#e5e5e5
   classDef ok fill:#052e16,stroke:#22c55e,color:#86efac
+  classDef fl fill:#450a0a,stroke:#ef4444,color:#fca5a5
   classDef lk fill:#162032,stroke:#3b82f6,color:#93c5fd
-  class S1,S2,S3 sc
+  classDef dc fill:#0f172a,stroke:#6366f1,color:#c7d2fe
+  classDef wr fill:#451a03,stroke:#f59e0b,color:#fcd34d
+  class PRE,HOME,HOME2,S1,S2,S3,OTP sc
   class STORE lk
-  class S4 ok`,
+  class D1,D2,D3 dc
+  class S4OK ok
+  class S4FL,ERR1,ERR2 fl
+  class S4PD wr
+  class S5 lk`,
 
   e2: `flowchart LR
-  S5[S5: Nhap so tien] --> AUTH[Auth: PIN/Bio]
-  AUTH --> STORE[Mo BIDV app]
-  STORE --> S7[S7: Cho xac thuc]
-  S7 --> S8[S8: Ket qua]
+  S5[S5: Nhap so tien] -->|Valid| AUTH[Auth: PIN/Bio\\n+ tom tat GD]
+  S5 -->|Loi min/max/limit| ERR[Hien loi\\ntai S5]
+  AUTH -->|Auth OK + loai C,D| STORE[Mo BIDV\\nSmartBanking]
+  AUTH -->|Auth OK + loai A| S8OK[S8: Thanh cong]
+  AUTH -->|Auth fail| S5
+  STORE --> S7[S7: Cho xac thuc\\ncountdown 3p]
+  S7 -->|Callback OK| S8OK
+  S7 -->|Callback fail| S8FL[S8: That bai]
+  S7 -->|Timeout| S8PD[S8: Dang xu ly]
   classDef sc fill:#1a1a2e,stroke:#22c55e,color:#e5e5e5
   classDef ok fill:#052e16,stroke:#22c55e,color:#86efac
+  classDef fl fill:#450a0a,stroke:#ef4444,color:#fca5a5
   classDef lk fill:#162032,stroke:#3b82f6,color:#93c5fd
+  classDef wr fill:#451a03,stroke:#f59e0b,color:#fcd34d
   class S5,AUTH,S7 sc
   class STORE lk
-  class S8 ok`,
+  class S8OK ok
+  class S8FL,ERR fl
+  class S8PD wr`,
 
   e3: `flowchart LR
-  S9[S9: Nhap so tien] --> AUTH[Auth: PIN/Bio]
-  AUTH --> S11[S11: Ket qua]
+  S9[S9: Nhap so tien] -->|Valid| AUTH[Auth: PIN/Bio\\n+ tom tat GD]
+  S9 -->|Loi min/max/balance| ERR[Hien loi\\ntai S9]
+  AUTH -->|Auth OK| PROC[Tru tien vi\\n+ gui NH]
+  AUTH -->|Auth fail| S9
+  PROC -->|NH OK + so tien khop| S11OK[S11: Thanh cong]
+  PROC -->|NH fail| S11FL[S11: That bai\\n+ hoan tien vi]
+  PROC -->|Timeout| S11PD[S11: Dang xu ly\\nmax 15 phut]
   classDef sc fill:#1a1a2e,stroke:#f59e0b,color:#e5e5e5
   classDef ok fill:#052e16,stroke:#22c55e,color:#86efac
-  class S9,AUTH sc
-  class S11 ok`,
+  classDef fl fill:#450a0a,stroke:#ef4444,color:#fca5a5
+  classDef wr fill:#451a03,stroke:#f59e0b,color:#fcd34d
+  class S9,AUTH,PROC sc
+  class S11OK ok
+  class S11FL,ERR fl
+  class S11PD wr`,
 
   e4: `flowchart LR
-  S12[S12: Chi tiet NH] --> CHK{Kiem tra\\npending?}
-  CHK -->|No| CONFIRM[Xac nhan huy]
-  CHK -->|Yes| BLOCK[Chan huy]
-  CONFIRM --> STORE[Mo BIDV app]
-  STORE --> S13[S13: Cho xac thuc]
-  S13 --> S14[S14: Ket qua]
+  S12[S12: Chi tiet NH] --> CHK{Co GD\\npending?}
+  CHK -->|Khong| CONFIRM[Popup xac nhan\\nhuy lien ket]
+  CHK -->|Co| BLOCK[Chan huy\\nThong bao co GD dang xu ly]
+  CONFIRM -->|Dong y| STORE[Mo BIDV\\nSmartBanking]
+  CONFIRM -->|Huy| S12
+  STORE --> S13[S13: Cho xac thuc\\ncountdown 3p]
+  S13 -->|Callback OK| S14OK[S14: Thanh cong]
+  S13 -->|Callback fail| S14FL[S14: That bai]
+  S13 -->|Timeout| S14PD[S14: Dang xu ly]
   classDef sc fill:#1a1a2e,stroke:#ef4444,color:#e5e5e5
   classDef ok fill:#052e16,stroke:#22c55e,color:#86efac
   classDef fl fill:#450a0a,stroke:#ef4444,color:#fca5a5
@@ -345,8 +409,9 @@ const FLOW_CHARTS: Record<string, string> = {
   class S12,CONFIRM,S13 sc
   class CHK dc
   class STORE lk
-  class S14 ok
-  class BLOCK fl`,
+  class S14OK ok
+  class S14FL,BLOCK fl
+  class S14PD sc`,
 
   e5: `flowchart LR
   S15[S15: DS ngan hang] --> S12[S12: Chi tiet NH]

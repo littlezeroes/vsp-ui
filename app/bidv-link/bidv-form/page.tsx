@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { useRouter, useSearchParams } from "next/navigation"
-import { ChevronLeft, AlertCircle } from "lucide-react"
+import { ChevronLeft, AlertCircle, Landmark, Building2 } from "lucide-react"
 import { Header } from "@/components/ui/header"
 import { TextField } from "@/components/ui/text-field"
 import { Button } from "@/components/ui/button"
@@ -35,6 +35,7 @@ function BidvFormContent() {
   const [isLoading, setIsLoading] = React.useState(state === "loading")
   const [networkDialog, setNetworkDialog] = React.useState(state === "error-network")
   const [deeplinkDialog, setDeeplinkDialog] = React.useState(state === "deeplink-fail")
+  const [mismatchDialog, setMismatchDialog] = React.useState(state === "error-mismatch")
 
   // Determine error messages based on state
   const getSTKError = () => {
@@ -212,6 +213,66 @@ function BidvFormContent() {
           secondaryProps: { onClick: () => setDeeplinkDialog(false) },
         }}
       />
+
+      {/* CCCD Mismatch Bottom Sheet */}
+      <BottomSheet open={mismatchDialog} onClose={() => setMismatchDialog(false)}>
+        <div className="pt-[16px] pb-[16px]">
+          <div className="flex justify-center pb-[16px]">
+            <div className="w-[48px] h-[48px] rounded-full bg-danger/10 flex items-center justify-center">
+              <AlertCircle size={24} className="text-danger" />
+            </div>
+          </div>
+          <h3 className="text-lg font-semibold leading-6 text-foreground text-center">
+            Thông tin CCCD chưa khớp
+          </h3>
+          <p className="text-sm font-normal leading-5 text-foreground-secondary text-center mt-[8px]">
+            Thông tin CCCD của bạn trên V-Smart Pay không khớp hoặc bạn chưa có tài khoản BIDV.
+          </p>
+
+          <div className="mt-[24px] space-y-[16px]">
+            {/* Cách 1 */}
+            <div className="flex gap-[12px] items-start">
+              <div className="w-[36px] h-[36px] rounded-full bg-secondary flex items-center justify-center shrink-0 mt-[2px]">
+                <Landmark size={16} className="text-foreground" />
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-foreground">Cách 1: Cập nhật tại BIDV</p>
+                <p className="text-xs font-normal text-foreground-secondary leading-[18px]">Cập nhật CCCD mới tại ngân hàng BIDV, sau đó quay lại liên kết.</p>
+              </div>
+            </div>
+
+            {/* Cách 2 */}
+            <div className="flex gap-[12px] items-start">
+              <div className="w-[36px] h-[36px] rounded-full bg-secondary flex items-center justify-center shrink-0 mt-[2px]">
+                <Building2 size={16} className="text-foreground" />
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-foreground">Cách 2: Liên kết ngân hàng khác</p>
+                <p className="text-xs font-normal text-foreground-secondary leading-[18px]">Liên kết ngân hàng khác để thanh toán không tiền mặt.</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="pt-[24px] space-y-[8px]">
+            <Button
+              variant="primary"
+              size="48"
+              className="w-full"
+              onClick={() => router.push("/bidv-link/bank-list")}
+            >
+              Liên kết ngân hàng khác
+            </Button>
+            <Button
+              variant="secondary"
+              size="48"
+              className="w-full"
+              onClick={() => setMismatchDialog(false)}
+            >
+              Đóng
+            </Button>
+          </div>
+        </div>
+      </BottomSheet>
 
       {/* Home indicator */}
       <div className="absolute bottom-0 inset-x-0 h-[21px] flex items-end justify-center pb-[4px] pointer-events-none">

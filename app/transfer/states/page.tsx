@@ -57,7 +57,7 @@ const EPICS: Epic[] = [
   {
     id: "e2",
     title: "Epic 2 — Nhập số tiền",
-    desc: "S2 Amount → Sheet Confirm + Face ID",
+    desc: "S2 Numpad → Confirm page (Cash App Pay pattern)",
     color: "#22c55e",
     screens: [
       {
@@ -84,7 +84,7 @@ const EPICS: Epic[] = [
         ],
       },
       {
-        screen: "S2: Nhập số tiền",
+        screen: "S2: Nhập số tiền (Numpad)",
         route: "/transfer/amount",
         states: [
           { label: "empty", param: "" },
@@ -96,7 +96,7 @@ const EPICS: Epic[] = [
         ],
       },
       {
-        screen: "S2-A: Sheet Xác nhận + Face ID",
+        screen: "S2-Confirm: Xác nhận (Cash App Pay page)",
         route: "/transfer/amount",
         states: [
           { label: "review", param: "?state=confirm-review" },
@@ -185,14 +185,15 @@ const FLOW_CHARTS: Record<string, string> = {
   class DET,DET2,FILT1,FILT2 lk`,
 
   e2: `flowchart TD
-  START((Tu\\nEpic 1)) --> S2[S2: Nhap so tien\\nNumpad + SwapCard]
+  START((Tu\\nEpic 1)) --> S2[S2: Numpad\\nHero amount + Chips]
   S2 --> D2{So tien\\nhop le?}
   D2 -->|Khong| S2
   D2 -->|Vuot so du| OB[Over Balance:\\nNap tien ngay]
   OB --> S2
-  D2 -->|Hop le| S2A[S2-A: Sheet Confirm\\nReview thong tin]
-  S2A --> D2A{Xac thuc?}
-  D2A -->|Bam Face ID| BIO[Biometric:\\nNhin camera]
+  D2 -->|Hop le + Tiep tuc| CONF[S2-Confirm:\\nTo + For + Detail]
+  CONF -->|Back| S2
+  CONF --> D2A{Xac nhan?}
+  D2A -->|Bam Xac nhan| BIO[Biometric:\\nNhin camera]
   BIO --> D2B{Ket qua?}
   D2B -->|OK| BSUC[Biometric\\nthanh cong]
   BSUC --> LOAD[Loading:\\nDang xu ly GD]
@@ -209,7 +210,7 @@ const FLOW_CHARTS: Record<string, string> = {
   classDef fl fill:#450a0a,stroke:#ef4444,color:#fca5a5
   classDef lk fill:#162032,stroke:#3b82f6,color:#93c5fd
   class START,RESULT st
-  class S2,S2A sc
+  class S2,CONF sc
   class D2,D2A,D2B,D2C dc
   class BSUC ok
   class OB,BFAIL fl
