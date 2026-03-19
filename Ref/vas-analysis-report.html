@@ -1,0 +1,1510 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VAS Payment Redesign — UX Analysis Report</title>
+<style>
+  :root {
+    --bg: #ffffff;
+    --fg: #111111;
+    --fg2: #555555;
+    --fg3: #999999;
+    --border: #e0e0e0;
+    --accent: #111;
+    --green: #00b182;
+    --red: #e74c3c;
+    --yellow: #f5a623;
+    --blue: #2196F3;
+    --card: #fafafa;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family: -apple-system, 'Segoe UI', 'Helvetica Neue', sans-serif;
+    background: var(--bg);
+    color: var(--fg);
+    line-height: 1.7;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px 24px 120px;
+  }
+  h1 { font-size: 32px; font-weight: 800; margin-bottom: 8px; letter-spacing: -0.5px; }
+  h2 { font-size: 22px; font-weight: 700; margin-top: 64px; margin-bottom: 20px; padding-bottom: 8px; border-bottom: 2px solid var(--fg); }
+  h3 { font-size: 17px; font-weight: 700; margin-top: 32px; margin-bottom: 12px; }
+  h4 { font-size: 14px; font-weight: 700; margin-top: 24px; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--fg3); }
+  p { margin-bottom: 16px; color: var(--fg2); font-size: 15px; }
+  .subtitle { font-size: 15px; color: var(--fg3); margin-bottom: 40px; }
+  .meta { font-size: 12px; color: var(--fg3); margin-bottom: 40px; display:flex; gap:24px; flex-wrap:wrap; }
+  .meta span { background: var(--card); padding: 4px 12px; border-radius: 6px; }
+
+  /* Badges */
+  .badge { display:inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+  .badge-red { background: #fde8e8; color: #c0392b; }
+  .badge-green { background: #e8f8f0; color: #00b182; }
+  .badge-yellow { background: #fff8e1; color: #e67e22; }
+  .badge-gray { background: #f0f0f0; color: #666; }
+
+  /* Cards */
+  .card {
+    background: var(--card);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-bottom: 16px;
+  }
+  .card-title { font-size: 14px; font-weight: 700; margin-bottom: 8px; }
+  .card p { margin-bottom: 8px; font-size: 14px; }
+
+  /* Finding cards */
+  .finding {
+    border-left: 3px solid var(--fg3);
+    padding: 16px 20px;
+    margin-bottom: 16px;
+    background: var(--card);
+    border-radius: 0 8px 8px 0;
+  }
+  .finding.critical { border-left-color: var(--red); }
+  .finding.warning { border-left-color: var(--yellow); }
+  .finding.good { border-left-color: var(--green); }
+  .finding-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+  .finding.critical .finding-label { color: var(--red); }
+  .finding.warning .finding-label { color: var(--yellow); }
+  .finding.good .finding-label { color: var(--green); }
+  .finding-title { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+  .finding-body { font-size: 13px; color: var(--fg2); line-height: 1.6; }
+
+  /* Screenshot grid */
+  .screenshot-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 16px;
+    margin: 20px 0;
+  }
+  .screenshot-item {
+    text-align: center;
+  }
+  .screenshot-item img {
+    width: 100%;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  }
+  .screenshot-item .caption {
+    font-size: 11px;
+    color: var(--fg3);
+    margin-top: 6px;
+    font-weight: 600;
+  }
+
+  /* Comparison table */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+    font-size: 13px;
+  }
+  th {
+    text-align: left;
+    padding: 10px 12px;
+    background: var(--fg);
+    color: #fff;
+    font-weight: 600;
+    font-size: 12px;
+  }
+  td {
+    padding: 10px 12px;
+    border-bottom: 1px solid #f0f0f0;
+    vertical-align: top;
+  }
+  tr:nth-child(even) td { background: var(--card); }
+
+  /* Score bar */
+  .score-bar { display:flex; align-items:center; gap:12px; margin-bottom: 8px; }
+  .score-label { font-size: 13px; font-weight: 600; min-width: 140px; }
+  .score-track { flex:1; height: 8px; background: #eee; border-radius: 4px; overflow:hidden; }
+  .score-fill { height: 100%; border-radius: 4px; }
+  .score-val { font-size: 13px; font-weight: 700; min-width: 32px; text-align:right; }
+
+  /* Flow diagram */
+  .flow-box {
+    background: var(--card);
+    border-radius: 12px;
+    padding: 20px;
+    margin: 16px 0;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 13px;
+    line-height: 2;
+    white-space: pre-wrap;
+    overflow-x: auto;
+  }
+  .flow-box .step { color: var(--fg); font-weight: 600; }
+  .flow-box .arrow { color: var(--fg3); }
+
+  /* Principle box */
+  .principle {
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-bottom: 16px;
+  }
+  .principle-num { font-size: 11px; font-weight: 700; color: var(--fg3); margin-bottom: 4px; }
+  .principle-title { font-size: 16px; font-weight: 700; margin-bottom: 6px; }
+  .principle-body { font-size: 13px; color: var(--fg2); }
+
+  /* Verdict */
+  .verdict {
+    background: var(--fg);
+    color: #fff;
+    border-radius: 16px;
+    padding: 32px;
+    margin: 32px 0;
+  }
+  .verdict h3 { color: #fff; margin-top: 0; }
+  .verdict p { color: rgba(255,255,255,0.7); }
+  .verdict strong { color: #fff; }
+
+  /* TOC */
+  .toc { margin: 32px 0; padding: 24px; background: var(--card); border-radius: 12px; }
+  .toc-title { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--fg3); margin-bottom: 12px; }
+  .toc ol { padding-left: 20px; }
+  .toc li { margin-bottom: 6px; font-size: 14px; }
+  .toc a { color: var(--fg); text-decoration: none; font-weight: 500; }
+  .toc a:hover { text-decoration: underline; }
+
+  /* Column layout */
+  .cols-2 { display:grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .cols-3 { display:grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+  @media (max-width: 600px) {
+    .cols-2, .cols-3 { grid-template-columns: 1fr; }
+    .screenshot-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  /* Separator */
+  .sep { height: 1px; background: #eee; margin: 48px 0; }
+
+  /* Quote */
+  blockquote {
+    border-left: 3px solid var(--fg);
+    padding: 12px 20px;
+    margin: 16px 0;
+    background: var(--card);
+    border-radius: 0 8px 8px 0;
+    font-style: italic;
+    color: var(--fg2);
+    font-size: 14px;
+  }
+
+  ul, ol { margin-bottom: 16px; padding-left: 20px; }
+  li { margin-bottom: 6px; font-size: 14px; color: var(--fg2); }
+  li strong { color: var(--fg); }
+
+  /* Inline highlight */
+  code {
+    background: #f0f0f0;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-family: 'SF Mono', monospace;
+  }
+
+  /* ═══ Wireframe Phone Frames ═══ */
+  .phone-row { display:flex; gap:24px; flex-wrap:wrap; margin:16px 0; }
+  .phone { width:280px; min-height:520px; background:#fff; border-radius:32px; border:2px solid #222; overflow:hidden; display:flex; flex-direction:column; box-shadow:0 4px 20px rgba(0,0,0,0.08); flex-shrink:0; }
+  .phone-label { font-size:11px; font-weight:700; color:#888; text-align:center; margin-top:8px; text-transform:uppercase; letter-spacing:0.5px; }
+  .w-statusbar { height:36px; display:flex; align-items:center; justify-content:space-between; padding:0 20px; flex-shrink:0; position:relative; }
+  .w-statusbar .time { font-size:11px; font-weight:600; }
+  .w-statusbar .notch { width:80px; height:20px; background:#222; border-radius:12px; position:absolute; left:50%; transform:translateX(-50%); }
+  .w-statusbar .icons { font-size:10px; color:#555; }
+  .w-navbar { display:flex; align-items:center; justify-content:space-between; padding:4px 16px 8px; flex-shrink:0; }
+  .w-navbar .back { font-size:18px; width:28px; }
+  .w-navbar .title-center { font-size:15px; font-weight:700; text-align:center; flex:1; }
+  .w-navbar .large-title { font-size:22px; font-weight:800; flex:1; }
+  .w-navbar .action { font-size:14px; color:#888; }
+  .w-content { flex:1; overflow-y:auto; padding:0 16px 16px; }
+  .w-section { margin-top:20px; }
+  .w-section-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
+  .w-section-title { font-size:13px; font-weight:700; color:#111; }
+  .w-section-link { font-size:11px; font-weight:600; color:#888; }
+  .cat-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; }
+  .cat-item { text-align:center; }
+  .cat-icon { width:44px; height:44px; background:#f0f0f0; border-radius:50%; margin:0 auto 4px; display:flex; align-items:center; justify-content:center; font-size:18px; }
+  .cat-label { font-size:9px; color:#555; font-weight:500; }
+  .w-list-item { display:flex; align-items:center; gap:10px; padding:10px 0; border-bottom:1px solid #f4f4f4; }
+  .w-list-item:last-child { border-bottom:none; }
+  .w-list-icon { width:34px; height:34px; border-radius:50%; background:#f0f0f0; display:flex; align-items:center; justify-content:center; font-size:14px; flex-shrink:0; }
+  .w-list-body { flex:1; min-width:0; }
+  .w-list-title { font-size:12px; font-weight:600; }
+  .w-list-sub { font-size:10px; color:#aaa; }
+  .w-list-trail { font-size:14px; color:#ccc; flex-shrink:0; }
+  .qp-badge { background:#e74c3c; color:#fff; font-size:8px; font-weight:700; padding:1px 5px; border-radius:8px; margin-left:4px; }
+  .w-input-field { border:1.5px solid #ddd; border-radius:10px; padding:10px 12px; margin-bottom:10px; display:flex; align-items:center; justify-content:space-between; }
+  .w-input-field .label { font-size:9px; color:#aaa; }
+  .w-input-field .value { font-size:13px; font-weight:600; }
+  .w-input-field .helper { font-size:10px; color:#2196F3; font-weight:600; }
+  .conv-text { font-size:18px; font-weight:700; line-height:1.6; margin:12px 0; }
+  .conv-text .highlight { color:#2196F3; }
+  .w-btn-primary { background:#111; color:#fff; font-size:13px; font-weight:700; text-align:center; padding:13px 0; border-radius:24px; margin-top:12px; }
+  .w-btn-blue { background:#2196F3; color:#fff; font-size:13px; font-weight:700; text-align:center; padding:13px 0; border-radius:12px; margin-top:12px; }
+  .chip-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
+  .chip { border:1.5px solid #e0e0e0; border-radius:8px; padding:10px 6px; text-align:center; font-size:11px; font-weight:600; }
+  .chip.selected { border-color:#2196F3; background:#EAF4FF; color:#2196F3; }
+  .w-toggle { width:36px; height:20px; border-radius:10px; background:#ccc; position:relative; flex-shrink:0; }
+  .w-toggle .dot { width:16px; height:16px; border-radius:50%; background:#fff; position:absolute; top:2px; left:2px; box-shadow:0 1px 2px rgba(0,0,0,0.2); }
+  .w-checkbox { width:18px; height:18px; border:2px solid #ccc; border-radius:4px; flex-shrink:0; display:flex; align-items:center; justify-content:center; }
+  .w-checkbox.checked { background:#111; border-color:#111; }
+  .w-checkbox.checked::after { content:"✓"; color:#fff; font-size:10px; font-weight:700; }
+  .sheet-handle { width:36px; height:4px; background:#ddd; border-radius:2px; margin:8px auto; }
+  .home-ind { width:100px; height:4px; background:#222; border-radius:2px; margin:8px auto 4px; }
+  .w-bottom-bar { padding:8px 16px 4px; flex-shrink:0; background:#fff; }
+  .w-sep { height:1px; background:#f0f0f0; margin:12px 0; }
+  .w-info-row { display:flex; justify-content:space-between; padding:8px 0; font-size:12px; }
+  .w-info-row .info-label { color:#999; }
+  .w-info-row .info-value { font-weight:600; color:#111; }
+  .search-bar { background:#f0f0f0; border-radius:10px; padding:8px 12px; font-size:11px; color:#aaa; margin-bottom:12px; }
+  .group-header { font-size:10px; font-weight:700; color:#888; padding:8px 0 4px; text-transform:uppercase; letter-spacing:0.3px; }
+  .anno { background:#FFFDE7; border-left:3px solid #f5a623; padding:8px 12px; margin:12px 0; border-radius:0 6px 6px 0; font-size:11px; color:#666; }
+  .anno strong { color:#111; }
+  .tag { display:inline-block; font-size:9px; font-weight:700; padding:2px 6px; border-radius:4px; }
+  .tag-blue { background:#EAF4FF; color:#2196F3; }
+  .tag-green { background:#e8f8f0; color:#00b182; }
+  .tag-gray { background:#f0f0f0; color:#888; }
+  .phase { display:inline-block; font-size:10px; font-weight:700; padding:3px 8px; border-radius:6px; margin-left:8px; }
+  .phase-1 { background:#111; color:#fff; }
+  .phase-2 { background:#eee; color:#888; }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════ HEADER ═══════════════════════════════════════ -->
+<h1>VAS Payment Redesign</h1>
+<p class="subtitle">Phân tích Mental Model → UX/UI hoàn chỉnh &middot; Không bias vào bất kỳ proposal nào</p>
+<div class="meta">
+  <span>Vi &mdash; Design Lead</span>
+  <span>19/03/2026</span>
+  <span>V-Smart Pay</span>
+  <span>First Principles Analysis</span>
+</div>
+
+<div class="toc">
+  <div class="toc-title">Mục lục</div>
+  <ol>
+    <li><a href="#s1">Mental Model &mdash; User nghĩ gì khi thanh toán hóa đơn?</a></li>
+    <li><a href="#s2">Audit UI hiện tại (Production)</a></li>
+    <li><a href="#s3">Audit UI PO Expected (vas.tsx prototype)</a></li>
+    <li><a href="#s4">Benchmark &mdash; MoMo, ZaloPay, Techcombank</a></li>
+    <li><a href="#s5">First Principles &mdash; Redesign từ gốc</a></li>
+    <li><a href="#s6">Information Architecture &mdash; Entry Points &amp; 3 Nhu Cầu</a></li>
+    <li><a href="#s7">Screen-by-Screen Recommendations</a></li>
+    <li><a href="#s8">Scoring &amp; Verdict</a></li>
+  </ol>
+</div>
+
+<!-- ═══════════════════════════════════════ SECTION 1 ═══════════════════════════════════════ -->
+<h2 id="s1">1. Mental Model &mdash; User nghĩ gì?</h2>
+
+<p>Trước khi đánh giá bất kỳ UI nào, phải hiểu cách user <strong>thực sự nghĩ</strong> khi thanh toán hóa đơn trên ví điện tử. Mental model quyết định mọi thứ.</p>
+
+<h3>1.1 Ba nhu cầu cốt lõi của user</h3>
+
+<p>Mọi interaction trên VAS quy về đúng <strong>3 nhu cầu</strong>. Thiết kế phải phục vụ cả 3 — nhưng không trộn lẫn chúng trên cùng 1 màn hình.</p>
+
+<div class="cols-3">
+  <div class="card" style="border-left: 3px solid var(--green);">
+    <div class="card-title" style="color:var(--green);">① THANH TOÁN (Pay)</div>
+    <p><strong>"Tôi muốn đóng tiền ngay."</strong></p>
+    <p>Returning user: đã lưu thông tin, muốn shortcut → confirm → done.<br>&lt;15 giây.</p>
+    <p>First-time: cần hướng dẫn từng bước → chọn → nhập → kiểm tra → thanh toán.</p>
+    <p style="font-size:12px; color:var(--fg3);">80% traffic. Entry point chính.</p>
+  </div>
+  <div class="card" style="border-left: 3px solid var(--blue);">
+    <div class="card-title" style="color:var(--blue);">② THÊM MỚI (Add)</div>
+    <p><strong>"Tôi muốn lưu 1 hóa đơn / SĐT mới để lần sau không nhập lại."</strong></p>
+    <p>Xảy ra khi: first-time thanh toán xong (prompt lưu), hoặc chủ động vào Quản lý để thêm.</p>
+    <p style="font-size:12px; color:var(--fg3);">20% traffic. Gắn với cuối flow thanh toán + entry trong Quản lý.</p>
+  </div>
+  <div class="card" style="border-left: 3px solid var(--yellow);">
+    <div class="card-title" style="color:var(--yellow);">③ QUẢN LÝ (Manage)</div>
+    <p><strong>"Tôi muốn sửa tên, xóa, bật/tắt nhắc nợ cho hóa đơn đã lưu."</strong></p>
+    <p>Deliberate action, không urgent. Cần screen riêng — KHÔNG trộn vào Home.</p>
+    <p style="font-size:12px; color:var(--fg3);">5% traffic. Entry point = link/icon từ Home.</p>
+  </div>
+</div>
+
+<div class="finding warning">
+  <div class="finding-label">Insight quan trọng</div>
+  <div class="finding-title">3 nhu cầu = 3 mental mode khác nhau → KHÔNG trộn trên 1 screen</div>
+  <div class="finding-body">
+    <strong>Thanh toán</strong> = fast, urgent, action mode → Home phải optimize cho nhu cầu này.<br>
+    <strong>Thêm mới</strong> = xảy ra tự nhiên cuối flow thanh toán, hoặc từ Quản lý → không cần entry riêng trên Home.<br>
+    <strong>Quản lý</strong> = deliberate, rare, configuration mode → screen riêng, chỉ cần 1 entry point nhỏ từ Home.<br><br>
+    PO prototype embed Quản lý inline vào Home = trộn 2 mental mode → cognitive overload.
+  </div>
+</div>
+
+<h3>1.2 User Need Map</h3>
+
+<table>
+  <tr>
+    <th>Nhu cầu</th>
+    <th>User nói gì</th>
+    <th>Frequency</th>
+    <th>Entry Point đề xuất</th>
+  </tr>
+  <tr>
+    <td><span class="badge badge-green">Thanh toán</span></td>
+    <td>"Đóng tiền điện tháng này"</td>
+    <td>Hàng tháng / tuần</td>
+    <td>Quick Pay card trên Home (1-tap)</td>
+  </tr>
+  <tr>
+    <td><span class="badge badge-green">Thanh toán</span></td>
+    <td>"Nạp tiền điện thoại cho vợ"</td>
+    <td>Thường xuyên</td>
+    <td>Category grid → Topup flow</td>
+  </tr>
+  <tr>
+    <td><span class="badge badge-green">TT mới</span></td>
+    <td>"Lần đầu đóng tiền nước qua app"</td>
+    <td>1 lần/service</td>
+    <td>Category grid → Full flow → Prompt "Lưu?"</td>
+  </tr>
+  <tr>
+    <td style="border-left:3px solid var(--blue)"><span class="badge badge-yellow">Thêm mới</span></td>
+    <td>"Lưu mã điện để lần sau thanh toán nhanh"</td>
+    <td>1 lần/biller</td>
+    <td>Cuối flow thanh toán + nút "Thêm" trong Quản lý</td>
+  </tr>
+  <tr>
+    <td style="border-left:3px solid var(--yellow)"><span class="badge badge-gray">Quản lý</span></td>
+    <td>"Đổi tên gợi nhớ cho hóa đơn nước"</td>
+    <td>Hiếm</td>
+    <td>Swipe row → xóa. Tap row → V4 xem info.</td>
+  </tr>
+  <tr>
+    <td style="border-left:3px solid var(--yellow)"><span class="badge badge-gray">Quản lý</span></td>
+    <td>"Xóa số ĐT cũ không dùng nữa"</td>
+    <td>Rất hiếm</td>
+    <td>Swipe row → xóa trực tiếp trên Home</td>
+  </tr>
+</table>
+
+<h3>1.3 Cognitive Load Map</h3>
+
+<table>
+  <tr>
+    <th>Bước</th>
+    <th>Cognitive Load</th>
+    <th>Giải pháp</th>
+  </tr>
+  <tr>
+    <td>Tìm loại dịch vụ</td>
+    <td><span class="badge badge-green">Thấp</span> (recognition)</td>
+    <td>Icon grid — user nhận diện, không cần nhớ</td>
+  </tr>
+  <tr>
+    <td>Chọn NCC</td>
+    <td><span class="badge badge-yellow">Trung bình</span> (recall + search)</td>
+    <td>Grouped by tỉnh/TP + search. Auto-suggest bằng location</td>
+  </tr>
+  <tr>
+    <td>Nhập mã KH/HĐ</td>
+    <td><span class="badge badge-red">Cao</span> (recall + lookup)</td>
+    <td>Hướng dẫn visual "mã ở đâu trên hóa đơn" + scan option</td>
+  </tr>
+  <tr>
+    <td>Chọn mệnh giá</td>
+    <td><span class="badge badge-green">Thấp</span> (decision)</td>
+    <td>Chip grid — tap 1 lần</td>
+  </tr>
+  <tr>
+    <td>Xác nhận & thanh toán</td>
+    <td><span class="badge badge-green">Thấp</span> (validation)</td>
+    <td>Summary sheet → 1 nút confirm</td>
+  </tr>
+</table>
+
+<h3>1.4 Key Principle: Progressive Commitment</h3>
+
+<blockquote>
+  "Mỗi screen chỉ hỏi user 1 câu hỏi. Không bao giờ yêu cầu user điền 3 field cùng lúc trên 1 form."
+  &mdash; Cash App, OKX, Revolut đều follow pattern này.
+</blockquote>
+
+<div class="sep"></div>
+
+<!-- ═══════════════════════════════════════ SECTION 2 ═══════════════════════════════════════ -->
+<h2 id="s2">2. Audit UI Hiện Tại (Production)</h2>
+
+<h4>Screenshots thực tế từ app V-Smart Pay</h4>
+
+<div class="screenshot-grid">
+  <div class="screenshot-item">
+    <img src="vas-old-home.jpeg" alt="VAS Home hiện tại">
+    <div class="caption">VAS Home — Production</div>
+  </div>
+  <div class="screenshot-item">
+    <img src="vas-old-bill-dien.jpeg" alt="Thanh toán điện">
+    <div class="caption">Thanh toán hóa đơn điện</div>
+  </div>
+  <div class="screenshot-item">
+    <img src="vas-old-bill-nuoc.jpeg" alt="Thanh toán nước">
+    <div class="caption">Thanh toán hóa đơn nước</div>
+  </div>
+  <div class="screenshot-item">
+    <img src="vas-old-topup.jpeg" alt="Nạp tiền">
+    <div class="caption">Nạp tiền điện thoại</div>
+  </div>
+</div>
+
+<h3>2.1 Findings</h3>
+
+<div class="finding critical">
+  <div class="finding-label">Critical — Mental Model Mismatch</div>
+  <div class="finding-title">F1: Form-based approach vi phạm Progressive Disclosure</div>
+  <div class="finding-body">
+    Tất cả screens thanh toán hóa đơn (Điện, Nước, Internet) dùng <strong>cùng 1 layout form cũ</strong>: 3 dropdown chồng lên nhau (Loại hóa đơn → NCC → Mã KH) trên 1 màn hình.<br><br>
+    <strong>Vấn đề:</strong> User phải xử lý 3 quyết định cùng lúc. Cognitive load cao → chậm → bỏ giữa chừng.<br>
+    <strong>Benchmark:</strong> MoMo, ZaloPay, TCB đều tách thành 2-3 screens riêng biệt, mỗi screen 1 task.
+  </div>
+</div>
+
+<div class="finding critical">
+  <div class="finding-label">Critical — No Return Path</div>
+  <div class="finding-title">F2: Không có saved items / quick pay cho returning user</div>
+  <div class="finding-body">
+    80% traffic là returning user. Hiện tại <strong>không có shortcut</strong> &mdash; mỗi lần thanh toán phải lặp lại toàn bộ flow chọn danh mục → chọn NCC → nhập mã.<br><br>
+    <strong>Impact:</strong> Mất 60-90 giây cho task lẽ ra mất 15 giây. So với MoMo (Quick Bill card) hay ZaloPay (Saved Biller) thì UX kém hẳn.
+  </div>
+</div>
+
+<div class="finding critical">
+  <div class="finding-label">Critical — Visual Language</div>
+  <div class="finding-title">F3: VAS Home dùng hero banner chiếm 40% viewport, không mang lại value</div>
+  <div class="finding-body">
+    Banner illustration "Thanh toán mọi hóa đơn dễ dàng" chiếm gần nửa màn hình. Content thực sự (danh mục + lịch sử) bị đẩy xuống dưới fold.<br><br>
+    <strong>First Principles:</strong> Mỗi pixel phải earn its place. Banner decorative = wasted viewport = user phải scroll thêm 1 lần.
+  </div>
+</div>
+
+<div class="finding warning">
+  <div class="finding-label">Warning — Scalability</div>
+  <div class="finding-title">F4: Chỉ có 5 danh mục — không có chỗ cho Data, Tài chính, Truyền hình, Auto-pay</div>
+  <div class="finding-body">
+    Grid hiện tại: Nạp tiền ĐT, Điện, Nước, Internet, Mua mã thẻ. Thiếu: Mua data, Tài chính (vay tiêu dùng), Truyền hình, Di động trả sau.<br>
+    Layout không có foundation để scale &mdash; thêm category sẽ phá vỡ grid hoặc đẩy content xa hơn khỏi fold.
+  </div>
+</div>
+
+<div class="finding warning">
+  <div class="finding-label">Warning — Guidance</div>
+  <div class="finding-title">F5: Không có hướng dẫn lấy mã hóa đơn</div>
+  <div class="finding-body">
+    Field "Mã hợp đồng / Mã khách hàng" không có helper text, tooltip, hay link hướng dẫn. First-time user không biết mã nằm ở đâu trên hóa đơn giấy → abandon flow → mất conversion.
+  </div>
+</div>
+
+<div class="finding warning">
+  <div class="finding-label">Warning — History</div>
+  <div class="finding-title">F6: Lịch sử GD chỉ hiện 1 item, không nhóm, không filter</div>
+  <div class="finding-body">
+    Section "Lịch sử thanh toán" ở home chỉ show 1 record gần nhất, không có "Xem tất cả", không group theo tháng, không filter theo loại.
+  </div>
+</div>
+
+<h3>2.2 Điểm tốt cần giữ</h3>
+
+<div class="finding good">
+  <div class="finding-label">Good</div>
+  <div class="finding-title">G1: Có tab "Nạp điện thoại / Mua mã thẻ" &mdash; gom 2 flow liên quan</div>
+  <div class="finding-body">Đây là pattern hợp lý &mdash; 2 dịch vụ cùng domain (telecom) share UI. Nên giữ concept này nhưng nâng cấp visual.</div>
+</div>
+
+<div class="finding good">
+  <div class="finding-label">Good</div>
+  <div class="finding-title">G2: Topup screen có icon nhà mạng thực (logo Viettel, Mobi...)</div>
+  <div class="finding-body">Recognition &gt; Recall. Logo thực giúp user nhận diện nhanh hơn text label.</div>
+</div>
+
+<h3>2.3 Scoring UI hiện tại</h3>
+
+<div class="score-bar">
+  <span class="score-label">Usability</span>
+  <div class="score-track"><div class="score-fill" style="width:25%; background:var(--red)"></div></div>
+  <span class="score-val">2.5</span>
+</div>
+<div class="score-bar">
+  <span class="score-label">Visual Design</span>
+  <div class="score-track"><div class="score-fill" style="width:35%; background:var(--yellow)"></div></div>
+  <span class="score-val">3.5</span>
+</div>
+<div class="score-bar">
+  <span class="score-label">Scalability</span>
+  <div class="score-track"><div class="score-fill" style="width:15%; background:var(--red)"></div></div>
+  <span class="score-val">1.5</span>
+</div>
+<div class="score-bar">
+  <span class="score-label">Returning User</span>
+  <div class="score-track"><div class="score-fill" style="width:10%; background:var(--red)"></div></div>
+  <span class="score-val">1.0</span>
+</div>
+<div class="score-bar">
+  <span class="score-label">First-time UX</span>
+  <div class="score-track"><div class="score-fill" style="width:20%; background:var(--red)"></div></div>
+  <span class="score-val">2.0</span>
+</div>
+<p style="font-size:12px; color:var(--fg3); margin-top:8px;">Thang 10 điểm. &lt;4 = cần redesign toàn bộ.</p>
+
+<div class="sep"></div>
+
+<!-- ═══════════════════════════════════════ SECTION 3 ═══════════════════════════════════════ -->
+<h2 id="s3">3. Audit UI PO Expected (vas.tsx Prototype)</h2>
+
+<p>PO đã tạo 1 React prototype (vas.tsx, ~1500 dòng) thể hiện vision cho VAS redesign. Em phân tích khách quan &mdash; không bias theo hay chống.</p>
+
+<h3>3.1 Những gì PO prototype làm đúng</h3>
+
+<div class="finding good">
+  <div class="finding-label">Good — Mental Model</div>
+  <div class="finding-title">P1: Quick Bill Cards ở đầu home — đúng returning user priority</div>
+  <div class="finding-body">
+    Horizontal scroll cards cho saved billers (EVN, Cấp nước, FPT) với nút "Kiểm tra" → "Thanh toán" ngay tại card. Returning user không cần navigate vào sub-screen.<br><br>
+    <strong>Đánh giá:</strong> Đúng mental model. Align với ZaloPay Quick Bill pattern. Nên giữ concept này.
+  </div>
+</div>
+
+<div class="finding good">
+  <div class="finding-label">Good — Progressive Disclosure</div>
+  <div class="finding-title">P2: Conversational input thay vì form truyền thống</div>
+  <div class="finding-body">
+    Screen nhập mã KH dùng pattern "Thanh toán <span style="color:var(--blue)">hóa đơn nước</span> cho <span style="color:var(--blue)">nhà cung cấp nào?</span> mã <span style="color:var(--fg3)">hợp đồng</span>".<br>
+    Mỗi phần là 1 link có thể tap để thay đổi. Rất giống Cash App "Send $____ to ____" pattern.<br><br>
+    <strong>Đánh giá:</strong> Creative và giảm form anxiety. Nhưng có trade-off (xem P5 bên dưới).
+  </div>
+</div>
+
+<div class="finding good">
+  <div class="finding-label">Good — Feature Coverage</div>
+  <div class="finding-title">P3: Cover đủ 8 flows từ BRD + nhiều edge cases</div>
+  <div class="finding-body">
+    Prototype có: Thanh toán hóa đơn, Nạp tiền, Mua thẻ, Mua data, Tài chính (multi-input), Auto-pay, Notify nhắc nợ, Quản lý đã lưu, Lịch sử GD, Insufficient Balance dialog, Nickname editing.<br><br>
+    Đây là coverage toàn diện hơn hẳn UI hiện tại.
+  </div>
+</div>
+
+<div class="finding good">
+  <div class="finding-label">Good — Saved Management</div>
+  <div class="finding-title">P4: Quản lý hóa đơn + SĐT đã lưu với tab segment</div>
+  <div class="finding-body">
+    Tab "Hóa đơn" / "Số điện thoại" + inline toggle Auto-pay + Nhắc nợ per item. Cho phép edit nickname, quản lý nạp tự động.<br>
+    Đúng BRD requirement. Good structure.
+  </div>
+</div>
+
+<h3>3.2 Vấn đề cần cải thiện</h3>
+
+<div class="finding critical">
+  <div class="finding-label">Critical — Hierarchy</div>
+  <div class="finding-title">P5: VAS Home quá tải — 3 sections nặng trên 1 scrollable page</div>
+  <div class="finding-body">
+    Home screen hiện tại stack: Quick Bills → Category Grid (7 items) → Full Quản Lý (tabbed list với tất cả hóa đơn + SĐT + toggles).<br><br>
+    <strong>Vấn đề:</strong> Section "Quản lý" ở ngay dưới Home quá nặng. Nó là 1 feature riêng biệt, không nên embed inline vào home.<br>
+    <strong>First Principles:</strong> Home = fast access. Quản lý = deliberate action. Hai mental mode khác nhau, cần tách screen.
+  </div>
+</div>
+
+<div class="finding critical">
+  <div class="finding-label">Critical — Discoverability</div>
+  <div class="finding-title">P6: Conversational input che giấu affordance — user không biết đâu là tappable</div>
+  <div class="finding-body">
+    Pattern "Thanh toán hóa đơn nước cho nhà cung cấp nào? mã hợp đồng" trông như text tĩnh. User mới sẽ không biết bấm chỗ nào để thay đổi NCC hoặc nhập mã.<br><br>
+    <strong>Benchmark:</strong> Cash App có lợi thế vì chỉ có 1 variable ("$____"). Khi có 3 variables cùng lúc (loại HĐ, NCC, mã) — conversational input trở nên khó scan.<br>
+    <strong>Đề xuất:</strong> Giữ conversational tone nhưng thêm visual cue (underline hoặc chip style cho phần tappable).
+  </div>
+</div>
+
+<div class="finding warning">
+  <div class="finding-label">Warning — Design System</div>
+  <div class="finding-title">P7: Prototype dùng inline styles 100% — không align với VSP tokens</div>
+  <div class="finding-body">
+    Toàn bộ vas.tsx dùng <code>style={{}}</code> với hardcoded colors (#2196F3, #111, #888...). Không dùng VSP design tokens (--foreground, --success, etc.).<br>
+    Khi implement sẽ cần translate toàn bộ sang token system. Một số giá trị (#2196F3) không tồn tại trong VSP palette.
+  </div>
+</div>
+
+<div class="finding warning">
+  <div class="finding-label">Warning — Spacing</div>
+  <div class="finding-title">P8: Custom keyboard trong app — unnecessary complexity</div>
+  <div class="finding-body">
+    Prototype tự vẽ keyboard (QWERTY + numpad) thay vì dùng native keyboard. Điều này:<br>
+    • Tăng code complexity (300+ dòng cho keyboard components)<br>
+    • Không support autocomplete, clipboard, voice input<br>
+    • Khác native behavior → user confusion<br><br>
+    <strong>Đề xuất:</strong> Dùng native input + keyboard. Focus vào business logic, không reinvent keyboard.
+  </div>
+</div>
+
+<div class="finding warning">
+  <div class="finding-label">Warning — NCC grouping</div>
+  <div class="finding-title">P9: Nhà cung cấp flat list — thiếu grouped by tỉnh/TP per BRD</div>
+  <div class="finding-body">
+    BRD yêu cầu rõ: "Danh sách NCC phải được gom nhóm theo tỉnh/TP, không hiển thị flat list". Prototype hiện tại show flat list (ProviderSheet).<br>
+    Thiếu: search bar, location-based suggestion, regional grouping.
+  </div>
+</div>
+
+<div class="finding warning">
+  <div class="finding-label">Warning — Help/Guidance</div>
+  <div class="finding-title">P10: Không có "Xem hướng dẫn lấy mã" per BRD requirement</div>
+  <div class="finding-body">
+    BRD section 7 yêu cầu: "Mỗi màn hình nhập thông tin KH phải có link 'Xem hướng dẫn'". Prototype không implement feature này.
+  </div>
+</div>
+
+<h3>3.3 Scoring PO Prototype</h3>
+
+<div class="score-bar">
+  <span class="score-label">Usability</span>
+  <div class="score-track"><div class="score-fill" style="width:65%; background:var(--green)"></div></div>
+  <span class="score-val">6.5</span>
+</div>
+<div class="score-bar">
+  <span class="score-label">Visual Design</span>
+  <div class="score-track"><div class="score-fill" style="width:55%; background:var(--yellow)"></div></div>
+  <span class="score-val">5.5</span>
+</div>
+<div class="score-bar">
+  <span class="score-label">Scalability</span>
+  <div class="score-track"><div class="score-fill" style="width:70%; background:var(--green)"></div></div>
+  <span class="score-val">7.0</span>
+</div>
+<div class="score-bar">
+  <span class="score-label">Returning User</span>
+  <div class="score-track"><div class="score-fill" style="width:75%; background:var(--green)"></div></div>
+  <span class="score-val">7.5</span>
+</div>
+<div class="score-bar">
+  <span class="score-label">First-time UX</span>
+  <div class="score-track"><div class="score-fill" style="width:50%; background:var(--yellow)"></div></div>
+  <span class="score-val">5.0</span>
+</div>
+<div class="score-bar">
+  <span class="score-label">BRD Coverage</span>
+  <div class="score-track"><div class="score-fill" style="width:60%; background:var(--yellow)"></div></div>
+  <span class="score-val">6.0</span>
+</div>
+
+<div class="sep"></div>
+
+<!-- ═══════════════════════════════════════ SECTION 4 ═══════════════════════════════════════ -->
+<h2 id="s4">4. Benchmark — Thị trường VN</h2>
+
+<p>Dựa trên BRD reference section + phân tích riêng. Focus vào luồng thanh toán hóa đơn nước (flow phức tạp nhất).</p>
+
+<h3>4.1 So sánh luồng</h3>
+
+<table>
+  <tr>
+    <th>Bước</th>
+    <th>MoMo</th>
+    <th>Techcombank</th>
+    <th>ZaloPay</th>
+    <th>PO Prototype</th>
+  </tr>
+  <tr>
+    <td><strong>1. Entry</strong></td>
+    <td>Category grid → subcategory</td>
+    <td>Category list → subcategory</td>
+    <td>Category grid → subcategory</td>
+    <td>Category grid (inline on home)</td>
+  </tr>
+  <tr>
+    <td><strong>2. NCC</strong></td>
+    <td>List + search</td>
+    <td>2-level: Vùng → Chi nhánh</td>
+    <td>Grouped list + search</td>
+    <td>Flat bottom sheet (no search)</td>
+  </tr>
+  <tr>
+    <td><strong>3. Input</strong></td>
+    <td>Single field + "Hướng dẫn"</td>
+    <td>Single field</td>
+    <td>Single field + "Hướng dẫn"</td>
+    <td>Conversational text (no guide)</td>
+  </tr>
+  <tr>
+    <td><strong>4. Bill Info</strong></td>
+    <td>Query → Show bill detail</td>
+    <td>Query → Show bill detail</td>
+    <td>Query → Show bill detail</td>
+    <td>No explicit bill detail screen</td>
+  </tr>
+  <tr>
+    <td><strong>5. Confirm</strong></td>
+    <td>Bottom sheet summary</td>
+    <td>Full screen confirm</td>
+    <td>Bottom sheet summary</td>
+    <td>Bottom sheet (PaymentSheet)</td>
+  </tr>
+  <tr>
+    <td><strong>Tổng screens</strong></td>
+    <td>3 screens</td>
+    <td>2 screens</td>
+    <td>3 screens</td>
+    <td>1 screen + sheets</td>
+  </tr>
+  <tr>
+    <td><strong>Quick Pay</strong></td>
+    <td>✅ Saved billers</td>
+    <td>✅ Favorites</td>
+    <td>✅ Quick Bill</td>
+    <td>✅ Quick Bill cards</td>
+  </tr>
+  <tr>
+    <td><strong>Auto-pay</strong></td>
+    <td>✅ Full config</td>
+    <td>✅ Full config</td>
+    <td>✅ Full config</td>
+    <td>✅ Toggle + config</td>
+  </tr>
+  <tr>
+    <td><strong>Bill Guide</strong></td>
+    <td>✅ Per provider</td>
+    <td>❌ No</td>
+    <td>✅ Per provider</td>
+    <td>❌ No</td>
+  </tr>
+</table>
+
+<h3>4.2 Patterns đáng học</h3>
+
+<div class="cols-2">
+  <div class="card">
+    <div class="card-title">MoMo — Bill Reminder Badge</div>
+    <p>Saved biller card hiện badge đỏ "Có hóa đơn mới" khi có bill pending. User không cần tra cứu thủ công. <strong>V-Smart Pay nên có.</strong></p>
+  </div>
+  <div class="card">
+    <div class="card-title">ZaloPay — Grouped by Service Type</div>
+    <p>Quản lý hóa đơn gom nhóm: Điện & Nước / Internet / Di động / Tài chính. Có collapse/expand. Search cross-group. <strong>BRD yêu cầu đúng pattern này.</strong></p>
+  </div>
+  <div class="card">
+    <div class="card-title">TCB — 2-level NCC (Vùng → Chi nhánh)</div>
+    <p>Cho dịch vụ Nước: chọn tỉnh/TP trước → thu hẹp list NCC. Rất hữu ích khi list dài 50+ providers. <strong>BRD yêu cầu.</strong></p>
+  </div>
+  <div class="card">
+    <div class="card-title">MoMo — Multi-input Tài chính</div>
+    <p>Cho provider có nhiều loại đầu vào: dropdown chọn "Mã HĐ" / "Số CCCD" trước khi nhập. Giải quyết vấn đề BRD section 6.</p>
+  </div>
+</div>
+
+<div class="sep"></div>
+
+<!-- ═══════════════════════════════════════ SECTION 5 ═══════════════════════════════════════ -->
+<h2 id="s5">5. First Principles — Redesign từ gốc</h2>
+
+<p>Dưới đây là 7 nguyên tắc thiết kế dẫn lối cho VAS redesign, derive từ VSP Design Principles + Mental Model analysis.</p>
+
+<div class="principle">
+  <div class="principle-num">PRINCIPLE 01</div>
+  <div class="principle-title">Returning User First</div>
+  <div class="principle-body">
+    80% traffic là returning. Home phải optimize cho họ: saved billers ở vị trí dominant, 1-tap access. Category grid là secondary — phục vụ first-time và khám phá dịch vụ mới.
+  </div>
+</div>
+
+<div class="principle">
+  <div class="principle-num">PRINCIPLE 02</div>
+  <div class="principle-title">One Question Per Screen</div>
+  <div class="principle-body">
+    Không bao giờ hỏi user 2 câu hỏi trên 1 screen. "Chọn NCC" là 1 screen. "Nhập mã" là 1 screen. Confirm là 1 screen. Progressively commit user deeper vào flow.
+  </div>
+</div>
+
+<div class="principle">
+  <div class="principle-num">PRINCIPLE 03</div>
+  <div class="principle-title">Guide, Don't Assume</div>
+  <div class="principle-body">
+    Mỗi input field phức tạp (mã KH, mã HĐ, CCCD) PHẢI có "Xem hướng dẫn" button. Content hướng dẫn load per provider, không generic. Giảm drop-off rate ở bước nhập liệu.
+  </div>
+</div>
+
+<div class="principle">
+  <div class="principle-num">PRINCIPLE 04</div>
+  <div class="principle-title">Auto Everything</div>
+  <div class="principle-body">
+    Auto-detect nhà mạng từ SĐT. Auto-suggest tỉnh/TP từ location. Auto-fill thông tin đã lưu. Auto-fetch bill khi có đủ mã. Mỗi automation giảm 1 tap = giảm 1 cơ hội abandon.
+  </div>
+</div>
+
+<div class="principle">
+  <div class="principle-num">PRINCIPLE 05</div>
+  <div class="principle-title">Separation of Concerns — Home ≠ Management</div>
+  <div class="principle-body">
+    Home = fast access (pay now). Quản lý = deliberate configuration (edit, delete, auto-pay). Hai mode khác nhau → hai screens khác nhau. Không embed Quản lý vào Home.
+  </div>
+</div>
+
+<div class="principle">
+  <div class="principle-num">PRINCIPLE 06</div>
+  <div class="principle-title">Scale-Ready Architecture</div>
+  <div class="principle-body">
+    Category grid phải accommodate ít nhất 12 dịch vụ (Điện, Nước, Internet, Truyền hình, Di động, Tài chính, Bảo hiểm, Mua data, Mua thẻ, Nhà ở, Học phí, Khác) mà không cần redesign. Dùng 2-column scrollable grid.
+  </div>
+</div>
+
+<div class="principle">
+  <div class="principle-num">PRINCIPLE 07</div>
+  <div class="principle-title">VSP Design System Compliance</div>
+  <div class="principle-body">
+    Mọi component PHẢI dùng VSP tokens. Không hardcode color. Không rebuild component có sẵn. px-[22px] cho content. pt-[32px] giữa sections. 1 primary button per screen. Semantic colors cho dark mode.
+  </div>
+</div>
+
+<div class="sep"></div>
+
+<!-- ═══════════════════════════════════════ SECTION 6 ═══════════════════════════════════════ -->
+<h2 id="s6">6. Information Architecture Đề Xuất</h2>
+
+<h3>6.1 VAS Home — Entry Points Only</h3>
+
+<p>Home chỉ là <strong>bộ định tuyến</strong> (router) — dẫn user tới đúng flow theo nhu cầu. Không chứa content nặng.</p>
+
+<div class="flow-box"><span class="step">VAS HOME</span>
+<span class="arrow">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span>
+
+<span class="step">NavBar</span>
+  ← Back     "Dịch vụ"     ⏱ → <em>Lịch sử GD (navigate out)</em>
+
+<span class="step">NHU CẦU ② THÊM MỚI — Danh mục dịch vụ</span>  ← TOP (context first)
+  "Thanh toán hóa đơn mới"
+  ┌──────┐ ┌──────┐ ┌──────┐ ┌──────┐
+  │⚡Điện │ │💧Nước │ │📶 Net│ │📺 TV │
+  └──────┘ └──────┘ └──────┘ └──────┘
+  ┌──────┐ ┌──────┐ ┌──────┐ ┌──────┐
+  │📲Topup│ │🎴 Thẻ│ │📡Data│ │💰 TC │
+  └──────┘ └──────┘ └──────┘ └──────┘
+  <em>→ Cuối flow TT: prompt "Lưu hóa đơn này?"</em>
+
+<span class="step">NHU CẦU ① THANH TOÁN — Đã lưu</span>  ← pt-[32px]
+  "Đã lưu"                  Xem tất cả (N) → <em>(overflow list nếu >5)</em>
+  [Hóa đơn] [Số điện thoại]  ← segment tabs
+
+  Tab Hóa đơn (vertical list):
+  ⚡ EVN Hồ Chí Minh    PE050001..    501.500đ  [TT ›]
+  💧 Cấp nước SG-CC     NW081200..    Chưa có   [Tra cứu ›]
+  📶 FPT Telecom        FPT-HCM..    299.000đ  [TT ›]
+
+  Tab SĐT (vertical list):
+  👤 Nguyễn Văn A    0901..567 · Viettel    [Nạp tiền]
+  👤 Trần Thị B      0912..678 · Mobi       [Nạp tiền]
+  👤 0934 567 890    + Đặt tên              [Nạp tiền]
+
+  <em>Chỉ xuất hiện khi có saved items. Follow MoMo/ZaloPay convention.</em>
+</div>
+
+<div class="finding good">
+  <div class="finding-label">IA Decision</div>
+  <div class="finding-title">Lịch sử = entry point icon trên NavBar → navigate tới Lịch sử GD chung</div>
+  <div class="finding-body">
+    Không show preview lịch sử GD trên VAS Home. Lịch sử không thuộc 3 nhu cầu cốt lõi (Thanh toán / Thêm mới / Quản lý). <br>
+    Chỉ cần 1 icon ⏱ trên NavBar dẫn sang screen Lịch sử GD (có thể reuse shared transaction history).
+  </div>
+</div>
+
+<div class="finding good">
+  <div class="finding-label">IA Decision</div>
+  <div class="finding-title">Không cần screen Quản lý riêng — quản lý inline trên Home</div>
+  <div class="finding-body">
+    Tap row → V4 (Bill Detail) để pay hoặc xem info. Swipe left → xóa. "Xem tất cả (N)" chỉ hiện khi >5 items → overflow list cùng format. Bớt 2 screens (V9 + V10).
+  </div>
+</div>
+
+<h3>6.2 Routing Map — 3 nhu cầu → đúng flow</h3>
+
+<div class="flow-box"><span class="step">① THANH TOÁN (returning user)</span>
+VAS Home → Tap Quick Pay card → Tra cứu → Bill Detail → Confirm → Auth → Result
+<em>3 taps. &lt;15 giây.</em>
+
+<span class="step">② THÊM MỚI (first-time)</span>
+VAS Home → Tap danh mục → [Chọn NCC] → [Nhập mã] → Bill Detail → Confirm → Auth → Result
+  └─ Cuối flow: "Lưu hóa đơn này?" [Lưu] → Biller xuất hiện ở Quick Pay lần sau
+
+<span class="step">③ QUẢN LÝ</span>
+VAS Home → Swipe row → Xóa
+VAS Home → Tap row → V4 (Bill Detail) → pay / xem info
+"Xem tất cả (N)" → overflow list (nếu >5 items)
+  <em>Không cần screen Quản lý riêng. Quản lý inline trên Home + V4.</em>
+</div>
+
+<h3>6.3 Flow Architecture — Bill Payment (ví dụ Nước)</h3>
+
+<div class="flow-box"><span class="step">Flow: Thanh toán hóa đơn nước (first-time)</span>
+<span class="arrow">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span>
+
+VAS Home
+  │
+  ├─ Tap "💧 Nước" ─────────────────────────────┐
+  │                                              ▼
+  │                              <span class="step">S1: Chọn khu vực</span>
+  │                              [Auto-suggest: TP.HCM]
+  │                              List: HN, HCM, Đà Nẵng...
+  │                                              │
+  │                                              ▼
+  │                              <span class="step">S2: Chọn NCC</span>
+  │                              Search bar + list
+  │                              "Cấp nước Sài Gòn - Củ Chi"
+  │                                              │
+  │                                              ▼
+  │                              <span class="step">S3: Nhập mã KH</span>
+  │                              [   NW08120034561   ]
+  │                              [? Xem hướng dẫn]
+  │                              [Tiếp tục]
+  │                                              │
+  │                                              ▼
+  │                              <span class="step">S4: Chi tiết hóa đơn</span>
+  │                              NCC: Cấp nước SG-CC
+  │                              KH: VO HUU LE
+  │                              Kỳ: T11/2025
+  │                              Số tiền: 245.000đ
+  │                              [□ Lưu hóa đơn]
+  │                              [Thanh toán]
+  │                                              │
+  │                                              ▼
+  │                              <span class="step">S5: Confirm (Bottom Sheet)</span>
+  │                              Amount + Nguồn TT
+  │                              [Xác thực giao dịch]
+  │                                              │
+  │                                              ▼
+  │                              <span class="step">Auth (reuse existing)</span>
+  │                                              │
+  │                                              ▼
+  │                              <span class="step">Result (reuse existing)</span>
+
+<span class="step">Flow: Returning user (đã lưu)</span>
+<span class="arrow">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span>
+
+VAS Home → Tap Quick Bill card "💧 Cấp nước" → [Tra cứu]
+  → S4 (pre-filled) → S5 → Auth → Result
+
+  <strong>Chỉ 3 taps thay vì 8 taps.</strong>
+</div>
+
+<h3>6.4 Screen Map Tổng Quan</h3>
+
+<h4>Phase 1 — Core Payment</h4>
+<table>
+  <tr>
+    <th>#</th>
+    <th>Screen</th>
+    <th>Nhu cầu</th>
+    <th>From PO?</th>
+    <th>Changes</th>
+  </tr>
+  <tr>
+    <td>V1</td>
+    <td>VAS Home (router)</td>
+    <td>①②③ entry</td>
+    <td>✅ Concept</td>
+    <td>Chỉ Quick Pay + Grid + link Quản lý. Bỏ inline content.</td>
+  </tr>
+  <tr>
+    <td>V2</td>
+    <td>Chọn NCC (grouped)</td>
+    <td>② Thêm mới</td>
+    <td>⚠️ Flat</td>
+    <td>Thêm regional grouping + search + location suggest</td>
+  </tr>
+  <tr>
+    <td>V3</td>
+    <td>Nhập mã KH/HĐ</td>
+    <td>② Thêm mới</td>
+    <td>✅ Conversational</td>
+    <td>Giữ tone + thêm clear affordance + "Xem hướng dẫn"</td>
+  </tr>
+  <tr>
+    <td>V4</td>
+    <td>Chi tiết hóa đơn</td>
+    <td>①② Thanh toán</td>
+    <td>❌ Thiếu</td>
+    <td><strong>NEW</strong> — query bill → detail → "Lưu?" checkbox → Confirm</td>
+  </tr>
+  <tr>
+    <td>V5</td>
+    <td>Nạp tiền ĐT</td>
+    <td>① Thanh toán</td>
+    <td>✅ Có</td>
+    <td>Native keyboard. Saved phones.</td>
+  </tr>
+  <tr>
+    <td>V6</td>
+    <td>Mua thẻ cào</td>
+    <td>① Thanh toán</td>
+    <td>✅ Có</td>
+    <td>Nhẹ: carrier logo thực</td>
+  </tr>
+  <tr>
+    <td>V7</td>
+    <td>Mua gói data</td>
+    <td>① Thanh toán</td>
+    <td>✅ Có</td>
+    <td>Giữ. Filter sheet tốt.</td>
+  </tr>
+  <tr>
+    <td>V8</td>
+    <td>Thanh toán tài chính</td>
+    <td>② Thêm mới</td>
+    <td>⚠️ Basic</td>
+    <td>Thêm input type selector per provider</td>
+  </tr>
+  <tr>
+    <td>V13</td>
+    <td>Confirm (Bottom Sheet)</td>
+    <td>① Thanh toán</td>
+    <td>✅ Có</td>
+    <td>Giữ. Đúng pattern.</td>
+  </tr>
+</table>
+
+<h4>Phase 2 — Automation (sau 30/4)</h4>
+<table>
+  <tr>
+    <th>#</th>
+    <th>Screen</th>
+    <th>Nhu cầu</th>
+    <th>From PO?</th>
+    <th>Notes</th>
+  </tr>
+  <tr>
+    <td>V11</td>
+    <td>Auto-pay Config</td>
+    <td>③ Quản lý</td>
+    <td>✅ Có</td>
+    <td>PO design sẵn sàng. Implement khi Phase 2.</td>
+  </tr>
+  <tr>
+    <td>V14</td>
+    <td>Nạp ĐT tự động</td>
+    <td>③ Quản lý</td>
+    <td>✅ Có</td>
+    <td>AutoTopupSheet — defer.</td>
+  </tr>
+  <tr>
+    <td>V15</td>
+    <td>Bill Reminder Config</td>
+    <td>③ Quản lý</td>
+    <td>✅ Có</td>
+    <td>NotifySheet — defer.</td>
+  </tr>
+</table>
+<p style="font-size:12px; color:var(--fg3); margin-top:8px;">Lịch sử GD = entry point icon ⏱ trên NavBar → navigate sang Lịch sử GD chung (không có screen riêng trong VAS scope).</p>
+
+<div class="sep"></div>
+
+<!-- ═══════════════════════════════════════ SECTION 7 ═══════════════════════════════════════ -->
+<h2 id="s7">7. Wireframes</h2>
+
+<!-- ──────── V1: VAS HOME ──────── -->
+<h3 style="color:var(--fg);">V1 — VAS Home <span class="phase phase-1">P1</span></h3>
+<p>Danh mục trên (context) → Đã lưu dưới (action). Tab Hóa đơn / SĐT. Follow MoMo/ZaloPay.</p>
+
+<div class="phone-row">
+<div>
+<div class="phone">
+  <div class="w-statusbar"><span class="time">9:41</span><div class="notch"></div><span class="icons">5G 🔋</span></div>
+  <div class="w-navbar"><span class="back">‹</span><span class="large-title">Dịch vụ</span><span class="action">⏱</span></div>
+  <div class="w-content">
+    <div class="w-section">
+      <div class="w-section-title" style="margin-bottom:12px;">Thanh toán hóa đơn mới</div>
+      <div class="cat-grid">
+        <div class="cat-item"><div class="cat-icon">⚡</div><div class="cat-label">Điện</div></div>
+        <div class="cat-item"><div class="cat-icon">💧</div><div class="cat-label">Nước</div></div>
+        <div class="cat-item"><div class="cat-icon">📶</div><div class="cat-label">Internet</div></div>
+        <div class="cat-item"><div class="cat-icon">📺</div><div class="cat-label">Truyền hình</div></div>
+        <div class="cat-item"><div class="cat-icon">📲</div><div class="cat-label">Nạp tiền</div></div>
+        <div class="cat-item"><div class="cat-icon">🎴</div><div class="cat-label">Mua thẻ</div></div>
+        <div class="cat-item"><div class="cat-icon">📡</div><div class="cat-label">Mua data</div></div>
+        <div class="cat-item"><div class="cat-icon">💰</div><div class="cat-label">Tài chính</div></div>
+      </div>
+    </div>
+    <div class="w-section" style="margin-top:24px;">
+      <div class="w-section-header"><span class="w-section-title">Đã lưu</span><span class="w-section-link">Xem tất cả (3) →</span></div>
+      <div style="display:flex; background:#f0f0f0; border-radius:10px; padding:2px; gap:2px; margin-bottom:12px;">
+        <div style="flex:1; text-align:center; padding:6px 0; border-radius:8px; font-size:10px; font-weight:600; background:#fff; box-shadow:0 1px 3px rgba(0,0,0,0.1);">Hóa đơn</div>
+        <div style="flex:1; text-align:center; padding:6px 0; border-radius:8px; font-size:10px; font-weight:600; color:#888;">Số điện thoại</div>
+      </div>
+      <div class="w-list-item" style="padding:10px 0;">
+        <div class="w-list-icon" style="border:2px solid #e0e0e0; background:#fff;">⚡</div>
+        <div class="w-list-body"><div style="display:flex; align-items:center; gap:4px;"><span class="w-list-title">EVN Hồ Chí Minh</span><span class="qp-badge">Mới</span></div><div class="w-list-sub">PE05000199088</div></div>
+        <div style="text-align:right; flex-shrink:0;"><div style="font-size:12px; font-weight:700;">501.500đ</div><div style="font-size:9px; color:#2196F3; font-weight:600; margin-top:2px;">Thanh toán ›</div></div>
+      </div>
+      <div class="w-list-item" style="padding:10px 0;">
+        <div class="w-list-icon" style="border:2px solid #e0e0e0; background:#fff;">💧</div>
+        <div class="w-list-body"><div class="w-list-title">Cấp nước SG – Củ Chi</div><div class="w-list-sub">NW08120034561</div></div>
+        <div style="text-align:right; flex-shrink:0;"><div style="font-size:10px; color:#aaa;">Chưa có HĐ</div><div style="font-size:9px; color:#888; font-weight:600; margin-top:2px;">Tra cứu ›</div></div>
+      </div>
+      <div class="w-list-item" style="padding:10px 0; border-bottom:none;">
+        <div class="w-list-icon" style="border:2px solid #e0e0e0; background:#fff;">📶</div>
+        <div class="w-list-body"><div class="w-list-title">FPT Telecom</div><div class="w-list-sub">FPT-HCM-20941</div></div>
+        <div style="text-align:right; flex-shrink:0;"><div style="font-size:12px; font-weight:700;">299.000đ</div><div style="font-size:9px; color:#2196F3; font-weight:600; margin-top:2px;">Thanh toán ›</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="home-ind"></div>
+</div>
+<div class="phone-label">V1 — Home (tab Hóa đơn)</div>
+</div>
+
+<div>
+<div class="phone">
+  <div class="w-statusbar"><span class="time">9:41</span><div class="notch"></div><span class="icons">5G 🔋</span></div>
+  <div class="w-navbar"><span class="back">‹</span><span class="large-title">Dịch vụ</span><span class="action">⏱</span></div>
+  <div class="w-content">
+    <div class="w-section">
+      <div class="w-section-title" style="margin-bottom:12px;">Thanh toán hóa đơn mới</div>
+      <div class="cat-grid">
+        <div class="cat-item"><div class="cat-icon">⚡</div><div class="cat-label">Điện</div></div><div class="cat-item"><div class="cat-icon">💧</div><div class="cat-label">Nước</div></div><div class="cat-item"><div class="cat-icon">📶</div><div class="cat-label">Internet</div></div><div class="cat-item"><div class="cat-icon">📺</div><div class="cat-label">Truyền hình</div></div>
+        <div class="cat-item"><div class="cat-icon">📲</div><div class="cat-label">Nạp tiền</div></div><div class="cat-item"><div class="cat-icon">🎴</div><div class="cat-label">Mua thẻ</div></div><div class="cat-item"><div class="cat-icon">📡</div><div class="cat-label">Mua data</div></div><div class="cat-item"><div class="cat-icon">💰</div><div class="cat-label">Tài chính</div></div>
+      </div>
+    </div>
+    <div class="w-section" style="margin-top:24px;">
+      <div class="w-section-header"><span class="w-section-title">Đã lưu</span><span class="w-section-link">Xem tất cả (3) →</span></div>
+      <div style="display:flex; background:#f0f0f0; border-radius:10px; padding:2px; gap:2px; margin-bottom:12px;">
+        <div style="flex:1; text-align:center; padding:6px 0; border-radius:8px; font-size:10px; font-weight:600; color:#888;">Hóa đơn</div>
+        <div style="flex:1; text-align:center; padding:6px 0; border-radius:8px; font-size:10px; font-weight:600; background:#fff; box-shadow:0 1px 3px rgba(0,0,0,0.1);">Số điện thoại</div>
+      </div>
+      <div class="w-list-item" style="padding:10px 0;">
+        <div style="width:34px; height:34px; border-radius:50%; background:#e91e63; display:flex; align-items:center; justify-content:center; color:#fff; font-size:11px; font-weight:700; flex-shrink:0;">NA</div>
+        <div class="w-list-body"><div class="w-list-title">Nguyễn Văn A</div><div class="w-list-sub">0901 234 567 · Viettel</div></div>
+        <div style="background:#2196F3; color:#fff; font-size:9px; font-weight:700; padding:5px 10px; border-radius:14px; flex-shrink:0;">Nạp tiền</div>
+      </div>
+      <div class="w-list-item" style="padding:10px 0;">
+        <div style="width:34px; height:34px; border-radius:50%; background:#9c27b0; display:flex; align-items:center; justify-content:center; color:#fff; font-size:11px; font-weight:700; flex-shrink:0;">TB</div>
+        <div class="w-list-body"><div class="w-list-title">Trần Thị B</div><div class="w-list-sub">0912 345 678 · Mobifone</div></div>
+        <div style="background:#2196F3; color:#fff; font-size:9px; font-weight:700; padding:5px 10px; border-radius:14px; flex-shrink:0;">Nạp tiền</div>
+      </div>
+      <div class="w-list-item" style="padding:10px 0; border-bottom:none;">
+        <div style="width:34px; height:34px; border-radius:50%; background:#607d8b; display:flex; align-items:center; justify-content:center; color:#fff; font-size:11px; font-weight:700; flex-shrink:0;">09</div>
+        <div class="w-list-body"><div class="w-list-title" style="color:#888;">0934 567 890</div><div class="w-list-sub" style="color:#2196F3;">+ Đặt tên gợi nhớ</div></div>
+        <div style="background:#2196F3; color:#fff; font-size:9px; font-weight:700; padding:5px 10px; border-radius:14px; flex-shrink:0;">Nạp tiền</div>
+      </div>
+    </div>
+  </div>
+  <div class="home-ind"></div>
+</div>
+<div class="phone-label">V1 — Home (tab SĐT)</div>
+</div>
+</div>
+
+<div class="anno"><strong>Section "Đã lưu"</strong> có 2 tabs: Hóa đơn | SĐT. Vertical list. Chỉ xuất hiện khi có saved items.<br><strong>Tap row →</strong> V4 (Bill Detail) để pay. <strong>Swipe left →</strong> xóa. <strong>"Xem tất cả (N)"</strong> chỉ hiện khi >5 items. Không cần screen Quản lý riêng.</div>
+
+<!-- ──────── V2 + V3 ──────── -->
+<h3 style="color:var(--fg);">V2 — Chọn NCC + V3 — Nhập mã KH <span class="phase phase-1">P1</span></h3>
+
+<div class="phone-row">
+<div>
+<div class="phone">
+  <div class="w-statusbar"><span class="time">9:41</span><div class="notch"></div><span class="icons">5G 🔋</span></div>
+  <div class="w-navbar"><span class="back">‹</span><span class="title-center">Chọn nhà cung cấp</span><span class="action" style="width:28px;"></span></div>
+  <div class="w-content">
+    <div class="search-bar">🔍 Tìm nhà cung cấp...</div>
+    <div class="group-header">📍 TP. Hồ Chí Minh <span class="tag tag-blue" style="margin-left:4px;">Gần bạn</span></div>
+    <div class="w-list-item"><div class="w-list-icon">💧</div><div class="w-list-body"><div class="w-list-title">Cấp nước Sài Gòn – Củ Chi</div></div><span class="w-list-trail">›</span></div>
+    <div class="w-list-item"><div class="w-list-icon">💧</div><div class="w-list-body"><div class="w-list-title">Cấp nước Chợ Lớn</div></div><span class="w-list-trail">›</span></div>
+    <div class="group-header">Hà Nội</div>
+    <div class="w-list-item"><div class="w-list-icon">💧</div><div class="w-list-body"><div class="w-list-title">Nước sạch Hà Đông</div></div><span class="w-list-trail">›</span></div>
+    <div class="w-list-item"><div class="w-list-icon">💧</div><div class="w-list-body"><div class="w-list-title">Nước sạch Viwaco</div></div><span class="w-list-trail">›</span></div>
+    <div class="group-header">Hậu Giang</div>
+    <div class="w-list-item"><div class="w-list-icon">💧</div><div class="w-list-body"><div class="w-list-title">Cấp Thoát nước Hậu Giang</div><div class="w-list-sub">Công Ty Cổ phần</div></div><span class="w-list-trail">›</span></div>
+  </div>
+  <div class="home-ind"></div>
+</div>
+<div class="phone-label">V2 — NCC Nước (grouped by tỉnh/TP)</div>
+</div>
+
+<div>
+<div class="phone">
+  <div class="w-statusbar"><span class="time">9:41</span><div class="notch"></div><span class="icons">5G 🔋</span></div>
+  <div class="w-navbar"><span class="back">‹</span><span class="action" style="width:28px;"></span></div>
+  <div class="w-content">
+    <div class="conv-text">Thanh toán <span class="highlight">hóa đơn nước</span><br>cho <span class="highlight">Cấp nước SG – Củ Chi</span></div>
+    <div style="margin-top:20px;">
+      <div class="w-input-field"><div style="flex:1;"><div class="label">Mã khách hàng</div><div class="value">NW08120034561</div></div><div class="helper">? Hướng dẫn</div></div>
+    </div>
+  </div>
+  <div class="w-bottom-bar"><div class="w-btn-primary">Tra cứu hóa đơn</div></div>
+  <div class="home-ind"></div>
+</div>
+<div class="phone-label">V3 — Nhập mã KH (hybrid)</div>
+</div>
+</div>
+
+<div class="anno"><strong>V3 Hybrid:</strong> Conversational header + standard input field + "? Hướng dẫn" per BRD.<br><strong>Tài chính:</strong> NCC có 2+ loại input → segment tab [Mã HĐ] [Số CCCD] phía trên input.</div>
+
+<!-- ──────── V4 ──────── -->
+<h3 style="color:var(--fg);">V4 — Chi tiết hóa đơn <span class="phase phase-1">P1</span></h3>
+
+<div class="phone-row">
+<div>
+<div class="phone">
+  <div class="w-statusbar"><span class="time">9:41</span><div class="notch"></div><span class="icons">5G 🔋</span></div>
+  <div class="w-navbar"><span class="back">‹</span><span class="title-center">Thông tin hóa đơn</span><span class="action" style="width:28px;"></span></div>
+  <div class="w-content">
+    <div style="text-align:center; padding:16px 0;"><div style="width:48px; height:48px; border-radius:50%; border:2px solid #e0e0e0; margin:0 auto 8px; display:flex; align-items:center; justify-content:center; font-size:22px;">💧</div><div style="font-size:14px; font-weight:700;">Cấp nước SG – Củ Chi</div></div>
+    <div class="w-sep"></div>
+    <div class="w-info-row"><span class="info-label">Mã khách hàng</span><span class="info-value">NW08120034561</span></div>
+    <div class="w-info-row"><span class="info-label">Tên khách hàng</span><span class="info-value">VÕ HỮU LÊ</span></div>
+    <div class="w-sep"></div>
+    <div class="w-info-row"><span class="info-label">Kỳ thanh toán</span><span class="info-value">Tháng 11/2025</span></div>
+    <div class="w-info-row"><span class="info-label">Số tiền</span><span class="info-value" style="font-size:16px; font-weight:800;">245.000đ</span></div>
+    <div class="w-info-row"><span class="info-label">Phí dịch vụ</span><span class="info-value" style="color:#00b182;">Miễn phí</span></div>
+    <div class="w-sep"></div>
+    <div style="display:flex; align-items:center; gap:8px; padding:8px 0;"><div class="w-checkbox checked"></div><span style="font-size:12px; font-weight:500;">Lưu hóa đơn này để thanh toán nhanh lần sau</span></div>
+  </div>
+  <div class="w-bottom-bar"><div class="w-btn-primary">Thanh toán 245.000đ</div></div>
+  <div class="home-ind"></div>
+</div>
+<div class="phone-label">V4 — Bill Detail (first-time, checkbox Lưu)</div>
+</div>
+
+<div>
+<div class="phone">
+  <div class="w-statusbar"><span class="time">9:41</span><div class="notch"></div><span class="icons">5G 🔋</span></div>
+  <div class="w-navbar"><span class="back">‹</span><span class="title-center">Thông tin hóa đơn</span><span class="action" style="width:28px;"></span></div>
+  <div class="w-content">
+    <div style="text-align:center; padding:16px 0;"><div style="width:48px; height:48px; border-radius:50%; border:2px solid #e0e0e0; margin:0 auto 8px; display:flex; align-items:center; justify-content:center; font-size:22px;">⚡</div><div style="font-size:14px; font-weight:700;">EVN Hồ Chí Minh</div><div style="font-size:11px; color:#aaa; margin-top:2px;">Điện nhà mình</div></div>
+    <div class="w-sep"></div>
+    <div class="w-info-row"><span class="info-label">Mã khách hàng</span><span class="info-value">PE05000199088</span></div>
+    <div class="w-info-row"><span class="info-label">Tên khách hàng</span><span class="info-value">VÕ THỊ TUYẾT SƯƠNG</span></div>
+    <div class="w-sep"></div>
+    <div class="w-info-row"><span class="info-label">Kỳ thanh toán</span><span class="info-value">Tháng 11/2025</span></div>
+    <div class="w-info-row"><span class="info-label">Số tiền</span><span class="info-value" style="font-size:16px; font-weight:800;">501.500đ</span></div>
+    <div class="w-info-row"><span class="info-label">Phí dịch vụ</span><span class="info-value" style="color:#00b182;">Miễn phí</span></div>
+  </div>
+  <div class="w-bottom-bar"><div class="w-btn-primary">Thanh toán 501.500đ</div></div>
+  <div class="home-ind"></div>
+</div>
+<div class="phone-label">V4 — Bill Detail (returning, đã lưu)</div>
+</div>
+</div>
+
+<!-- ──────── V5 + V6 ──────── -->
+<h3 style="color:var(--fg);">V5 — Nạp tiền ĐT + V6 — Mua thẻ <span class="phase phase-1">P1</span></h3>
+
+<div class="phone-row">
+<div>
+<div class="phone">
+  <div class="w-statusbar"><span class="time">9:41</span><div class="notch"></div><span class="icons">5G 🔋</span></div>
+  <div class="w-navbar"><span class="back">‹</span><span class="action" style="width:28px;"></span></div>
+  <div class="w-content">
+    <div class="conv-text">Nạp <span class="highlight">tiền điện thoại</span></div>
+    <div class="w-input-field" style="margin-top:12px;">
+      <div style="display:flex; align-items:center; gap:8px; flex:1;"><div style="background:#e8001d; border-radius:4px; padding:2px 6px;"><span style="color:#fff; font-size:8px; font-weight:700;">viettel</span></div><div><div class="label">Số của tôi</div><div class="value">0338451218</div></div></div>
+      <span style="font-size:16px;">👤</span>
+    </div>
+    <div style="font-size:13px; font-weight:700; margin:16px 0 10px;">Mệnh giá</div>
+    <div class="chip-grid"><div class="chip">10.000đ</div><div class="chip">20.000đ</div><div class="chip">50.000đ</div><div class="chip selected">100.000đ</div><div class="chip">200.000đ</div><div class="chip">500.000đ</div></div>
+  </div>
+  <div class="w-bottom-bar"><div class="w-btn-blue">Nạp ngay · 100.000đ</div></div>
+  <div class="home-ind"></div>
+</div>
+<div class="phone-label">V5 — Nạp tiền ĐT</div>
+</div>
+
+<div>
+<div class="phone">
+  <div class="w-statusbar"><span class="time">9:41</span><div class="notch"></div><span class="icons">5G 🔋</span></div>
+  <div class="w-navbar"><span class="back">‹</span><span class="action" style="width:28px;"></span></div>
+  <div class="w-content">
+    <div class="conv-text">Mua <span class="highlight">thẻ điện thoại</span></div>
+    <div style="display:flex; gap:8px; margin:12px 0 16px; overflow-x:auto;">
+      <div style="padding:8px 14px; border-radius:10px; border:2px solid #2196F3; background:#EAF4FF; font-size:10px; font-weight:700; color:#e8001d; flex-shrink:0;">viettel</div>
+      <div style="padding:8px 14px; border-radius:10px; border:1.5px solid #eee; font-size:10px; font-weight:700; color:#0070c0; flex-shrink:0;">mobifone</div>
+      <div style="padding:8px 14px; border-radius:10px; border:1.5px solid #eee; font-size:10px; font-weight:700; color:#0000cc; flex-shrink:0;">vinaphone</div>
+    </div>
+    <div style="font-size:13px; font-weight:700; margin-bottom:10px;">Mệnh giá</div>
+    <div class="chip-grid"><div class="chip selected">10.000đ</div><div class="chip">20.000đ</div><div class="chip">50.000đ</div><div class="chip">100.000đ</div><div class="chip">200.000đ</div><div class="chip">500.000đ</div></div>
+  </div>
+  <div class="w-bottom-bar">
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;"><span style="font-size:12px; font-weight:600;">Số lượng</span><div style="display:flex; align-items:center; gap:10px;"><div style="width:24px; height:24px; border-radius:50%; border:1.5px solid #ddd; display:flex; align-items:center; justify-content:center; font-size:14px; color:#888;">−</div><span style="font-size:14px; font-weight:700;">1</span><div style="width:24px; height:24px; border-radius:50%; background:#2196F3; display:flex; align-items:center; justify-content:center; font-size:12px; color:#fff;">+</div></div></div>
+    <div class="w-btn-blue">Mua ngay · 10.000đ</div>
+  </div>
+  <div class="home-ind"></div>
+</div>
+<div class="phone-label">V6 — Mua thẻ cào</div>
+</div>
+</div>
+
+
+<!-- ──────── V13 ──────── -->
+<h3 style="color:var(--fg);">V13 — Confirm Sheet <span class="phase phase-1">P1</span></h3>
+
+<div class="phone-row">
+<div>
+<div class="phone">
+  <div class="w-statusbar"><span class="time">9:41</span><div class="notch"></div><span class="icons">5G 🔋</span></div>
+  <div style="flex:1; background:rgba(0,0,0,0.05); display:flex; flex-direction:column; justify-content:flex-end;">
+    <div style="background:#fff; border-radius:20px 20px 0 0; padding:16px;">
+      <div class="sheet-handle"></div>
+      <div style="font-size:13px; color:#555; margin:8px 0 4px;">Thanh toán hóa đơn nước</div>
+      <div style="font-size:28px; font-weight:800; margin-bottom:16px;">245.000đ</div>
+      <div class="w-info-row"><span class="info-label">Nhà cung cấp</span><span class="info-value">Cấp nước SG – Củ Chi</span></div>
+      <div class="w-info-row"><span class="info-label">Mã khách hàng</span><span class="info-value">NW08120034561</span></div>
+      <div class="w-info-row"><span class="info-label">Kỳ thanh toán</span><span class="info-value">Tháng 11/2025</span></div>
+      <div class="w-info-row"><span class="info-label">Phí dịch vụ</span><span class="info-value" style="color:#00b182;">Miễn phí</span></div>
+      <div class="w-sep"></div>
+      <div style="font-size:12px; font-weight:700; margin-bottom:8px;">Nguồn thanh toán</div>
+      <div style="border:2px solid #111; border-radius:10px; padding:10px 14px; display:inline-flex; align-items:center; gap:8px;"><span style="font-size:14px;">💳</span><div><div style="font-size:11px; font-weight:700;">Ví V-Smart Pay</div><div style="font-size:10px; color:#2196F3;">1.637.500đ</div></div></div>
+      <div class="w-btn-primary" style="margin-top:16px;">Xác thực giao dịch</div>
+    </div>
+  </div>
+  <div class="home-ind" style="background:#fff;"></div>
+</div>
+<div class="phone-label">V13 — Confirm (Bottom Sheet)</div>
+</div>
+</div>
+
+<div class="sep"></div>
+
+<!-- ═══════════════════════════════════════ SECTION 8 ═══════════════════════════════════════ -->
+<h2 id="s8">8. Scoring Tổng Hợp &amp; Verdict</h2>
+
+<h3>8.1 So sánh 3 approaches</h3>
+
+<table>
+  <tr>
+    <th>Tiêu chí (weight)</th>
+    <th>Current UI</th>
+    <th>PO Prototype</th>
+    <th>Proposed (Report này)</th>
+  </tr>
+  <tr>
+    <td><strong>Returning User UX</strong> (25%)</td>
+    <td><span class="badge badge-red">1.0</span></td>
+    <td><span class="badge badge-green">7.5</span></td>
+    <td><span class="badge badge-green">9.0</span></td>
+  </tr>
+  <tr>
+    <td><strong>First-time UX</strong> (20%)</td>
+    <td><span class="badge badge-red">2.0</span></td>
+    <td><span class="badge badge-yellow">5.0</span></td>
+    <td><span class="badge badge-green">8.0</span></td>
+  </tr>
+  <tr>
+    <td><strong>BRD Coverage</strong> (20%)</td>
+    <td><span class="badge badge-red">2.0</span></td>
+    <td><span class="badge badge-yellow">6.0</span></td>
+    <td><span class="badge badge-green">9.0</span></td>
+  </tr>
+  <tr>
+    <td><strong>Scalability</strong> (15%)</td>
+    <td><span class="badge badge-red">1.5</span></td>
+    <td><span class="badge badge-green">7.0</span></td>
+    <td><span class="badge badge-green">8.5</span></td>
+  </tr>
+  <tr>
+    <td><strong>Design System Compliance</strong> (10%)</td>
+    <td><span class="badge badge-yellow">5.0</span></td>
+    <td><span class="badge badge-red">2.0</span></td>
+    <td><span class="badge badge-green">9.0</span></td>
+  </tr>
+  <tr>
+    <td><strong>Visual Design</strong> (10%)</td>
+    <td><span class="badge badge-yellow">3.5</span></td>
+    <td><span class="badge badge-yellow">5.5</span></td>
+    <td><span class="badge badge-green">8.0</span></td>
+  </tr>
+  <tr>
+    <td style="font-weight:700;">WEIGHTED TOTAL</td>
+    <td style="font-weight:700;">2.1 / 10</td>
+    <td style="font-weight:700;">5.8 / 10</td>
+    <td style="font-weight:700;">8.6 / 10</td>
+  </tr>
+</table>
+
+<h3>8.2 Verdict</h3>
+
+<div class="verdict">
+  <h3>PO Prototype là nền tảng tốt. Cần restructure theo 3 nhu cầu user.</h3>
+  <p>PO prototype giải quyết đúng vấn đề lớn nhất (Quick Pay cho returning user) và cover feature scope rộng. Nhưng cần restructure:</p>
+  <ol style="color:rgba(255,255,255,0.85); margin-top:16px; padding-left:20px;">
+    <li style="color:rgba(255,255,255,0.85); margin-bottom:8px;"><strong style="color:#fff;">Home = router cho 3 nhu cầu:</strong> ① Quick Pay (thanh toán) + ② Category grid (thêm mới) + link ③ Quản lý. Không embed content nặng.</li>
+    <li style="color:rgba(255,255,255,0.85); margin-bottom:8px;"><strong style="color:#fff;">Lịch sử = entry point icon trên NavBar</strong> — navigate sang Lịch sử GD chung, không show inline trên VAS Home.</li>
+    <li style="color:rgba(255,255,255,0.85); margin-bottom:8px;"><strong style="color:#fff;">Thêm mới = prompt cuối flow + nút trong Quản lý</strong> — không cần entry riêng trên Home.</li>
+    <li style="color:rgba(255,255,255,0.85); margin-bottom:8px;"><strong style="color:#fff;">Không cần screen Quản lý riêng</strong> — swipe xóa, tap → V4 xem info. Bớt 2 screens.</li>
+    <li style="color:rgba(255,255,255,0.85); margin-bottom:8px;"><strong style="color:#fff;">Auto-pay → Phase 2 (sau 30/4)</strong> — focus Phase 1 vào core payment flows.</li>
+    <li style="color:rgba(255,255,255,0.85); margin-bottom:8px;"><strong style="color:#fff;">NCC grouped + Bill Detail + Hướng dẫn mã</strong> — 3 gaps từ BRD cần close.</li>
+  </ol>
+</div>
+
+<h3>8.3 Priority Roadmap</h3>
+
+<h4>Phase 1 — Core VAS (Ship first)</h4>
+<table>
+  <tr>
+    <th>Priority</th>
+    <th>Item</th>
+    <th>Effort</th>
+    <th>Impact</th>
+  </tr>
+  <tr>
+    <td><span class="badge badge-red">P0</span></td>
+    <td>VAS Home (Quick Pay + Category grid + entry points only)</td>
+    <td>Medium</td>
+    <td>High — router cho tất cả flows</td>
+  </tr>
+  <tr>
+    <td><span class="badge badge-red">P0</span></td>
+    <td>Bill Payment flow (NCC grouped + Input + Bill Detail + "Lưu?")</td>
+    <td>High</td>
+    <td>High — flow phức tạp nhất, nhiều user nhất</td>
+  </tr>
+  <tr>
+    <td><span class="badge badge-yellow">P1</span></td>
+    <td>Topup + Mua thẻ (refresh visual)</td>
+    <td>Low</td>
+    <td>Medium — flow đã tốt, chỉ cần polish</td>
+  </tr>
+  <tr>
+    <td><span class="badge badge-yellow">P1</span></td>
+    <td>Mua data + Tài chính (new flows)</td>
+    <td>Medium</td>
+    <td>Medium — expand service coverage</td>
+  </tr>
+</table>
+
+<h4>Phase 2 — Automation &amp; Retention (sau 30/4)</h4>
+<table>
+  <tr>
+    <th>Priority</th>
+    <th>Item</th>
+    <th>Effort</th>
+    <th>Impact</th>
+  </tr>
+  <tr>
+    <td><span class="badge badge-gray">P2</span></td>
+    <td>Thanh toán tự động (Auto-pay) — toggle + config ngày + hạn mức</td>
+    <td>High</td>
+    <td>Medium — retention, giảm churn</td>
+  </tr>
+  <tr>
+    <td><span class="badge badge-gray">P2</span></td>
+    <td>Bill Reminder — nhắc nợ tự động + push notification</td>
+    <td>Medium</td>
+    <td>Medium — engagement</td>
+  </tr>
+  <tr>
+    <td><span class="badge badge-gray">P2</span></td>
+    <td>Nạp tiền ĐT tự động (Auto-topup)</td>
+    <td>Medium</td>
+    <td>Low — niche feature</td>
+  </tr>
+</table>
+<p style="font-size:12px; color:var(--fg3); margin-top:8px;">Phase 2 align với BRD note: "Thanh toán tự động → Có thể để sau 30/4".</p>
+
+<div class="sep"></div>
+
+<p style="font-size:12px; color:var(--fg3); text-align:center; margin-top:48px;">
+  VAS Payment Redesign Analysis Report &middot; Vi — Design Lead &middot; V-Smart Pay Design Team &middot; 19/03/2026<br>
+  Sources: BRD Confluence (Nguyễn Đức Thiện) &middot; Production UI Screenshots &middot; PO Prototype (vas.tsx) &middot; MoMo/ZaloPay/TCB Benchmark &middot; VSP Design Principles
+</p>
+
+</body>
+</html>

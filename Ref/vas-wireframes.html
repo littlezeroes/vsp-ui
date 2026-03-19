@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VAS Payment — Wireframes</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:-apple-system,'Segoe UI',sans-serif; background:#f5f5f5; color:#111; line-height:1.5; padding:32px 20px 120px; }
+  .container { max-width:1200px; margin:0 auto; }
+
+  h1 { font-size:28px; font-weight:800; margin-bottom:4px; }
+  .sub { font-size:13px; color:#888; margin-bottom:32px; }
+  h2 { font-size:18px; font-weight:700; margin:48px 0 16px; padding-bottom:6px; border-bottom:2px solid #111; }
+  h3 { font-size:14px; font-weight:700; margin:24px 0 8px; color:#555; text-transform:uppercase; letter-spacing:0.5px; }
+  p { font-size:14px; color:#555; margin-bottom:12px; }
+  .note { font-size:12px; color:#999; margin-top:6px; }
+
+  /* Phone frame */
+  .phone-row { display:flex; gap:24px; flex-wrap:wrap; margin:16px 0; }
+  .phone {
+    width:280px; min-height:520px;
+    background:#fff; border-radius:32px;
+    border:2px solid #222;
+    overflow:hidden; display:flex; flex-direction:column;
+    box-shadow:0 4px 20px rgba(0,0,0,0.08);
+    flex-shrink:0;
+  }
+  .phone-label { font-size:11px; font-weight:700; color:#888; text-align:center; margin-top:8px; text-transform:uppercase; letter-spacing:0.5px; }
+
+  /* Status bar */
+  .statusbar { height:36px; display:flex; align-items:center; justify-content:space-between; padding:0 20px; flex-shrink:0; }
+  .statusbar .time { font-size:11px; font-weight:600; }
+  .statusbar .notch { width:80px; height:20px; background:#222; border-radius:12px; position:absolute; left:50%; transform:translateX(-50%); }
+  .statusbar { position:relative; }
+  .statusbar .icons { font-size:10px; color:#555; }
+
+  /* NavBar */
+  .navbar { display:flex; align-items:center; justify-content:space-between; padding:4px 16px 8px; flex-shrink:0; }
+  .navbar .back { font-size:18px; cursor:pointer; width:28px; }
+  .navbar .title { font-size:16px; font-weight:700; flex:1; }
+  .navbar .title-center { font-size:15px; font-weight:700; text-align:center; flex:1; }
+  .navbar .action { font-size:14px; color:#888; }
+  .navbar .large-title { font-size:22px; font-weight:800; flex:1; }
+
+  /* Content area */
+  .content { flex:1; overflow-y:auto; padding:0 16px 16px; }
+
+  /* Section */
+  .section { margin-top:20px; }
+  .section-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
+  .section-title { font-size:13px; font-weight:700; color:#111; }
+  .section-link { font-size:11px; font-weight:600; color:#888; }
+
+  /* Quick Pay cards */
+  .qp-scroll { display:flex; gap:10px; overflow-x:auto; padding-bottom:4px; margin:0 -16px; padding-left:16px; padding-right:16px; }
+  .qp-card {
+    min-width:180px; background:#f8f8f8; border-radius:14px; padding:12px;
+    flex-shrink:0; border:1.5px solid #eee;
+  }
+  .qp-card .qp-icon { display:flex; align-items:center; gap:8px; margin-bottom:8px; }
+  .qp-card .qp-icon span:first-child { font-size:16px; }
+  .qp-card .qp-icon .qp-name { font-size:11px; font-weight:600; }
+  .qp-card .qp-code { font-size:10px; color:#aaa; margin-bottom:6px; }
+  .qp-card .qp-amount { font-size:13px; font-weight:700; margin-bottom:8px; }
+  .qp-card .qp-btn { background:#111; color:#fff; font-size:10px; font-weight:700; text-align:center; padding:6px 0; border-radius:8px; }
+  .qp-card .qp-btn.secondary { background:#eee; color:#555; }
+  .qp-card.has-bill { border-color:#111; }
+  .qp-badge { background:#e74c3c; color:#fff; font-size:8px; font-weight:700; padding:1px 5px; border-radius:8px; margin-left:4px; }
+
+  /* Category grid */
+  .cat-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; }
+  .cat-item { text-align:center; }
+  .cat-icon { width:44px; height:44px; background:#f0f0f0; border-radius:50%; margin:0 auto 4px; display:flex; align-items:center; justify-content:center; font-size:18px; }
+  .cat-label { font-size:9px; color:#555; font-weight:500; }
+
+  /* List items */
+  .list-item { display:flex; align-items:center; gap:10px; padding:10px 0; border-bottom:1px solid #f4f4f4; }
+  .list-item:last-child { border-bottom:none; }
+  .list-icon { width:34px; height:34px; border-radius:50%; background:#f0f0f0; display:flex; align-items:center; justify-content:center; font-size:14px; flex-shrink:0; }
+  .list-body { flex:1; min-width:0; }
+  .list-title { font-size:12px; font-weight:600; }
+  .list-sub { font-size:10px; color:#aaa; }
+  .list-trail { font-size:14px; color:#ccc; flex-shrink:0; }
+
+  /* Input field */
+  .input-field { border:1.5px solid #ddd; border-radius:10px; padding:10px 12px; margin-bottom:10px; display:flex; align-items:center; justify-content:space-between; }
+  .input-field .label { font-size:9px; color:#aaa; }
+  .input-field .value { font-size:13px; font-weight:600; }
+  .input-field .placeholder { font-size:13px; color:#ccc; }
+  .input-field .helper { font-size:10px; color:#2196F3; font-weight:600; cursor:pointer; }
+
+  /* Conversational input */
+  .conv-text { font-size:18px; font-weight:700; line-height:1.6; margin:12px 0; }
+  .conv-text .highlight { color:#2196F3; }
+  .conv-text .placeholder { color:#ccc; font-weight:400; }
+  .conv-text .editable { border-bottom:2px solid #2196F3; padding-bottom:1px; }
+
+  /* Button */
+  .btn-primary { background:#111; color:#fff; font-size:13px; font-weight:700; text-align:center; padding:13px 0; border-radius:24px; margin-top:12px; }
+  .btn-secondary { background:#f0f0f0; color:#555; font-size:13px; font-weight:600; text-align:center; padding:13px 0; border-radius:24px; margin-top:8px; }
+  .btn-blue { background:#2196F3; color:#fff; font-size:13px; font-weight:700; text-align:center; padding:13px 0; border-radius:12px; margin-top:12px; }
+  .btn-disabled { background:#e8e8e8; color:#bbb; font-size:13px; font-weight:700; text-align:center; padding:13px 0; border-radius:24px; margin-top:12px; }
+
+  /* Toggle */
+  .toggle { width:36px; height:20px; border-radius:10px; background:#ccc; position:relative; flex-shrink:0; }
+  .toggle.on { background:#2196F3; }
+  .toggle .dot { width:16px; height:16px; border-radius:50%; background:#fff; position:absolute; top:2px; left:2px; box-shadow:0 1px 2px rgba(0,0,0,0.2); }
+  .toggle.on .dot { left:18px; }
+
+  /* Chips */
+  .chip-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
+  .chip { border:1.5px solid #e0e0e0; border-radius:8px; padding:10px 6px; text-align:center; font-size:11px; font-weight:600; }
+  .chip.selected { border-color:#2196F3; background:#EAF4FF; color:#2196F3; }
+
+  /* Bottom sheet indicator */
+  .sheet-handle { width:36px; height:4px; background:#ddd; border-radius:2px; margin:8px auto; }
+
+  /* Separator */
+  .sep { height:1px; background:#f0f0f0; margin:12px 0; }
+
+  /* Info row */
+  .info-row { display:flex; justify-content:space-between; padding:8px 0; font-size:12px; }
+  .info-row .info-label { color:#999; }
+  .info-row .info-value { font-weight:600; color:#111; }
+
+  /* Checkbox */
+  .checkbox { width:18px; height:18px; border:2px solid #ccc; border-radius:4px; flex-shrink:0; display:flex; align-items:center; justify-content:center; }
+  .checkbox.checked { background:#111; border-color:#111; }
+  .checkbox.checked::after { content:"✓"; color:#fff; font-size:10px; font-weight:700; }
+
+  /* Annotation */
+  .anno { background:#FFFDE7; border-left:3px solid #f5a623; padding:8px 12px; margin:12px 0; border-radius:0 6px 6px 0; font-size:11px; color:#666; }
+  .anno strong { color:#111; }
+
+  /* Flow diagram */
+  .flow { background:#fff; border-radius:12px; padding:16px 20px; margin:12px 0; font-family:'SF Mono','Fira Code',monospace; font-size:12px; line-height:2; white-space:pre-wrap; border:1px solid #eee; }
+
+  /* Home indicator */
+  .home-ind { width:100px; height:4px; background:#222; border-radius:2px; margin:8px auto 4px; }
+
+  /* Search bar */
+  .search-bar { background:#f0f0f0; border-radius:10px; padding:8px 12px; font-size:11px; color:#aaa; margin-bottom:12px; }
+
+  /* Grouped section */
+  .group-header { font-size:10px; font-weight:700; color:#888; padding:8px 0 4px; text-transform:uppercase; letter-spacing:0.3px; }
+
+  /* Bottom bar */
+  .bottom-bar { padding:8px 16px 4px; flex-shrink:0; background:#fff; }
+
+  /* Tag */
+  .tag { display:inline-block; font-size:9px; font-weight:700; padding:2px 6px; border-radius:4px; }
+  .tag-blue { background:#EAF4FF; color:#2196F3; }
+  .tag-red { background:#fde8e8; color:#e74c3c; }
+  .tag-green { background:#e8f8f0; color:#00b182; }
+  .tag-gray { background:#f0f0f0; color:#888; }
+
+  /* Phase badge */
+  .phase { display:inline-block; font-size:10px; font-weight:700; padding:3px 8px; border-radius:6px; margin-left:8px; }
+  .phase-1 { background:#111; color:#fff; }
+  .phase-2 { background:#eee; color:#888; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>VAS Payment — Wireframes</h1>
+<p class="sub">V-Smart Pay &middot; Vi &middot; 19/03/2026 &middot; Phase 1 scope</p>
+
+<!-- ════════════════════ USER NEEDS ════════════════════ -->
+<h2>User Needs</h2>
+
+<div class="phone-row" style="gap:0;">
+<div style="flex:1; min-width:280px;">
+<table style="width:100%; border-collapse:collapse; font-size:13px;">
+  <tr style="background:#111; color:#fff;">
+    <th style="padding:10px 12px; text-align:left; font-size:12px;">Nhu cầu</th>
+    <th style="padding:10px 12px; text-align:left; font-size:12px;">User nói</th>
+    <th style="padding:10px 12px; text-align:left; font-size:12px;">Entry Point</th>
+  </tr>
+  <tr>
+    <td style="padding:10px 12px; border-bottom:1px solid #f0f0f0;"><strong>① Thanh toán</strong><br><span class="tag tag-green">80% traffic</span></td>
+    <td style="padding:10px 12px; border-bottom:1px solid #f0f0f0;">"Đóng tiền điện"</td>
+    <td style="padding:10px 12px; border-bottom:1px solid #f0f0f0;">Quick Pay card → pay ngay</td>
+  </tr>
+  <tr style="background:#fafafa;">
+    <td style="padding:10px 12px; border-bottom:1px solid #f0f0f0;"><strong>② Thêm mới</strong><br><span class="tag tag-blue">20% traffic</span></td>
+    <td style="padding:10px 12px; border-bottom:1px solid #f0f0f0;">"Lần đầu đóng tiền nước"</td>
+    <td style="padding:10px 12px; border-bottom:1px solid #f0f0f0;">Category grid → full flow → "Lưu?"</td>
+  </tr>
+  <tr>
+    <td style="padding:10px 12px;"><strong>③ Quản lý</strong><br><span class="tag tag-gray">5% traffic</span></td>
+    <td style="padding:10px 12px;">"Đổi tên / xóa / xem chi tiết"</td>
+    <td style="padding:10px 12px;">Tap card → Biller Detail<br>"Xem tất cả" → Full list</td>
+  </tr>
+</table>
+</div>
+</div>
+
+<div class="anno"><strong>Lịch sử GD:</strong> Icon ⏱ trên NavBar → navigate sang Lịch sử GD chung. Không render trong VAS.<br><strong>Auto-pay / Nhắc nợ / Nạp tự động:</strong> Phase 2 (sau 30/4). Phase 1 chỉ cần suggestion sau khi TT thành công.<br><strong>Header thay đổi theo state:</strong> New user = "Điện, nước, internet — thanh toán tại đây" (context). Returning user = "Dịch vụ" (đã có Đã lưu section cho context).</div>
+
+<!-- ════════════════════ FLOW MAP ════════════════════ -->
+<h2>Flow Map</h2>
+
+<div class="flow">① Returning user (đã lưu):
+Home → Quick Pay card → [Thanh toán] → Confirm sheet → Auth → Result
+<strong>3 taps, &lt;15 giây</strong>
+
+② First-time (hóa đơn mới):
+Home → Danh mục → Chọn NCC → Nhập mã → Bill Detail → Confirm → Auth → Result
+                                                └─ ☑ "Lưu hóa đơn này"
+③ Quản lý:
+Home → Swipe row → Xóa
+Home → Tap row → V4 (Bill Detail) → pay / xem info
+"Xem tất cả (N)" → overflow list (nếu >5 items)
+</div>
+
+<!-- ════════════════════ WIREFRAMES ════════════════════ -->
+<h2>Wireframes</h2>
+
+<!-- ──────── V1: VAS HOME ──────── -->
+<h3>V1 — VAS Home <span class="phase phase-1">P1</span></h3>
+<p>Danh mục trên (context) → Đã lưu dưới (vertical list, tabs HĐ/SĐT). Tap row → V4 pay. Swipe → xóa.</p>
+
+<div class="phone-row">
+
+<div>
+<div class="phone">
+  <div class="statusbar">
+    <span class="time">9:41</span>
+    <div class="notch"></div>
+    <span class="icons">5G 🔋</span>
+  </div>
+  <div class="navbar">
+    <span class="back">‹</span>
+    <span class="large-title">Dịch vụ</span>
+    <span class="action">⏱</span>
+  </div>
+  <div class="content">
+    <!-- Category Grid — lên trên -->
+    <div class="section">
+      <div class="section-title" style="margin-bottom:12px;">Thanh toán hóa đơn mới</div>
+      <div class="cat-grid">
+        <div class="cat-item"><div class="cat-icon">⚡</div><div class="cat-label">Điện</div></div>
+        <div class="cat-item"><div class="cat-icon">💧</div><div class="cat-label">Nước</div></div>
+        <div class="cat-item"><div class="cat-icon">📶</div><div class="cat-label">Internet</div></div>
+        <div class="cat-item"><div class="cat-icon">📺</div><div class="cat-label">Truyền hình</div></div>
+        <div class="cat-item"><div class="cat-icon">📲</div><div class="cat-label">Nạp tiền</div></div>
+        <div class="cat-item"><div class="cat-icon">🎴</div><div class="cat-label">Mua thẻ</div></div>
+        <div class="cat-item"><div class="cat-icon">📡</div><div class="cat-label">Mua data</div></div>
+        <div class="cat-item"><div class="cat-icon">💰</div><div class="cat-label">Tài chính</div></div>
+      </div>
+    </div>
+
+    <!-- Đã lưu — xuống dưới, có 2 tabs -->
+    <div class="section" style="margin-top:24px;">
+      <div class="section-header">
+        <span class="section-title">Đã lưu</span>
+        <span class="section-link">Xem tất cả (3) →</span>
+      </div>
+      <!-- Segment tabs -->
+      <div style="display:flex; background:#f0f0f0; border-radius:10px; padding:2px; gap:2px; margin-bottom:12px;">
+        <div style="flex:1; text-align:center; padding:6px 0; border-radius:8px; font-size:10px; font-weight:600; background:#fff; box-shadow:0 1px 3px rgba(0,0,0,0.1);">Hóa đơn</div>
+        <div style="flex:1; text-align:center; padding:6px 0; border-radius:8px; font-size:10px; font-weight:600; color:#888;">Số điện thoại</div>
+      </div>
+      <!-- Tab: Hóa đơn (vertical list) -->
+      <div class="list-item" style="padding:10px 0;">
+        <div class="list-icon" style="border:2px solid #e0e0e0; background:#fff;">⚡</div>
+        <div class="list-body">
+          <div style="display:flex; align-items:center; gap:4px;"><span class="list-title">EVN Hồ Chí Minh</span><span class="qp-badge">Mới</span></div>
+          <div class="list-sub">PE05000199088</div>
+        </div>
+        <div style="text-align:right; flex-shrink:0;">
+          <div style="font-size:12px; font-weight:700;">501.500đ</div>
+          <div style="font-size:9px; color:#2196F3; font-weight:600; margin-top:2px;">Thanh toán ›</div>
+        </div>
+      </div>
+      <div class="list-item" style="padding:10px 0;">
+        <div class="list-icon" style="border:2px solid #e0e0e0; background:#fff;">💧</div>
+        <div class="list-body">
+          <div class="list-title">Cấp nước SG – Củ Chi</div>
+          <div class="list-sub">NW08120034561</div>
+        </div>
+        <div style="text-align:right; flex-shrink:0;">
+          <div style="font-size:10px; color:#aaa;">Chưa có HĐ</div>
+          <div style="font-size:9px; color:#888; font-weight:600; margin-top:2px;">Tra cứu ›</div>
+        </div>
+      </div>
+      <div class="list-item" style="padding:10px 0; border-bottom:none;">
+        <div class="list-icon" style="border:2px solid #e0e0e0; background:#fff;">📶</div>
+        <div class="list-body">
+          <div class="list-title">FPT Telecom</div>
+          <div class="list-sub">FPT-HCM-20941</div>
+        </div>
+        <div style="text-align:right; flex-shrink:0;">
+          <div style="font-size:12px; font-weight:700;">299.000đ</div>
+          <div style="font-size:9px; color:#2196F3; font-weight:600; margin-top:2px;">Thanh toán ›</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="home-ind"></div>
+</div>
+<div class="phone-label">V1 — Home (tab Hóa đơn)</div>
+</div>
+
+<!-- V1 tab SĐT -->
+<div>
+<div class="phone">
+  <div class="statusbar">
+    <span class="time">9:41</span>
+    <div class="notch"></div>
+    <span class="icons">5G 🔋</span>
+  </div>
+  <div class="navbar">
+    <span class="back">‹</span>
+    <span class="large-title">Dịch vụ</span>
+    <span class="action">⏱</span>
+  </div>
+  <div class="content">
+    <div class="section">
+      <div class="section-title" style="margin-bottom:12px;">Thanh toán hóa đơn mới</div>
+      <div class="cat-grid">
+        <div class="cat-item"><div class="cat-icon">⚡</div><div class="cat-label">Điện</div></div>
+        <div class="cat-item"><div class="cat-icon">💧</div><div class="cat-label">Nước</div></div>
+        <div class="cat-item"><div class="cat-icon">📶</div><div class="cat-label">Internet</div></div>
+        <div class="cat-item"><div class="cat-icon">📺</div><div class="cat-label">Truyền hình</div></div>
+        <div class="cat-item"><div class="cat-icon">📲</div><div class="cat-label">Nạp tiền</div></div>
+        <div class="cat-item"><div class="cat-icon">🎴</div><div class="cat-label">Mua thẻ</div></div>
+        <div class="cat-item"><div class="cat-icon">📡</div><div class="cat-label">Mua data</div></div>
+        <div class="cat-item"><div class="cat-icon">💰</div><div class="cat-label">Tài chính</div></div>
+      </div>
+    </div>
+    <div class="section" style="margin-top:24px;">
+      <div class="section-header">
+        <span class="section-title">Đã lưu</span>
+        <span class="section-link">Xem tất cả (3) →</span>
+      </div>
+      <div style="display:flex; background:#f0f0f0; border-radius:10px; padding:2px; gap:2px; margin-bottom:12px;">
+        <div style="flex:1; text-align:center; padding:6px 0; border-radius:8px; font-size:10px; font-weight:600; color:#888;">Hóa đơn</div>
+        <div style="flex:1; text-align:center; padding:6px 0; border-radius:8px; font-size:10px; font-weight:600; background:#fff; box-shadow:0 1px 3px rgba(0,0,0,0.1);">Số điện thoại</div>
+      </div>
+      <!-- Tab: SĐT (vertical list) -->
+      <div class="list-item" style="padding:10px 0;">
+        <div style="width:34px; height:34px; border-radius:50%; background:#e91e63; display:flex; align-items:center; justify-content:center; color:#fff; font-size:11px; font-weight:700; flex-shrink:0;">NA</div>
+        <div class="list-body">
+          <div class="list-title">Nguyễn Văn A</div>
+          <div class="list-sub">0901 234 567 · Viettel</div>
+        </div>
+        <div style="background:#2196F3; color:#fff; font-size:9px; font-weight:700; padding:5px 10px; border-radius:14px; flex-shrink:0;">Nạp tiền</div>
+      </div>
+      <div class="list-item" style="padding:10px 0;">
+        <div style="width:34px; height:34px; border-radius:50%; background:#9c27b0; display:flex; align-items:center; justify-content:center; color:#fff; font-size:11px; font-weight:700; flex-shrink:0;">TB</div>
+        <div class="list-body">
+          <div class="list-title">Trần Thị B</div>
+          <div class="list-sub">0912 345 678 · Mobifone</div>
+        </div>
+        <div style="background:#2196F3; color:#fff; font-size:9px; font-weight:700; padding:5px 10px; border-radius:14px; flex-shrink:0;">Nạp tiền</div>
+      </div>
+      <div class="list-item" style="padding:10px 0; border-bottom:none;">
+        <div style="width:34px; height:34px; border-radius:50%; background:#607d8b; display:flex; align-items:center; justify-content:center; color:#fff; font-size:11px; font-weight:700; flex-shrink:0;">09</div>
+        <div class="list-body">
+          <div class="list-title" style="color:#888;">0934 567 890</div>
+          <div class="list-sub" style="color:#2196F3;">+ Đặt tên gợi nhớ</div>
+        </div>
+        <div style="background:#2196F3; color:#fff; font-size:9px; font-weight:700; padding:5px 10px; border-radius:14px; flex-shrink:0;">Nạp tiền</div>
+      </div>
+    </div>
+  </div>
+  <div class="home-ind"></div>
+</div>
+<div class="phone-label">V1 — Home (tab Số điện thoại)</div>
+</div>
+
+<!-- V1 new user -->
+<div>
+<div class="phone" style="min-height:420px;">
+  <div class="statusbar">
+    <span class="time">9:41</span>
+    <div class="notch"></div>
+    <span class="icons">5G 🔋</span>
+  </div>
+  <div class="navbar">
+    <span class="back">‹</span>
+    <span class="action">⏱</span>
+  </div>
+  <div class="content">
+    <div style="font-size:20px; font-weight:800; line-height:1.4; margin-bottom:20px;">Điện, nước, internet<br><span style="color:#888; font-weight:600;">thanh toán tại đây</span></div>
+    <div class="cat-grid">
+      <div class="cat-item"><div class="cat-icon">⚡</div><div class="cat-label">Điện</div></div>
+      <div class="cat-item"><div class="cat-icon">💧</div><div class="cat-label">Nước</div></div>
+      <div class="cat-item"><div class="cat-icon">📶</div><div class="cat-label">Internet</div></div>
+      <div class="cat-item"><div class="cat-icon">📺</div><div class="cat-label">Truyền hình</div></div>
+      <div class="cat-item"><div class="cat-icon">📲</div><div class="cat-label">Nạp tiền</div></div>
+      <div class="cat-item"><div class="cat-icon">🎴</div><div class="cat-label">Mua thẻ</div></div>
+      <div class="cat-item"><div class="cat-icon">📡</div><div class="cat-label">Mua data</div></div>
+      <div class="cat-item"><div class="cat-icon">💰</div><div class="cat-label">Tài chính</div></div>
+    </div>
+  </div>
+  <div class="home-ind"></div>
+</div>
+<div class="phone-label">V1 — Home (new user)</div>
+</div>
+
+</div>
+
+<div class="anno">
+  <strong>Section "Đã lưu"</strong> có 2 tabs: Hóa đơn | Số điện thoại. Chỉ xuất hiện khi user có saved items. New user chỉ thấy Category Grid.<br>
+  <strong>Tab Hóa đơn:</strong> Quick Pay cards (EVN, Nước, FPT...) — tap → Bill Detail → pay hoặc quản lý.<br>
+  <strong>Tab SĐT:</strong> Saved phone cards — tap "Nạp tiền" → Topup flow pre-filled.<br>
+  <strong>"Xem tất cả (N)"</strong> chỉ hiện khi >5 items → overflow list cùng format. Tap row → V4 pay. Swipe left → xóa.
+</div>
+
+<!-- ──────── V2: Chọn NCC ──────── -->
+<h3>V2 — Chọn nhà cung cấp <span class="phase phase-1">P1</span></h3>
+<p>Grouped by tỉnh/TP. Search cross-region. Auto-suggest location.</p>
+
+<div class="phone-row">
+<div>
+<div class="phone">
+  <div class="statusbar">
+    <span class="time">9:41</span>
+    <div class="notch"></div>
+    <span class="icons">5G 🔋</span>
+  </div>
+  <div class="navbar">
+    <span class="back">‹</span>
+    <span class="title-center">Chọn nhà cung cấp</span>
+    <span class="action" style="width:28px;"></span>
+  </div>
+  <div class="content">
+    <div class="search-bar">🔍 Tìm nhà cung cấp...</div>
+    <div class="group-header">📍 TP. Hồ Chí Minh <span class="tag tag-blue" style="margin-left:4px;">Gần bạn</span></div>
+    <div class="list-item">
+      <div class="list-icon">💧</div>
+      <div class="list-body">
+        <div class="list-title">Cấp nước Sài Gòn – Củ Chi</div>
+      </div>
+      <span class="list-trail">›</span>
+    </div>
+    <div class="list-item">
+      <div class="list-icon">💧</div>
+      <div class="list-body">
+        <div class="list-title">Cấp nước Chợ Lớn</div>
+      </div>
+      <span class="list-trail">›</span>
+    </div>
+    <div class="group-header">Hà Nội</div>
+    <div class="list-item">
+      <div class="list-icon">💧</div>
+      <div class="list-body">
+        <div class="list-title">Nước sạch Hà Đông</div>
+      </div>
+      <span class="list-trail">›</span>
+    </div>
+    <div class="list-item">
+      <div class="list-icon">💧</div>
+      <div class="list-body">
+        <div class="list-title">Nước sạch Viwaco</div>
+      </div>
+      <span class="list-trail">›</span>
+    </div>
+    <div class="list-item">
+      <div class="list-icon">💧</div>
+      <div class="list-body">
+        <div class="list-title">Nước Sơn Tây</div>
+      </div>
+      <span class="list-trail">›</span>
+    </div>
+    <div class="group-header">Hậu Giang</div>
+    <div class="list-item">
+      <div class="list-icon">💧</div>
+      <div class="list-body">
+        <div class="list-title">Cấp Thoát nước Hậu Giang</div>
+        <div class="list-sub">Công Ty Cổ phần</div>
+      </div>
+      <span class="list-trail">›</span>
+    </div>
+  </div>
+  <div class="home-ind"></div>
+</div>
+<div class="phone-label">V2 — NCC Nước (grouped by tỉnh/TP)</div>
+</div>
+
+<!-- ──────── V3: Nhập mã ──────── -->
+<div>
+<div class="phone">
+  <div class="statusbar">
+    <span class="time">9:41</span>
+    <div class="notch"></div>
+    <span class="icons">5G 🔋</span>
+  </div>
+  <div class="navbar">
+    <span class="back">‹</span>
+    <span class="action" style="width:28px;"></span>
+  </div>
+  <div class="content">
+    <div class="conv-text">
+      Thanh toán <span class="highlight">hóa đơn nước</span><br>
+      cho <span class="highlight">Cấp nước SG – Củ Chi</span>
+    </div>
+    <div style="margin-top:20px;">
+      <div class="input-field">
+        <div style="flex:1;">
+          <div class="label">Mã khách hàng</div>
+          <div class="value">NW08120034561</div>
+        </div>
+        <div class="helper">? Hướng dẫn</div>
+      </div>
+    </div>
+    <div style="flex:1;"></div>
+  </div>
+  <div class="bottom-bar">
+    <div class="btn-primary">Tra cứu hóa đơn</div>
+  </div>
+  <div class="home-ind"></div>
+</div>
+<div class="phone-label">V3 — Nhập mã KH (hybrid approach)</div>
+</div>
+
+</div>
+
+<div class="anno">
+  <strong>V3 Hybrid:</strong> Conversational header (PO prototype) + standard input field + "? Hướng dẫn" link (per BRD).<br>
+  <strong>Tài chính:</strong> NCC có 2+ loại input → thêm segment tab [Mã HĐ] [Số CCCD] phía trên input.
+</div>
+
+<!-- ──────── V4: Bill Detail ──────── -->
+<h3>V4 — Chi tiết hóa đơn <span class="phase phase-1">P1</span></h3>
+<p>Sau khi tra cứu. Dùng cho cả returning (Quick Pay) và first-time. Có checkbox "Lưu".</p>
+
+<div class="phone-row">
+<div>
+<div class="phone">
+  <div class="statusbar">
+    <span class="time">9:41</span>
+    <div class="notch"></div>
+    <span class="icons">5G 🔋</span>
+  </div>
+  <div class="navbar">
+    <span class="back">‹</span>
+    <span class="title-center">Thông tin hóa đơn</span>
+    <span class="action" style="width:28px;"></span>
+  </div>
+  <div class="content">
+    <div style="text-align:center; padding:16px 0;">
+      <div style="width:48px; height:48px; border-radius:50%; border:2px solid #e0e0e0; margin:0 auto 8px; display:flex; align-items:center; justify-content:center; font-size:22px;">💧</div>
+      <div style="font-size:14px; font-weight:700;">Cấp nước SG – Củ Chi</div>
+    </div>
+    <div class="sep"></div>
+    <div class="info-row"><span class="info-label">Mã khách hàng</span><span class="info-value">NW08120034561</span></div>
+    <div class="info-row"><span class="info-label">Tên khách hàng</span><span class="info-value">VÕ HỮU LÊ</span></div>
+    <div class="info-row"><span class="info-label">Địa chỉ</span><span class="info-value" style="text-align:right; max-width:160px;">280 Tôn Thất Thuyết, P. Vĩnh Hội</span></div>
+    <div class="sep"></div>
+    <div class="info-row"><span class="info-label">Kỳ thanh toán</span><span class="info-value">Tháng 11/2025</span></div>
+    <div class="info-row"><span class="info-label">Số tiền</span><span class="info-value" style="font-size:16px; font-weight:800;">245.000đ</span></div>
+    <div class="info-row"><span class="info-label">Phí dịch vụ</span><span class="info-value" style="color:#00b182;">Miễn phí</span></div>
+    <div class="sep"></div>
+    <div style="display:flex; align-items:center; gap:8px; padding:8px 0;">
+      <div class="checkbox checked"></div>
+      <span style="font-size:12px; font-weight:500;">Lưu hóa đơn này để thanh toán nhanh lần sau</span>
+    </div>
+  </div>
+  <div class="bottom-bar">
+    <div class="btn-primary">Thanh toán 245.000đ</div>
+  </div>
+  <div class="home-ind"></div>
+</div>
+<div class="phone-label">V4 — Bill Detail (first-time, có checkbox Lưu)</div>
+</div>
+
+<!-- ──────── V4b: Returning ──────── -->
+<div>
+<div class="phone">
+  <div class="statusbar">
+    <span class="time">9:41</span>
+    <div class="notch"></div>
+    <span class="icons">5G 🔋</span>
+  </div>
+  <div class="navbar">
+    <span class="back">‹</span>
+    <span class="title-center">Thông tin hóa đơn</span>
+    <span class="action" style="width:28px;"></span>
+  </div>
+  <div class="content">
+    <div style="text-align:center; padding:16px 0;">
+      <div style="width:48px; height:48px; border-radius:50%; border:2px solid #e0e0e0; margin:0 auto 8px; display:flex; align-items:center; justify-content:center; font-size:22px;">⚡</div>
+      <div style="font-size:14px; font-weight:700;">EVN Hồ Chí Minh</div>
+      <div style="font-size:11px; color:#aaa; margin-top:2px;">Điện nhà mình</div>
+    </div>
+    <div class="sep"></div>
+    <div class="info-row"><span class="info-label">Mã khách hàng</span><span class="info-value">PE05000199088</span></div>
+    <div class="info-row"><span class="info-label">Tên khách hàng</span><span class="info-value">VÕ THỊ TUYẾT SƯƠNG</span></div>
+    <div class="sep"></div>
+    <div class="info-row"><span class="info-label">Kỳ thanh toán</span><span class="info-value">Tháng 11/2025</span></div>
+    <div class="info-row"><span class="info-label">Số tiền</span><span class="info-value" style="font-size:16px; font-weight:800;">501.500đ</span></div>
+    <div class="info-row"><span class="info-label">Phí dịch vụ</span><span class="info-value" style="color:#00b182;">Miễn phí</span></div>
+  </div>
+  <div class="bottom-bar">
+    <div class="btn-primary">Thanh toán 501.500đ</div>
+  </div>
+  <div class="home-ind"></div>
+</div>
+<div class="phone-label">V4 — Bill Detail (returning, đã lưu)</div>
+</div>
+
+</div>
+
+<!-- ──────── V5: Nạp tiền ──────── -->
+<h3>V5 — Nạp tiền điện thoại <span class="phase phase-1">P1</span></h3>
+
+<div class="phone-row">
+<div>
+<div class="phone">
+  <div class="statusbar">
+    <span class="time">9:41</span>
+    <div class="notch"></div>
+    <span class="icons">5G 🔋</span>
+  </div>
+  <div class="navbar">
+    <span class="back">‹</span>
+    <span class="action" style="width:28px;"></span>
+  </div>
+  <div class="content">
+    <div class="conv-text">Nạp <span class="highlight">tiền điện thoại</span></div>
+    <div class="input-field" style="margin-top:12px;">
+      <div style="display:flex; align-items:center; gap:8px; flex:1;">
+        <div style="background:#e8001d; border-radius:4px; padding:2px 6px;"><span style="color:#fff; font-size:8px; font-weight:700;">viettel</span></div>
+        <div>
+          <div class="label">Số của tôi</div>
+          <div class="value">0338451218</div>
+        </div>
+      </div>
+      <span style="font-size:16px;">👤</span>
+    </div>
+
+    <div style="font-size:13px; font-weight:700; margin:16px 0 10px;">Mệnh giá</div>
+    <div class="chip-grid">
+      <div class="chip">10.000đ</div>
+      <div class="chip">20.000đ</div>
+      <div class="chip">50.000đ</div>
+      <div class="chip selected">100.000đ</div>
+      <div class="chip">200.000đ</div>
+      <div class="chip">500.000đ</div>
+    </div>
+  </div>
+  <div class="bottom-bar">
+    <div class="btn-blue">Nạp ngay · 100.000đ</div>
+  </div>
+  <div class="home-ind"></div>
+</div>
+<div class="phone-label">V5 — Nạp tiền ĐT</div>
+</div>
+
+<!-- ──────── V6: Mua thẻ ──────── -->
+<div>
+<div class="phone">
+  <div class="statusbar">
+    <span class="time">9:41</span>
+    <div class="notch"></div>
+    <span class="icons">5G 🔋</span>
+  </div>
+  <div class="navbar">
+    <span class="back">‹</span>
+    <span class="action" style="width:28px;"></span>
+  </div>
+  <div class="content">
+    <div class="conv-text">Mua <span class="highlight">thẻ điện thoại</span></div>
+
+    <div style="display:flex; gap:8px; margin:12px 0 16px; overflow-x:auto;">
+      <div style="padding:8px 14px; border-radius:10px; border:2px solid #2196F3; background:#EAF4FF; font-size:10px; font-weight:700; color:#e8001d; flex-shrink:0;">viettel</div>
+      <div style="padding:8px 14px; border-radius:10px; border:1.5px solid #eee; font-size:10px; font-weight:700; color:#0070c0; flex-shrink:0;">mobifone</div>
+      <div style="padding:8px 14px; border-radius:10px; border:1.5px solid #eee; font-size:10px; font-weight:700; color:#0000cc; flex-shrink:0;">vinaphone</div>
+      <div style="padding:8px 14px; border-radius:10px; border:1.5px solid #eee; font-size:10px; font-weight:700; color:#00a859; flex-shrink:0;">vnmobile</div>
+    </div>
+
+    <div style="font-size:13px; font-weight:700; margin-bottom:10px;">Mệnh giá</div>
+    <div class="chip-grid">
+      <div class="chip selected">10.000đ</div>
+      <div class="chip">20.000đ</div>
+      <div class="chip">50.000đ</div>
+      <div class="chip">100.000đ</div>
+      <div class="chip">200.000đ</div>
+      <div class="chip">500.000đ</div>
+    </div>
+  </div>
+  <div class="bottom-bar">
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
+      <span style="font-size:12px; font-weight:600;">Số lượng</span>
+      <div style="display:flex; align-items:center; gap:10px;">
+        <div style="width:24px; height:24px; border-radius:50%; border:1.5px solid #ddd; display:flex; align-items:center; justify-content:center; font-size:14px; color:#888;">−</div>
+        <span style="font-size:14px; font-weight:700;">1</span>
+        <div style="width:24px; height:24px; border-radius:50%; background:#2196F3; display:flex; align-items:center; justify-content:center; font-size:12px; color:#fff;">+</div>
+      </div>
+    </div>
+    <div class="btn-blue">Mua ngay · 10.000đ</div>
+  </div>
+  <div class="home-ind"></div>
+</div>
+<div class="phone-label">V6 — Mua thẻ cào</div>
+</div>
+
+</div>
+
+
+<!-- ──────── Confirm Sheet ──────── -->
+<h3>V13 — Confirm Sheet <span class="phase phase-1">P1</span></h3>
+
+<div class="phone-row">
+<div>
+<div class="phone">
+  <div class="statusbar">
+    <span class="time">9:41</span>
+    <div class="notch"></div>
+    <span class="icons">5G 🔋</span>
+  </div>
+  <div style="flex:1; background:rgba(0,0,0,0.05); display:flex; flex-direction:column; justify-content:flex-end;">
+    <div style="background:#fff; border-radius:20px 20px 0 0; padding:16px;">
+      <div class="sheet-handle"></div>
+      <div style="font-size:13px; color:#555; margin:8px 0 4px;">Thanh toán hóa đơn nước</div>
+      <div style="font-size:28px; font-weight:800; margin-bottom:16px;">245.000đ</div>
+      <div class="info-row"><span class="info-label">Nhà cung cấp</span><span class="info-value">Cấp nước SG – Củ Chi</span></div>
+      <div class="info-row"><span class="info-label">Mã khách hàng</span><span class="info-value">NW08120034561</span></div>
+      <div class="info-row"><span class="info-label">Kỳ thanh toán</span><span class="info-value">Tháng 11/2025</span></div>
+      <div class="info-row"><span class="info-label">Phí dịch vụ</span><span class="info-value" style="color:#00b182;">Miễn phí</span></div>
+      <div class="sep"></div>
+      <div style="font-size:12px; font-weight:700; margin-bottom:8px;">Nguồn thanh toán</div>
+      <div style="border:2px solid #111; border-radius:10px; padding:10px 14px; display:inline-flex; align-items:center; gap:8px;">
+        <span style="font-size:14px;">💳</span>
+        <div>
+          <div style="font-size:11px; font-weight:700;">Ví V-Smart Pay</div>
+          <div style="font-size:10px; color:#2196F3;">1.637.500đ</div>
+        </div>
+      </div>
+      <div class="btn-primary" style="margin-top:16px;">Xác thực giao dịch</div>
+    </div>
+  </div>
+  <div class="home-ind" style="background:#fff;"></div>
+</div>
+<div class="phone-label">V13 — Confirm (Bottom Sheet)</div>
+</div>
+</div>
+
+<!-- ════════════════════ SCREEN MAP ════════════════════ -->
+<h2>Screen Map</h2>
+
+<table style="width:100%; border-collapse:collapse; font-size:12px; background:#fff; border-radius:8px; overflow:hidden;">
+  <tr style="background:#111; color:#fff;">
+    <th style="padding:8px 10px; text-align:left;">#</th>
+    <th style="padding:8px 10px; text-align:left;">Screen</th>
+    <th style="padding:8px 10px; text-align:left;">Nhu cầu</th>
+    <th style="padding:8px 10px; text-align:left;">Phase</th>
+  </tr>
+  <tr><td style="padding:6px 10px; border-bottom:1px solid #f4f4f4;">V1</td><td style="padding:6px 10px; border-bottom:1px solid #f4f4f4;"><strong>VAS Home</strong></td><td style="padding:6px 10px; border-bottom:1px solid #f4f4f4;">①②③ entry</td><td style="padding:6px 10px; border-bottom:1px solid #f4f4f4;"><span class="tag tag-green">P1</span></td></tr>
+  <tr style="background:#fafafa;"><td style="padding:6px 10px; border-bottom:1px solid #f4f4f4;">V2</td><td style="padding:6px 10px; border-bottom:1px solid #f4f4f4;"><strong>Chọn NCC</strong> (grouped)</td><td style="padding:6px 10px; border-bottom:1px solid #f4f4f4;">② Thêm mới</td><td style="padding:6px 10px; border-bottom:1px solid #f4f4f4;"><span class="tag tag-green">P1</span></td></tr>
+  <tr><td style="padding:6px 10px; border-bottom:1px solid #f4f4f4;">V3</td><td style="padding:6px 10px; border-bottom:1px solid #f4f4f4;"><strong>Nhập mã KH</strong> (hybrid)</td><td style="padding:6px 10px; border-bottom:1px solid #f4f4f4;">② Thêm mới</td><td style="padding:6px 10px; border-bottom:1px solid #f4f4f4;"><span class="tag tag-green">P1</span></td></tr>
+  <tr style="background:#fafafa;"><td style="padding:6px 10px; border-bottom:1px solid #f4f4f4;">V4</td><td style="padding:6px 10px; border-bottom:1px solid #f4f4f4;"><strong>Bill Detail</strong> + "Lưu?"</td><td style="padding:6px 10px; border-bottom:1px solid #f4f4f4;">①② Thanh toán</td><td style="padding:6px 10px; border-bottom:1px solid #f4f4f4;"><span class="tag tag-green">P1</span></td></tr>
+  <tr><td style="padding:6px 10px; border-bottom:1px solid #f4f4f4;">V5</td><td style="padding:6px 10px; border-bottom:1px solid #f4f4f4;"><strong>Nạp tiền ĐT</strong></td><td style="padding:6px 10px; border-bottom:1px solid #f4f4f4;">① Thanh toán</td><td style="padding:6px 10px; border-bottom:1px solid #f4f4f4;"><span class="tag tag-green">P1</span></td></tr>
+  <tr style="background:#fafafa;"><td style="padding:6px 10px; border-bottom:1px solid #f4f4f4;">V6</td><td style="padding:6px 10px; border-bottom:1px solid #f4f4f4;"><strong>Mua thẻ cào</strong></td><td style="padding:6px 10px; border-bottom:1px solid #f4f4f4;">① Thanh toán</td><td style="padding:6px 10px; border-bottom:1px solid #f4f4f4;"><span class="tag tag-green">P1</span></td></tr>
+  <tr><td style="padding:6px 10px; border-bottom:1px solid #f4f4f4;">V7</td><td style="padding:6px 10px; border-bottom:1px solid #f4f4f4;"><strong>Mua gói data</strong></td><td style="padding:6px 10px; border-bottom:1px solid #f4f4f4;">① Thanh toán</td><td style="padding:6px 10px; border-bottom:1px solid #f4f4f4;"><span class="tag tag-green">P1</span></td></tr>
+  <tr style="background:#fafafa;"><td style="padding:6px 10px; border-bottom:1px solid #f4f4f4;">V8</td><td style="padding:6px 10px; border-bottom:1px solid #f4f4f4;"><strong>TT Tài chính</strong> (multi-input)</td><td style="padding:6px 10px; border-bottom:1px solid #f4f4f4;">② Thêm mới</td><td style="padding:6px 10px; border-bottom:1px solid #f4f4f4;"><span class="tag tag-green">P1</span></td></tr>
+  <tr><td style="padding:6px 10px; border-bottom:1px solid #f4f4f4;">V13</td><td style="padding:6px 10px; border-bottom:1px solid #f4f4f4;"><strong>Confirm Sheet</strong></td><td style="padding:6px 10px; border-bottom:1px solid #f4f4f4;">① Thanh toán</td><td style="padding:6px 10px; border-bottom:1px solid #f4f4f4;"><span class="tag tag-green">P1</span></td></tr>
+  <tr style="background:#f8f8f8; color:#aaa;"><td style="padding:6px 10px; border-bottom:1px solid #f4f4f4;">V11</td><td style="padding:6px 10px; border-bottom:1px solid #f4f4f4;">Auto-pay Config</td><td style="padding:6px 10px; border-bottom:1px solid #f4f4f4;">③</td><td style="padding:6px 10px; border-bottom:1px solid #f4f4f4;"><span class="tag tag-gray">P2</span></td></tr>
+  <tr style="background:#f8f8f8; color:#aaa;"><td style="padding:6px 10px; border-bottom:1px solid #f4f4f4;">V14</td><td style="padding:6px 10px; border-bottom:1px solid #f4f4f4;">Bill Reminder Config</td><td style="padding:6px 10px; border-bottom:1px solid #f4f4f4;">③</td><td style="padding:6px 10px; border-bottom:1px solid #f4f4f4;"><span class="tag tag-gray">P2</span></td></tr>
+  <tr style="background:#f8f8f8; color:#aaa;"><td style="padding:6px 10px;">V15</td><td style="padding:6px 10px;">Auto-topup Config</td><td style="padding:6px 10px;">③</td><td style="padding:6px 10px;"><span class="tag tag-gray">P2</span></td></tr>
+</table>
+
+<div style="font-size:11px; color:#999; text-align:center; margin-top:48px;">
+  VAS Payment Wireframes &middot; Vi — Design Lead &middot; V-Smart Pay &middot; 19/03/2026
+</div>
+
+</div>
+</body>
+</html>
