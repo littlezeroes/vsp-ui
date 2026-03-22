@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VSP — Tab Thanh toán Design Spec</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:Georgia,'Times New Roman',serif;background:#fff;color:#111;line-height:1.75;max-width:960px;margin:0 auto;padding:48px 24px 120px;font-size:15px}
+  h1{font-family:-apple-system,sans-serif;font-size:28px;font-weight:800;margin-bottom:2px;letter-spacing:-0.4px}
+  .subtitle{font-family:-apple-system,sans-serif;font-size:14px;font-weight:600;color:#555;margin-bottom:2px}
+  .meta{font-size:12px;color:#999;margin-bottom:40px;font-family:-apple-system,sans-serif}
+  h2{font-family:-apple-system,sans-serif;font-size:19px;font-weight:700;margin:48px 0 12px;padding-bottom:5px;border-bottom:2px solid #111}
+  h3{font-family:-apple-system,sans-serif;font-size:15px;font-weight:700;margin:24px 0 8px}
+  p{margin-bottom:10px}
+  ul,ol{margin:4px 0 10px 24px}
+  li{margin-bottom:3px}
+  strong{font-weight:700}
+  blockquote{border-left:3px solid #111;padding:10px 16px;margin:14px 0;font-family:-apple-system,sans-serif;font-size:14px;font-weight:600;line-height:1.5;background:#fafafa}
+  table{width:100%;border-collapse:collapse;margin:12px 0;font-size:13px;font-family:-apple-system,sans-serif}
+  th{text-align:left;padding:6px 8px;border-bottom:2px solid #111;font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:0.5px}
+  td{padding:6px 8px;border-bottom:1px solid #eee;vertical-align:top}
+  tr:hover td{background:#fafafa}
+  .callout{background:#f8f8f8;border-left:3px solid #111;padding:10px 14px;margin:14px 0;font-family:-apple-system,sans-serif;font-size:13px;line-height:1.55}
+  pre{font-family:'SF Mono',monospace;font-size:12px;background:#fafafa;padding:14px;margin:12px 0;border-left:3px solid #ddd;white-space:pre;overflow-x:auto;line-height:1.5;color:#333}
+  .wf{display:inline-block;width:200px;vertical-align:top;margin:8px}
+  .wf img{width:100%;border:2px solid #111;border-radius:20px;display:block}
+  .fn{font-size:11px;color:#999;margin-top:52px;padding-top:14px;border-top:2px solid #111;font-family:-apple-system,sans-serif}
+</style>
+</head>
+<body>
+
+<h1>Tab Thanh toán</h1>
+<div class="subtitle">Product Design Specification — Bill Payment</div>
+<div class="meta">Version 1.0 &middot; 22/03/2026 &middot; by Huy Kieu &copy; 2026</div>
+
+<!-- 1 -->
+<h2>1. Phân tích cạnh tranh</h2>
+
+<table>
+  <tr><th>App</th><th>Mô hình IA</th><th>Saved Billers</th><th>Auto-pay</th><th>Nhắc hạn</th></tr>
+  <tr><td><strong>MoMo</strong></td><td>Grid 4x theo danh mục → NCC → nhập mã KH. 50+ dịch vụ.</td><td>Có ("Đã lưu")</td><td>Có (hạn chế)</td><td>Push + badge</td></tr>
+  <tr><td><strong>ZaloPay</strong></td><td>Grid icon + tabs ngang lọc. 30+ dịch vụ.</td><td>Có ("Lưu mẫu") chips ngang</td><td>Có (adoption ~5-8%)</td><td>Push + banner</td></tr>
+  <tr><td><strong>Revolut</strong></td><td>Search-first. "Bills & Subscriptions" riêng. Scheduled payments.</td><td>Có (Scheduled)</td><td>Có (recurring/standing orders)</td><td>Email + push trước 3 ngày</td></tr>
+  <tr><td><strong>Monzo</strong></td><td>Bills tab riêng. Group theo Direct Debit vs Standing Order. "Bills Pot" pattern.</td><td>Direct Debit = auto-save</td><td>Có (native UK Direct Debit)</td><td>Smart notification trước 1 ngày</td></tr>
+  <tr><td><strong>Grab</strong></td><td>List danh mục dọc, từng bước. 15+ dịch vụ.</td><td>Có (recent)</td><td>Không</td><td>Không</td></tr>
+</table>
+
+<h3>Pattern đáng học</h3>
+
+<table>
+  <tr><th>Pattern</th><th>App dùng</th><th>Phù hợp VSP?</th></tr>
+  <tr><td><strong>Urgency-first</strong> — Hoá đơn sắp hạn lên đầu</td><td>MoMo, Monzo</td><td>Có — nhu cầu VN</td></tr>
+  <tr><td><strong>Saved-first</strong> — "Your bills" là section chính</td><td>Monzo</td><td>Có — returning user</td></tr>
+  <tr><td><strong>Batch payment</strong> — Chọn nhiều hoá đơn, trả 1 lần</td><td>Chưa ai làm tốt</td><td><strong>Cơ hội lớn cho VSP</strong></td></tr>
+  <tr><td><strong>Bills Pot</strong> — Tách tiền hoá đơn ra ví riêng</td><td>Monzo</td><td>Không (v1)</td></tr>
+  <tr><td><strong>Auto-pay simplified</strong> — 2-tap setup</td><td>Revolut</td><td>Có — hiện VN adoption chỉ 5-10%</td></tr>
+</table>
+
+<!-- 2 -->
+<h2>2. Hành vi người dùng Việt Nam</h2>
+
+<h3>Top hoá đơn thanh toán online</h3>
+
+<table>
+  <tr><th>#</th><th>Loại</th><th>Tần suất</th><th>% online</th><th>Ghi chú</th></tr>
+  <tr><td>1</td><td><strong>Điện</strong></td><td>Hàng tháng</td><td>~65%</td><td>EVN 63 triệu KH điện tử</td></tr>
+  <tr><td>2</td><td><strong>Nạp điện thoại</strong></td><td>2-4 lần/tháng</td><td>~80%</td><td>VAS phổ biến nhất VN</td></tr>
+  <tr><td>3</td><td><strong>Internet</strong></td><td>Hàng tháng</td><td>~45%</td><td>FPT, VNPT, Viettel</td></tr>
+  <tr><td>4</td><td><strong>Nước</strong></td><td>Hàng tháng</td><td>~35%</td><td>Phân mảnh theo tỉnh</td></tr>
+  <tr><td>5</td><td><strong>Học phí</strong></td><td>Hàng tháng/kỳ</td><td>~25%</td><td>Tập trung thành phố lớn</td></tr>
+  <tr><td>6</td><td><strong>Trả góp/Vay</strong></td><td>Hàng tháng</td><td>~30%</td><td>FE Credit, Home Credit, ngân hàng</td></tr>
+  <tr><td>7</td><td><strong>Bảo hiểm</strong></td><td>Hàng quý/năm</td><td>~15%</td><td>Tăng mạnh hậu COVID</td></tr>
+  <tr><td>8</td><td><strong>Phí chung cư</strong></td><td>Hàng tháng</td><td>~20%</td><td><strong>Đặc trưng Vinhomes — cơ hội VSP!</strong></td></tr>
+</table>
+
+<h3>Pain points</h3>
+
+<table>
+  <tr><th>Pain point</th><th>Mức độ</th><th>Giải pháp VSP</th></tr>
+  <tr><td><strong>Quên trả hoá đơn</strong> — 47% người VN trả trễ ít nhất 1 lần/năm</td><td>Cao</td><td>Nhắc hẹn + urgency banner đầu trang</td></tr>
+  <tr><td><strong>Không nhớ mã KH</strong> — phải tìm hoá đơn giấy</td><td>Cao</td><td>Saved billers + QR scan hoá đơn</td></tr>
+  <tr><td><strong>Quá nhiều bước</strong> — 7 tap cho 1 hoá đơn đã biết</td><td>Trung bình</td><td>3-tap từ saved: chip → confirm → auth</td></tr>
+  <tr><td><strong>Trả nhiều hoá đơn</strong> — phải làm từng cái một</td><td>Cao</td><td><strong>Batch payment</strong> — chọn nhiều, trả 1 lần</td></tr>
+  <tr><td><strong>Auto-pay setup khó</strong> — flow dài, cần liên kết NH</td><td>Cao</td><td>Simplified 2-tap toggle sau khi thanh toán</td></tr>
+</table>
+
+<h3>Số tap so sánh</h3>
+
+<table>
+  <tr><th></th><th>MoMo</th><th>ZaloPay</th><th>VSP hiện tại</th><th>VSP mục tiêu</th></tr>
+  <tr><td><strong>New bill</strong></td><td>7 tap</td><td>7 tap</td><td>7 tap</td><td>7 tap</td></tr>
+  <tr><td><strong>Saved bill</strong></td><td>4 tap</td><td>5 tap</td><td>5 tap</td><td><strong>3 tap</strong></td></tr>
+  <tr><td><strong>Thời gian (saved)</strong></td><td>~25s</td><td>~30s</td><td>~30s</td><td><strong>&lt;15s</strong></td></tr>
+</table>
+
+<!-- 3 -->
+<h2>3. Đề xuất IA</h2>
+
+<blockquote>Urgency-first + Saved-first + Category browse. Returning user: 3 tap, &lt;15 giây. New user: onboarding banner "Thêm hoá đơn đầu tiên".</blockquote>
+
+<h3>Cấu trúc màn hình chính</h3>
+
+<pre>
+Tab Thanh toán
+├── Search bar (sticky)
+├── [NEW USER] → Banner: "Thêm hoá đơn đầu tiên"
+├── [RETURNING] → Sắp đến hạn (1-2 urgent bills, countdown, 1-tap pay)
+├── Đã lưu (horizontal chips, max 5 + "Tất cả")
+├── Dịch vụ (grid 4 col — max 12 icons, 3 rows)
+│   ├── Row 1: Điện · Nước · Internet · Nạp ĐT
+│   ├── Row 2: Mua thẻ · Data 4G · Trả vay · Học phí
+│   └── Row 3: Vinhomes · VinFast · Vinschool · Thêm
+└── Gần đây (3 items + "Xem tất cả")
+</pre>
+
+<h3>Trạng thái màn hình</h3>
+
+<table>
+  <tr><th>Trạng thái</th><th>Điều kiện</th><th>Hiển thị</th></tr>
+  <tr><td><strong>New user</strong></td><td>0 saved, 0 giao dịch</td><td>Ẩn "Sắp đến hạn" + "Đã lưu". Hiện banner CTA.</td></tr>
+  <tr><td><strong>Có saved, chưa có bill</strong></td><td>Có saved nhưng chưa pending</td><td>Hiện "Đã lưu" chips. Ẩn urgency.</td></tr>
+  <tr><td><strong>Có hoá đơn urgent</strong></td><td>Hoá đơn trong 7 ngày</td><td>Urgency banner đầu trang, sort theo deadline.</td></tr>
+  <tr><td><strong>Quá hạn</strong></td><td>Hoá đơn đã quá hạn</td><td>Banner đỏ đậm: "Quá hạn X ngày".</td></tr>
+  <tr><td><strong>Nhiều urgent</strong></td><td>2+ hoá đơn sắp hạn</td><td>Horizontal swipe cards.</td></tr>
+</table>
+
+<h3>Anti-MoMo: Không làm grid lớn</h3>
+
+<table>
+  <tr><th>MoMo</th><th>VSP</th></tr>
+  <tr><td>20+ icons trên 1 màn hình</td><td>Max 12 icons (3 rows × 4)</td></tr>
+  <tr><td>Grid phẳng, không hierarchy</td><td>Urgency → Saved → Browse</td></tr>
+  <tr><td>Mỗi service = 1 icon riêng</td><td>Group "Hệ sinh thái" gom VH+VF+VS</td></tr>
+  <tr><td>Quảng cáo banner xen giữa</td><td>Không quảng cáo. Cross-sell tinh tế (result screen).</td></tr>
+</table>
+
+<!-- 4 -->
+<h2>4. Wireframe</h2>
+
+<div class="wf"><img src="wire-tab-tt.png?v=11" alt="Tab Thanh toán" /></div>
+
+<!-- 5 -->
+<h2>5. Hệ sinh thái Vingroup</h2>
+
+<table>
+  <tr><th>Dịch vụ</th><th>Loại hoá đơn</th><th>Tần suất</th><th>Priority</th></tr>
+  <tr><td><strong>Vinhomes</strong></td><td>Phí quản lý, gửi xe, tiện ích</td><td>Hàng tháng</td><td>P0</td></tr>
+  <tr><td><strong>VinFast</strong></td><td>Thuê/trả góp pin, sạc điện</td><td>Hàng tháng</td><td>P0</td></tr>
+  <tr><td><strong>Vinschool</strong></td><td>Học phí, trông sớm, sách</td><td>Hàng tháng/kỳ</td><td>P0</td></tr>
+  <tr><td><strong>XanhSM</strong></td><td>Phí di chuyển</td><td>Theo chuyến</td><td>P1</td></tr>
+  <tr><td><strong>VinPearl</strong></td><td>Booking, membership</td><td>Bất thường</td><td>P2</td></tr>
+  <tr><td><strong>VinMec</strong></td><td>Phí khám bệnh</td><td>Bất thường</td><td>P2</td></tr>
+</table>
+
+<div class="callout"><strong>Strategy:</strong> Hợp nhất VAS (Điện/Nước/Internet) + SBH (Vinhomes/VinFast/Vinschool) thành 1 Tab Thanh toán thống nhất. User không cần biết backend là API nào. Row 3 trong grid dành riêng cho hệ sinh thái Vingroup.</div>
+
+<!-- 6 -->
+<h2>6. Cross-sell trong Payment Flow</h2>
+
+<table>
+  <tr><th>Thời điểm</th><th>Cross-sell</th><th>UX Pattern</th></tr>
+  <tr><td><strong>Sau thanh toán thành công</strong></td><td>Sinh lời</td><td>"Tiền còn lại 2.5M — Gửi tiết kiệm tự động?"</td></tr>
+  <tr><td><strong>Khi xem hoá đơn</strong></td><td>Auto-pay</td><td>"Bật thanh toán tự động để không quên?"</td></tr>
+  <tr><td><strong>Thanh toán Vinhomes</strong></td><td>Hệ sinh thái</td><td>"Xem ưu đãi VinPearl cho cư dân?"</td></tr>
+  <tr><td><strong>Monthly summary</strong></td><td>Chi tiêu insight</td><td>"Tháng này trả 12M hoá đơn — Xem cách tiết kiệm"</td></tr>
+</table>
+
+<!-- 7 -->
+<h2>7. Metrics</h2>
+
+<table>
+  <tr><th>Metric</th><th>Benchmark</th><th>VSP Target</th></tr>
+  <tr><td><strong>Tab visit → hoàn thành thanh toán</strong></td><td>25-35%</td><td>40%</td></tr>
+  <tr><td><strong>Saved biller adoption</strong> (sau 3 tháng)</td><td>15-25%</td><td>40%</td></tr>
+  <tr><td><strong>Auto-pay setup rate</strong></td><td>5-10% (VN)</td><td>15%</td></tr>
+  <tr><td><strong>Thời gian thanh toán (saved)</strong></td><td>15-25s</td><td>&lt;15s</td></tr>
+  <tr><td><strong>Repeat payment rate</strong></td><td>70-80%/tháng</td><td>85%</td></tr>
+  <tr><td><strong>Bills/user/tháng</strong></td><td>1.5-2.5</td><td>3+ (Vinhomes ecosystem thêm 1-2 bills)</td></tr>
+  <tr><td><strong>Batch payment adoption</strong></td><td>N/A (mới)</td><td>20%</td></tr>
+</table>
+
+<!-- 8 -->
+<h2>8. Phasing</h2>
+
+<table>
+  <tr><th>Phase</th><th>Nội dung</th><th>Timeline</th></tr>
+  <tr><td><strong>Phase 1</strong></td><td>Hợp nhất UI: 1 Tab với urgency + saved + grid 12 icons</td><td>2-3 tuần</td></tr>
+  <tr><td><strong>Phase 2</strong></td><td>Batch payment cho tất cả bill types</td><td>1-2 tuần</td></tr>
+  <tr><td><strong>Phase 3</strong></td><td>Auto-pay simplified + cross-sell Sinh lời</td><td>2-3 tuần</td></tr>
+  <tr><td><strong>Phase 4</strong></td><td>Smart features: QR scan, predictive amount, personalized grid</td><td>3-4 tuần</td></tr>
+</table>
+
+<div class="fn">V-Smart Pay — Tab Thanh toán Design Spec v1.0 &mdash; 22/03/2026 &mdash; by Huy Kieu &copy; 2026<br>Sources: MoMo, ZaloPay, Revolut, Monzo, Grab app analysis &middot; Sensor Tower benchmarks &middot; EVN statistics &middot; VSP codebase (VAS + SBH modules)</div>
+
+</body>
+</html>
