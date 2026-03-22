@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VSP — Information Architecture 2026 — Product Design Specification v2.0</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:Georgia,'Times New Roman',serif; background:#fff; color:#111; line-height:1.8; max-width:720px; margin:0 auto; padding:48px 24px 120px; font-size:15px; }
+  h1 { font-family:-apple-system,'Helvetica Neue',sans-serif; font-size:26px; font-weight:800; margin-bottom:2px; letter-spacing:-0.3px; }
+  .subtitle { font-family:-apple-system,sans-serif; font-size:14px; font-weight:600; color:#555; margin-bottom:2px; }
+  .meta { font-size:12px; color:#999; margin-bottom:48px; font-family:-apple-system,sans-serif; }
+  h2 { font-family:-apple-system,sans-serif; font-size:18px; font-weight:700; margin:56px 0 14px; padding-bottom:6px; border-bottom:2px solid #111; }
+  h3 { font-family:-apple-system,sans-serif; font-size:15px; font-weight:700; margin:32px 0 10px; }
+  h4 { font-family:-apple-system,sans-serif; font-size:14px; font-weight:700; margin:20px 0 8px; }
+  p { margin-bottom:14px; }
+  ul, ol { margin:8px 0 14px 24px; }
+  li { margin-bottom:6px; }
+  strong { font-weight:700; }
+  em { font-style:italic; color:#555; }
+  pre { font-family:'SF Mono','Fira Code','Consolas',monospace; font-size:12px; background:#fafafa; padding:16px 20px; margin:14px 0; border-left:3px solid #ddd; white-space:pre; overflow-x:auto; line-height:1.7; color:#333; }
+  table { width:100%; border-collapse:collapse; margin:16px 0; font-size:13px; font-family:-apple-system,sans-serif; }
+  th { text-align:left; padding:8px 10px; border-bottom:2px solid #111; font-weight:700; font-size:11px; text-transform:uppercase; letter-spacing:0.5px; white-space:nowrap; }
+  td { padding:8px 10px; border-bottom:1px solid #eee; vertical-align:top; }
+  tr:hover td { background:#fafafa; }
+  .section-num { font-family:-apple-system,sans-serif; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:1.5px; color:#999; margin:56px 0 -8px; display:block; }
+  .callout { background:#f8f8f8; border-left:3px solid #111; padding:12px 16px; margin:16px 0; font-family:-apple-system,sans-serif; font-size:13px; line-height:1.6; }
+  .callout strong { color:#111; }
+  .tag { font-family:-apple-system,sans-serif; font-size:10px; color:#888; background:#f0f0f0; padding:2px 6px; border-radius:3px; margin-left:6px; white-space:nowrap; }
+  .phase-bar { display:flex; gap:0; margin:20px 0; font-family:-apple-system,sans-serif; font-size:12px; font-weight:600; }
+  .phase-bar div { padding:8px 0; text-align:center; }
+  .phase-current { background:#111; color:#fff; }
+  .phase-future { background:#f0f0f0; color:#888; }
+  .phase-new { background:#333; color:#fff; }
+  .ia { padding:4px 10px; margin:3px 0; border-radius:6px; font-size:12px; font-weight:600; display:inline-block; font-family:-apple-system,sans-serif; }
+  .ia-0 { background:#111; color:#fff; font-size:13px; }
+  .ia-1 { background:#444; color:#fff; }
+  .ia-2 { background:#f0f0f0; color:#333; margin-left:24px; }
+  .ia-3 { background:#fff; border:1px solid #ddd; color:#888; margin-left:48px; font-weight:400; font-size:11px; }
+  .footnote { font-size:12px; color:#888; margin-top:56px; padding-top:16px; border-top:2px solid #111; font-family:-apple-system,sans-serif; line-height:1.6; }
+  .wireframe-row { display:flex; gap:24px; margin:24px 0; justify-content:center; flex-wrap:wrap; }
+  .wireframe-frame { width:195px; flex-shrink:0; }
+  .wireframe-frame .frame-label { font-family:-apple-system,sans-serif; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:#999; text-align:center; margin-bottom:8px; }
+  .wireframe-frame .frame-border { border:2px solid #111; border-radius:24px; overflow:hidden; height:422px; position:relative; background:#fff; }
+  .wireframe-frame iframe { width:390px; height:844px; border:none; transform:scale(0.5); transform-origin:top left; pointer-events:none; }
+  .page-break { page-break-before:always; }
+  .kpi-highlight { font-family:-apple-system,sans-serif; font-size:28px; font-weight:800; color:#111; display:block; margin:8px 0; }
+  .kpi-label { font-family:-apple-system,sans-serif; font-size:11px; text-transform:uppercase; letter-spacing:1px; color:#999; }
+  .risk-high { color:#111; font-weight:700; }
+  .risk-med { color:#555; font-weight:600; }
+  .risk-low { color:#999; }
+  hr { border:none; border-top:1px solid #eee; margin:40px 0; }
+  @media print {
+    body { padding:24px; font-size:13px; }
+    h2 { page-break-before:always; margin-top:24px; }
+    h2:first-of-type { page-break-before:avoid; }
+    pre { font-size:10px; }
+    table { font-size:11px; }
+    .no-break { page-break-inside:avoid; }
+  }
+</style>
+</head>
+<body>
+
+<h1>V-Smart Pay<br>Information Architecture 2026</h1>
+<div class="subtitle">Product Design Specification</div>
+<div class="meta">Version 2.0 &middot; 21/03/2026 &middot; Product Design Team &middot; Internal &mdash; C-level &amp; Product</div>
+
+<!-- ═══════════════════ 1. EXECUTIVE SUMMARY ═══════════════════ -->
+
+<span class="section-num">Section 1 &mdash; 1 trang</span>
+<h2>1. Executive Summary</h2>
+
+<p><strong>Vision:</strong> V-Smart Pay chuyển từ ví thanh toán đơn thuần sang nền tảng quản lý tài chính cá nhân tích hợp hệ sinh thái Vingroup &mdash; nơi mọi giao dịch tiền bạc trong đời sống người dùng Việt Nam đều chạy qua một điểm duy nhất.</p>
+
+<h3>3 quyết định chiến lược</h3>
+
+<table>
+  <tr><th>#</th><th>Quyết định</th><th>Lý do</th><th>Impact</th></tr>
+  <tr><td>1</td><td>Giải phóng tab Chuyển tiền &rarr; thay bằng tab <strong>Thanh toán</strong></td><td>1 action không xứng chiếm 1 tab; ~20 dịch vụ mới cần nhà</td><td>Mở khoá monetization từ transaction fees</td></tr>
+  <tr><td>2</td><td>Thêm tab <strong>Tài chính</strong> (Q3) thay tab Giao dịch</td><td>6 product lines cần destination riêng</td><td>Tạo AUM engine &mdash; revenue driver dài hạn</td></tr>
+  <tr><td>3</td><td>Thêm tab <strong>Ưu đãi</strong> (Q4) thay tab Tài khoản</td><td>V-Point + Voucher + HST deals đủ weight; TK lên avatar</td><td>Retention + partner revenue + HST lock-in</td></tr>
+</table>
+
+<h3>Phased Navigation Evolution</h3>
+
+<table>
+  <tr><th>Phase</th><th>Timeline</th><th>Bottom Nav</th><th>Thay đổi</th></tr>
+  <tr><td><strong>Phase 1</strong></td><td>30/04/2026</td><td>Trang chủ &middot; <strong>Thanh toán</strong> &middot; QR &middot; Giao dịch &middot; Tài khoản</td><td>Chuyển tiền &rarr; Thanh toán</td></tr>
+  <tr><td><strong>Phase 2</strong></td><td>Q3 2026</td><td>Trang chủ &middot; Thanh toán &middot; QR &middot; <strong>Tài chính</strong> &middot; Tài khoản</td><td>Giao dịch &rarr; Tài chính</td></tr>
+  <tr><td><strong>Phase 3</strong></td><td>Q4 2026</td><td>Trang chủ &middot; Thanh toán &middot; QR &middot; Tài chính &middot; <strong>Ưu đãi</strong></td><td>Tài khoản &rarr; Ưu đãi</td></tr>
+</table>
+
+<div class="callout">
+  <strong>Nguyên tắc xuyên suốt:</strong> Mỗi phase chỉ đổi 1 tab. Backward compatible &mdash; tap count cho mọi action cũ không tăng. Tab mới chỉ xuất hiện khi đủ content thực tế, không bao giờ tạo tab trống.
+</div>
+
+<!-- ═══════════════════ 2. BUSINESS CONTEXT ═══════════════════ -->
+
+<span class="section-num">Section 2 &mdash; 2 trang</span>
+<h2>2. Business Context &amp; Objectives</h2>
+
+<h3>2.1 Hiện trạng sản phẩm</h3>
+
+<p>V-Smart Pay v1.0.6 là ví điện tử thuần thanh toán, thuộc hệ sinh thái Vingroup. App chưa mass launch, đang ở giai đoạn early adopters.</p>
+
+<table>
+  <tr><th>Chỉ số</th><th>Giá trị hiện tại</th></tr>
+  <tr><td>Bottom nav</td><td>5 tabs: Trang chủ &middot; Chuyển tiền &middot; QR &middot; Giao dịch &middot; Tài khoản</td></tr>
+  <tr><td>Số features</td><td>~12 (nạp/rút/chuyển/nhận, QR, lịch sử, hóa đơn cơ bản)</td></tr>
+  <tr><td>Revenue stream</td><td>Chỉ transaction fees từ chuyển tiền + thanh toán</td></tr>
+  <tr><td>Điểm yếu IA</td><td>Tab CT = 1 action chiếm 1 slot; không có destination cho tài chính/ưu đãi</td></tr>
+</table>
+
+<h3>2.2 Kế hoạch hoạt động 2026</h3>
+
+<p>Thêm ~50 features mới trong 4 mảng kinh doanh:</p>
+
+<table>
+  <tr><th>Mảng</th><th>Số features</th><th>Timeline</th><th>Revenue model</th></tr>
+  <tr><td><strong>Thanh toán mở rộng</strong></td><td>~20 dịch vụ</td><td>30/4 &rarr; Q3</td><td>Transaction fees 0.5-1.5%</td></tr>
+  <tr><td><strong>Tài chính &amp; Đầu tư</strong></td><td>6 product lines</td><td>Q2 &rarr; Q4</td><td>AUM fees + BH premium + lending margin</td></tr>
+  <tr><td><strong>Ưu đãi &amp; Loyalty</strong></td><td>V-Point, voucher, HST deals</td><td>30/4 &rarr; Q4</td><td>Partner commission 3-8% + V-Point breakage</td></tr>
+  <tr><td><strong>HST Vingroup</strong></td><td>XanhSM, VHR, VinPearl, VinFast...</td><td>T3 &rarr; T8</td><td>Ecosystem lock-in</td></tr>
+</table>
+
+<h3>2.3 Mục tiêu chiến lược IA</h3>
+
+<table>
+  <tr><th>Mục tiêu</th><th>Đo lường</th><th>Target</th></tr>
+  <tr><td>Mỗi feature mới có "nhà" rõ ràng</td><td>Zero orphaned features</td><td>100%</td></tr>
+  <tr><td>Không phá vỡ thói quen hiện tại</td><td>Core Task Completion Rate</td><td>Không drop &gt;10%</td></tr>
+  <tr><td>Revenue diversification</td><td>Finance revenue share</td><td>&ge;25% cuối 2026</td></tr>
+  <tr><td>Ecosystem stickiness</td><td>HST cross-sell conversion</td><td>&ge;8% từ in-app</td></tr>
+</table>
+
+<h3>2.4 Ràng buộc</h3>
+
+<ul>
+  <li><strong>Chưa mass launch</strong> &rarr; có thể thay đổi nav mạnh hơn app đã có 10M users</li>
+  <li><strong>Regulatory:</strong> Ví điện tử, không phải ngân hàng &mdash; giới hạn sản phẩm tài chính</li>
+  <li><strong>Vingroup dependency:</strong> Timeline HST phụ thuộc đối tác nội bộ</li>
+  <li><strong>Resource:</strong> 1 design team, multiple engineering squads &mdash; phải phase để không overload</li>
+</ul>
+
+<!-- ═══════════════════ 3. USER RESEARCH ═══════════════════ -->
+
+<span class="section-num">Section 3 &mdash; 3-4 trang</span>
+<h2>3. User Research &amp; Mental Models</h2>
+
+<h3>3.1 Jobs-to-be-Done Framework</h3>
+
+<p>Thay vì personas (dễ trở thành fiction), document này dùng <strong>JTBD</strong> &mdash; tập trung vào việc user thuê app làm gì.</p>
+
+<h4>Core Job 1: "Tiền di chuyển" &mdash; Move money quickly</h4>
+
+<table>
+  <tr><th style="width:140px">Thuộc tính</th><th>Chi tiết</th></tr>
+  <tr><td><strong>Job statement</strong></td><td>Khi tôi cần chuyển/nạp/rút tiền, tôi muốn hoàn thành trong &le;3 tap</td></tr>
+  <tr><td><strong>Sub-jobs</strong></td><td>Chuyển tiền P2P &middot; Nạp tiền vào ví &middot; Rút về ngân hàng &middot; Nhận tiền qua QR</td></tr>
+  <tr><td><strong>Tần suất</strong></td><td>5-10 lần/tuần</td></tr>
+  <tr><td><strong>Pain hiện tại</strong></td><td>Chuyển tiền nằm ở tab riêng nhưng mental model = quick action (ngang hàng Nạp/Rút) &rarr; user phải tìm</td></tr>
+  <tr><td><strong>Evidence</strong></td><td>User tap Nạp/Rút trên Home nhưng không thấy Chuyển tiền ở cùng vị trí</td></tr>
+  <tr><td><strong>Giải pháp IA</strong></td><td>Đưa Chuyển tiền lên Home quick actions cạnh Nạp/Rút/Nhận</td></tr>
+</table>
+
+<h4>Core Job 2: "Trả tiền cho dịch vụ" &mdash; Pay bills &amp; services</h4>
+
+<table>
+  <tr><th style="width:140px">Thuộc tính</th><th>Chi tiết</th></tr>
+  <tr><td><strong>Job statement</strong></td><td>Khi tôi cần trả hóa đơn, tôi muốn tìm đúng nhà cung cấp và thanh toán 1 chỗ</td></tr>
+  <tr><td><strong>Sub-jobs</strong></td><td>Trả HĐ (điện/nước/net) &middot; Nạp ĐT &middot; Trả dịch vụ HST &middot; Mua vé &middot; Auto-pay</td></tr>
+  <tr><td><strong>Tần suất</strong></td><td>3-5 lần/tháng</td></tr>
+  <tr><td><strong>Pain hiện tại</strong></td><td>~20 dịch vụ mới sắp ship nhưng chỉ có 1 banner + 1 sub-page</td></tr>
+  <tr><td><strong>Evidence</strong></td><td>Hóa đơn đã có nhưng chôn sâu, conversion thấp vì không có entry point rõ</td></tr>
+  <tr><td><strong>Giải pháp IA</strong></td><td>Tab Thanh toán riêng &mdash; search, categories, saved billers, HST grid</td></tr>
+</table>
+
+<h4>Core Job 3: "Tiền sinh ra tiền" &mdash; Grow &amp; protect wealth</h4>
+
+<table>
+  <tr><th style="width:140px">Thuộc tính</th><th>Chi tiết</th></tr>
+  <tr><td><strong>Job statement</strong></td><td>Khi tôi có tiền nhàn rỗi, tôi muốn sinh lời hoặc bảo vệ tài sản trong app</td></tr>
+  <tr><td><strong>Sub-jobs</strong></td><td>Sinh lời tự động &middot; Đầu tư BĐS &middot; Mua BH &middot; Mua CCQ &middot; BNPL &middot; Vay trả góp</td></tr>
+  <tr><td><strong>Tần suất</strong></td><td>2-4 lần/tháng (check), 1-2 lần/tháng (action)</td></tr>
+  <tr><td><strong>Pain hiện tại</strong></td><td>Không có destination &mdash; SL/BH/BĐS sẽ phải nằm rải rác trên Home</td></tr>
+  <tr><td><strong>Evidence</strong></td><td>User có balance &gt;5M liên tục không biết app có sinh lời</td></tr>
+  <tr><td><strong>Giải pháp IA</strong></td><td>Tab Tài chính (Q3) &mdash; tổng tài sản + product cards + portfolio</td></tr>
+</table>
+
+<h3>3.2 Three Mental Modes</h3>
+
+<table>
+  <tr><th>Mental Mode</th><th>Entry Point</th><th>Pattern</th><th>Thời gian</th><th>Tần suất</th></tr>
+  <tr><td><strong>"Xong nhanh"</strong></td><td>Home quick actions</td><td>Tap &rarr; flow &rarr; done</td><td>15-30s</td><td>5-10x/tuần</td></tr>
+  <tr><td><strong>"Trả cho ai đó"</strong></td><td>Tab Thanh toán</td><td>Browse &rarr; pick &rarr; pay</td><td>1-3 phút</td><td>3-5x/tháng</td></tr>
+  <tr><td><strong>"Quản lý tiền"</strong></td><td>Tab Tài chính</td><td>Review &rarr; action</td><td>3-10 phút</td><td>2-4x/tháng</td></tr>
+</table>
+
+<pre>
+  USER MENTAL MODEL
+  ┌────────────┬────────────────┬────────────────────┐
+  │ Mode 1     │ Mode 2         │ Mode 3             │
+  │ Xong nhanh │ Trả cho ai đó  │ Quản lý tiền       │
+  ├────────────┼────────────────┼────────────────────┤
+  │ Home       │ Tab Thanh toán │ Tab Tài chính      │
+  │ Quick Acts │ Browse → Pay   │ Review → Action    │
+  ├────────────┼────────────────┼────────────────────┤
+  │ 15-30s     │ 1-3 min        │ 3-10 min           │
+  │ 5-10x/week │ 3-5x/month     │ 2-4x/month         │
+  └────────────┴────────────────┴────────────────────┘
+                + Tab Ưu đãi (cross-cutting: tiết kiệm khi chi tiêu)
+</pre>
+
+<h3>3.3 HST Persona vs General Persona</h3>
+
+<table>
+  <tr><th>Dimension</th><th>HST Persona</th><th>General Persona</th></tr>
+  <tr><td><strong>Profile</strong></td><td>Cư dân Vinhomes, chủ xe VinFast, KH VinPearl</td><td>User phổ thông VN, đang dùng MoMo/ZaloPay</td></tr>
+  <tr><td><strong>Core jobs</strong></td><td>Trả dịch vụ HST + BH xe + đầu tư BĐS</td><td>Chuyển tiền + trả HĐ + nạp ĐT</td></tr>
+  <tr><td><strong>AUM potential</strong></td><td>Cao &mdash; đã trust Vingroup</td><td>Thấp ban đầu &mdash; cần prove value</td></tr>
+  <tr><td><strong>IA priority</strong></td><td>HST trong Thanh toán + BĐS/BH trong Tài chính</td><td>Quick actions + HĐ tiện ích</td></tr>
+  <tr><td><strong>Retention</strong></td><td>Ecosystem lock-in</td><td>Ưu đãi + convenience</td></tr>
+</table>
+
+<!-- ═══════════════════ 4. CURRENT STATE ═══════════════════ -->
+
+<span class="section-num">Section 4 &mdash; 2 trang</span>
+<h2>4. Current State Analysis</h2>
+
+<h3>4.1 Cấu trúc hiện tại (v1.0.6)</h3>
+
+<pre>Bottom Nav:   Trang chủ  ·  Chuyển tiền  ·  QR  ·  Giao dịch  ·  Tài khoản</pre>
+
+<h3>4.2 Đánh giá từng tab</h3>
+
+<table>
+  <tr><th>Tab</th><th>Nội dung</th><th>Tần suất</th><th>Đánh giá</th><th>Quyết định</th></tr>
+  <tr><td><strong>Trang chủ</strong></td><td>Balance + quick actions + GD gần đây</td><td>Mỗi session</td><td>Hoạt động tốt</td><td><strong>Giữ + nâng cấp</strong></td></tr>
+  <tr><td><strong>Chuyển tiền</strong></td><td>Chọn ví/NH &rarr; flow chuyển</td><td>2-3x/tuần</td><td>1 action chiếm 1 tab &mdash; lãng phí slot</td><td><strong>Thay bằng Thanh toán</strong></td></tr>
+  <tr><td><strong>QR</strong></td><td>Mã nhận tiền VietQR</td><td>Mỗi session</td><td>Standard, tốt</td><td><strong>Giữ</strong></td></tr>
+  <tr><td><strong>Giao dịch</strong></td><td>Lịch sử chi tiết + filter</td><td>1-2x/tuần</td><td>Lịch sử = context ví, không phải destination</td><td><strong>Merge vào Home (Q3)</strong></td></tr>
+  <tr><td><strong>Tài khoản</strong></td><td>Profile + bảo mật</td><td>1x/tháng</td><td>Tần suất thấp nhất</td><td><strong>Lên avatar (Q4)</strong></td></tr>
+</table>
+
+<h3>4.3 Annotated Current State</h3>
+
+<pre>
+┌─────────────────────────────────────┐
+│ Xin chào                    [Bell] │
+│                                     │
+│ ┌─────────────────────────────────┐ │
+│ │ Ví V-Smart Pay                  │ │
+│ │ 14.328.000 đ              [Eye]│ │
+│ └─────────────────────────────────┘ │
+│                                     │
+│  [Nạp]  [Rút]  [Nhận]  [Thanh toán]│ ← CT THIẾU ở đây
+│                                     │   (nằm ở tab riêng — sai mental model)
+│                                     │
+│ Giao dịch gần đây          Tất cả  │
+│  CONG TY DIEN LUC HN    -38.000    │
+│  HO THI MINH ANH       -100.000    │
+│                                     │
+│ ┌─────────────────────────────────┐ │
+│ │ [Promo banner — đang chiếm      │ │ ← Không có chỗ cho SL/BH/BĐS
+│ │  không gian cho features mới]   │ │   khi ship 50 features
+│ └─────────────────────────────────┘ │
+│                                     │
+│ [TC] [CT]  [QR]  [GD] [TK]         │
+│       ↑              ↑    ↑        │
+│    Lãng phí        Sẽ   Sẽ        │
+│    slot            merge move      │
+└─────────────────────────────────────┘
+</pre>
+
+<h3>4.4 Vấn đề cần giải quyết</h3>
+
+<table>
+  <tr><th>#</th><th>Vấn đề</th><th>Severity</th><th>Phase</th></tr>
+  <tr><td>1</td><td>Chuyển tiền sai vị trí (tab thay vì quick action)</td><td class="risk-high">High</td><td>Phase 1</td></tr>
+  <tr><td>2</td><td>Không có destination cho ~20 dịch vụ thanh toán mới</td><td class="risk-high">Critical</td><td>Phase 1</td></tr>
+  <tr><td>3</td><td>Không có destination cho 6 product lines tài chính</td><td class="risk-high">Critical</td><td>Phase 2</td></tr>
+  <tr><td>4</td><td>Home thiếu widget architecture cho cross-sell</td><td class="risk-med">Medium</td><td>Phase 1-2</td></tr>
+  <tr><td>5</td><td>Tab TK chiếm slot nhưng dùng 1 lần/tháng</td><td class="risk-low">Low</td><td>Phase 3</td></tr>
+</table>
+
+<!-- ═══════════════════ 5. COMPETITIVE ═══════════════════ -->
+
+<span class="section-num">Section 5 &mdash; 3 trang</span>
+<h2>5. Competitive Analysis</h2>
+
+<h3>5.1 Bảng so sánh Navigation</h3>
+
+<table>
+  <tr><th>App</th><th>Nav hiện tại</th><th>Khi thêm Wealth tab</th><th>Promo / Utility</th><th>Key takeaway</th></tr>
+  <tr><td><strong>Cash App</strong></td><td>Home &middot; Pay &middot; Activity &middot; Banking &middot; Invest</td><td>Invest 2019 (sau 6 năm)</td><td>90/10 utility</td><td>Profile = avatar. 1 tab = 1 job.</td></tr>
+  <tr><td><strong>Revolut 2026</strong></td><td>Home &middot; Payments &middot; Hub &middot; Crypto &middot; More</td><td>Crypto 2021 (&gt;3M users)</td><td>85/15 utility</td><td>Hub = catch-all. Payments = all outgoing.</td></tr>
+  <tr><td><strong>Monzo</strong></td><td>Home &middot; Payments &middot; Analytics &middot; Browse</td><td>Chưa tách &mdash; trong Browse</td><td>95/5 utility</td><td>Analytics thay History. Browse = discovery.</td></tr>
+  <tr><td><strong>ZaloPay</strong></td><td>Trang chủ &middot; Ví &middot; QR &middot; Ưu đãi &middot; Cá nhân</td><td>Chưa có Finance tab</td><td>40/60 promo</td><td>Ưu đãi tab = retention play.</td></tr>
+  <tr><td><strong>MoMo</strong></td><td>Trang chủ &middot; Ví &middot; QR &middot; Feed &middot; Tài khoản</td><td>Chưa tách &mdash; grid trên Home</td><td>30/70 promo</td><td>70% promo &rarr; engagement drop 40%.</td></tr>
+  <tr><td><strong>OKX</strong></td><td>Home &middot; Trade &middot; Discover &middot; Wallet &middot; Assets</td><td>Trade từ ngày 1</td><td>80/20 utility</td><td>Data-dense. Portfolio = trust builder.</td></tr>
+</table>
+
+<h3>5.2 Pattern Analysis</h3>
+
+<p><strong>Pattern 1: Tab xuất hiện khi đủ weight.</strong> Cash App: 6 năm mới thêm Invest. Revolut: 3 năm mới tách Crypto. Bài học: <strong>không tạo tab trống.</strong></p>
+
+<p><strong>Pattern 2: Profile không cần tab.</strong> Cash App, Revolut, Monzo dùng avatar/icon. ZaloPay, MoMo vẫn giữ tab. Bài học: <strong>app tài chính mature đều move Profile lên avatar.</strong></p>
+
+<p><strong>Pattern 3: Home ratio quyết định trust.</strong> Top apps: 85-95% utility. MoMo 30% &rarr; user than phiền. Bài học: <strong>VSP target 70/30, lý tưởng 80/20.</strong></p>
+
+<p><strong>Pattern 4: History merge trend.</strong> Revolut: History trong từng account. Monzo: Analytics thay History. Bài học: <strong>History đang merge vào context, không cần tab riêng.</strong></p>
+
+<h3>5.3 Competitive Positioning</h3>
+
+<pre>
+                    Utility-first
+                        |
+              Revolut * | * Cash App
+                        |
+     Monzo *            |            * OKX
+                        |
+  ─────────────────── * VSP (target) ──────────
+  Simple                |              Complex
+                        |
+         ZaloPay *      |
+                        |     * MoMo
+                        |
+                    Promo-heavy
+</pre>
+
+<p>VSP target: <strong>Utility-first, moderate complexity</strong> &mdash; giữa Revolut (full bank) và Cash App (simple), phức tạp hơn ZaloPay nhưng sạch hơn MoMo.</p>
+
+<!-- ═══════════════════ 6. PROPOSED IA ═══════════════════ -->
+
+<span class="section-num">Section 6 &mdash; 4 trang</span>
+<h2>6. Proposed Information Architecture</h2>
+
+<h3>6.1 Nguyên tắc thiết kế IA</h3>
+
+<table>
+  <tr><th>#</th><th>Nguyên tắc</th><th>Giải thích</th><th>Test</th></tr>
+  <tr><td>1</td><td><strong>Modular, không monolith</strong></td><td>Mỗi tab = 1 module độc lập</td><td>Xoá 1 tab &rarr; app vẫn functional?</td></tr>
+  <tr><td>2</td><td><strong>1 tab = 1 job</strong></td><td>Nếu 1 tab làm 2 việc &rarr; tách</td><td>Tab description &le;5 từ?</td></tr>
+  <tr><td>3</td><td><strong>Backward compatible</strong></td><td>Đổi nav không tăng tap count action cũ</td><td>Tap count audit trước/sau</td></tr>
+  <tr><td>4</td><td><strong>Home = status, Tab = action</strong></td><td>Widget show trạng thái, tap &rarr; tab</td><td>Không duplicate functionality</td></tr>
+  <tr><td>5</td><td><strong>Tab khi đủ weight</strong></td><td>&ge;3 product lines sẵn sàng</td><td>Zero empty tabs</td></tr>
+</table>
+
+<h3>6.2 Bottom Nav Evolution</h3>
+
+<pre>
+HIỆN TẠI (v1.0.6)
+┌────────┬────────────┬────┬──────────┬──────────┐
+│Trang   │ Chuyển     │ QR │ Giao     │ Tài      │
+│chủ     │ tiền       │    │ dịch     │ khoản    │
+└────────┴────────────┴────┴──────────┴──────────┘
+
+PHASE 1 (30/4/2026) — Thay 1 tab
+┌────────┬────────────┬────┬──────────┬──────────┐
+│Trang   │ Thanh    * │ QR │ Giao     │ Tài      │
+│chủ     │ toán       │    │ dịch     │ khoản    │
+└────────┴────────────┴────┴──────────┴──────────┘
+
+PHASE 2 (Q3/2026) — Thay 1 tab
+┌────────┬────────────┬────┬──────────┬──────────┐
+│Trang   │ Thanh      │ QR │ Tài    * │ Tài      │
+│chủ     │ toán       │    │ chính    │ khoản    │
+└────────┴────────────┴────┴──────────┴──────────┘
+
+PHASE 3 (Q4/2026) — Thay 1 tab
+┌────────┬────────────┬────┬──────────┬──────────┐
+│Trang   │ Thanh      │ QR │ Tài      │ Ưu     * │
+│chủ     │ toán       │    │ chính    │ đãi      │
+└────────┴────────────┴────┴──────────┴──────────┘
+* = tab mới trong phase đó
+</pre>
+
+<h3>6.3 Full IA Tree (End State &mdash; Q4 2026)</h3>
+
+<div style="margin:20px 0">
+  <div><span class="ia ia-0">Trang chủ</span></div>
+  <div><span class="ia ia-2">Wallet Card (balance, ẩn/hiện, tap &rarr; lịch sử)</span></div>
+  <div><span class="ia ia-2">Quick Actions: Nạp &middot; Rút &middot; Chuyển &middot; Nhận</span></div>
+  <div><span class="ia ia-2">Utility Widgets (70%)</span></div>
+  <div><span class="ia ia-3">SL status &middot; BH active &middot; Upcoming bills &middot; GD gần đây</span></div>
+  <div><span class="ia ia-2">Promo Widget (30%, 1 max, dismissible)</span></div>
+</div>
+
+<div style="margin:20px 0">
+  <div><span class="ia ia-0">Thanh toán</span></div>
+  <div><span class="ia ia-2">Search bar</span></div>
+  <div><span class="ia ia-2">Category tabs: Tất cả &middot; HĐ &middot; HST &middot; Vé</span></div>
+  <div><span class="ia ia-1">Hóa đơn tiện ích</span></div>
+  <div><span class="ia ia-3">Điện &middot; Nước &middot; Internet &middot; Data &middot; Nạp ĐT &middot; Mua thẻ &middot; Học phí &middot; Vé phim</span></div>
+  <div><span class="ia ia-1">Hệ sinh thái Vingroup</span></div>
+  <div><span class="ia ia-3">XanhSM &middot; VHR &middot; VinPearl &middot; VinFast &middot; Vinschool &middot; VinUni &middot; Vincom &middot; VinMec</span></div>
+  <div><span class="ia ia-2">Saved billers</span></div>
+  <div><span class="ia ia-2">Auto-pay &amp; nhắc lịch</span></div>
+</div>
+
+<div style="margin:20px 0">
+  <div><span class="ia ia-0">QR (center)</span></div>
+  <div><span class="ia ia-2">Quét QR thanh toán &middot; Mã nhận tiền &middot; QR chuyển tiền</span></div>
+</div>
+
+<div style="margin:20px 0">
+  <div><span class="ia ia-0">Tài chính</span></div>
+  <div><span class="ia ia-2">Tổng tài sản (ví + SL + đầu tư)</span></div>
+  <div><span class="ia ia-1">Sinh lời tự động</span><span class="tag">30/6</span></div>
+  <div><span class="ia ia-3">Kích hoạt &middot; Nạp/Rút &middot; Dashboard &middot; Lịch sử &middot; Huỷ</span></div>
+  <div><span class="ia ia-1">Đầu tư BĐS mã hoá</span><span class="tag">30/4 &rarr; 4/12</span></div>
+  <div><span class="ia ia-3">Dự án &middot; Chi tiết &middot; Đặt mua &middot; Settlement &middot; Trao đổi</span></div>
+  <div><span class="ia ia-1">Bảo hiểm</span><span class="tag">20/4 &rarr; 30/6</span></div>
+  <div><span class="ia ia-3">Xe máy &middot; Ô tô &middot; Du lịch &middot; Sức khỏe &mdash; Mua &middot; Quản lý HĐ</span></div>
+  <div><span class="ia ia-1">Chứng chỉ quỹ</span><span class="tag">30/9</span></div>
+  <div><span class="ia ia-3">Mở TK &middot; Mua &middot; Bán &middot; Portfolio &middot; Hồ sơ</span></div>
+  <div><span class="ia ia-1">Ví trả sau (BNPL)</span><span class="tag">30/9</span></div>
+  <div><span class="ia ia-3">Đăng ký &middot; Thanh toán &middot; Quản lý dư nợ</span></div>
+  <div><span class="ia ia-1">Vay trả góp VinFast</span><span class="tag">31/5</span></div>
+</div>
+
+<div style="margin:20px 0">
+  <div><span class="ia ia-0">Ưu đãi</span></div>
+  <div><span class="ia ia-2">V-Point (điểm tích luỹ)</span></div>
+  <div><span class="ia ia-2">Voucher store</span></div>
+  <div><span class="ia ia-2">Category tabs: Tất cả &middot; Ăn &middot; Đi &middot; Mua</span></div>
+  <div><span class="ia ia-2">HST deals &middot; Flash deals</span></div>
+  <div><span class="ia ia-2">Giới thiệu bạn (referral)</span></div>
+</div>
+
+<div style="margin:20px 0">
+  <div><span class="ia ia-0">Tài khoản (avatar góc phải)</span></div>
+  <div><span class="ia ia-2">Profile &amp; KYC &middot; NH liên kết &middot; Bảo mật &middot; Settings &middot; Trợ giúp</span></div>
+</div>
+
+<h3>6.4 Tap Count Audit &mdash; Backward Compatibility</h3>
+
+<table>
+  <tr><th>Action</th><th>Hiện tại</th><th>Phase 1</th><th>Phase 2</th><th>Phase 3</th><th>Verdict</th></tr>
+  <tr><td>Chuyển tiền</td><td>1 tap (tab)</td><td>1 tap (Home)</td><td>1 tap</td><td>1 tap</td><td>Giữ nguyên</td></tr>
+  <tr><td>Nạp tiền</td><td>1 tap</td><td>1 tap</td><td>1 tap</td><td>1 tap</td><td>Giữ nguyên</td></tr>
+  <tr><td>Xem lịch sử</td><td>1 tap (tab)</td><td>1 tap</td><td>1 tap (wallet)</td><td>1 tap</td><td>Giữ nguyên</td></tr>
+  <tr><td>Trả hóa đơn</td><td>3 tap</td><td>2 tap</td><td>2 tap</td><td>2 tap</td><td><strong>Cải thiện</strong></td></tr>
+  <tr><td>Xem profile</td><td>1 tap (tab)</td><td>1 tap</td><td>1 tap</td><td>1 tap (avatar)</td><td>Giữ nguyên</td></tr>
+  <tr><td>Sinh lời</td><td>N/A</td><td>2 tap</td><td>1 tap</td><td>1 tap</td><td><strong>Cải thiện</strong></td></tr>
+</table>
+
+<!-- ═══════════════════ 7. PHASED ROLLOUT ═══════════════════ -->
+
+<span class="section-num">Section 7 &mdash; 4-5 trang</span>
+<h2>7. Phased Rollout Plan</h2>
+
+<h3>7.1 Phase 1: Tab Thanh toán (30/04/2026)</h3>
+
+<p><strong>Thay đổi nav:</strong> Chuyển tiền &rarr; <strong>Thanh toán</strong><br>
+<strong>Lý do:</strong> ~20 dịch vụ ship trước 30/4 không có chỗ. Tab CT lãng phí slot cho 1 action.</p>
+
+<h4>Nội dung ship</h4>
+
+<table>
+  <tr><th>Feature</th><th>Ready date</th><th>Priority</th></tr>
+  <tr><td>HĐ: Điện, Nước, Internet, Data, Nạp ĐT, Mua thẻ</td><td>30/4</td><td>P0</td></tr>
+  <tr><td>HST: XanhSM</td><td>T3 (done)</td><td>P0</td></tr>
+  <tr><td>Saved billers + Nhắc thanh toán</td><td>20/4</td><td>P1</td></tr>
+  <tr><td>BH xe máy + ô tô (TNDS)</td><td>20/4</td><td>P1</td></tr>
+  <tr><td>Voucher basic</td><td>30/4</td><td>P2</td></tr>
+  <tr><td>BĐS mã hoá (basic listing)</td><td>30/4</td><td>P2</td></tr>
+</table>
+
+<h4>Home Phase 1</h4>
+
+<table>
+  <tr><th>Khu vực</th><th>Nội dung</th><th>Rule</th></tr>
+  <tr><td><strong>Wallet Card</strong></td><td>Balance + ẩn/hiện</td><td>Fixed</td></tr>
+  <tr><td><strong>Quick Actions</strong></td><td>Nạp &middot; Rút &middot; <strong>Chuyển</strong> &middot; Nhận</td><td>Thêm CT từ tab cũ</td></tr>
+  <tr><td><strong>Utility (70%)</strong></td><td>GD gần đây + SL teaser + BH card</td><td>Status only, tap &rarr; deep link</td></tr>
+  <tr><td><strong>Promo (30%)</strong></td><td>1 card max, dismissible</td><td>Không banner blindness</td></tr>
+</table>
+
+<h4>Migration Plan</h4>
+
+<table>
+  <tr><th>Bước</th><th>Action</th><th>Timeline</th></tr>
+  <tr><td>1</td><td>Ship CT vào Home quick actions (A/B test)</td><td>T3 W3</td></tr>
+  <tr><td>2</td><td>Feature flag tab TT cho Vingroup employees</td><td>T4 W1</td></tr>
+  <tr><td>3</td><td>Monitor Core Task Completion 2 tuần</td><td>T4 W1-2</td></tr>
+  <tr><td>4</td><td>Rollout Vinhomes residents</td><td>T4 W3</td></tr>
+  <tr><td>5</td><td>General rollout</td><td>30/4</td></tr>
+  <tr><td>6</td><td>Remove tab CT cũ</td><td>30/4+7d</td></tr>
+</table>
+
+<h3>7.2 Phase 2: Tab Tài chính (Q3/2026)</h3>
+
+<p><strong>Thay đổi nav:</strong> Giao dịch &rarr; <strong>Tài chính</strong><br>
+<strong>Lý do:</strong> 6 product lines đủ weight. GD merge vào Home wallet area.</p>
+
+<h4>Nội dung ship</h4>
+
+<table>
+  <tr><th>Feature</th><th>Ready date</th><th>Priority</th></tr>
+  <tr><td>Sinh lời tự động (full)</td><td>30/6</td><td>P0</td></tr>
+  <tr><td>BH 4 loại</td><td>30/6</td><td>P0</td></tr>
+  <tr><td>BĐS mã hoá &mdash; trao đổi</td><td>17/7</td><td>P1</td></tr>
+  <tr><td>CCQ (Chứng chỉ quỹ)</td><td>30/9</td><td>P1</td></tr>
+  <tr><td>BNPL (Ví trả sau)</td><td>30/9</td><td>P1</td></tr>
+  <tr><td>Vay trả góp VinFast</td><td>31/5</td><td>P2</td></tr>
+  <tr><td>Lịch sử GD merge vào Home wallet</td><td>Q3</td><td>P0</td></tr>
+</table>
+
+<h4>Behavioral Graduation Strategy</h4>
+
+<div class="callout">
+  <strong>User đã dùng SL/BH/BĐS (&ge;1 action)</strong><br>
+  &rarr; Thấy tab Tài chính + tooltip "Tài chính của bạn, 1 chỗ"<br>
+  &rarr; Lịch sử GD = tap Wallet Card trên Home<br><br>
+  <strong>User chưa dùng sản phẩm tài chính nào</strong><br>
+  &rarr; Vẫn thấy tab Giao dịch (không thay đổi)<br>
+  &rarr; Khi 80% graduate &rarr; force switch
+</div>
+
+<h4>Migration Plan</h4>
+
+<table>
+  <tr><th>Bước</th><th>Action</th><th>Timeline</th></tr>
+  <tr><td>1</td><td>Ship "Tap Wallet &rarr; Lịch sử" trên Home</td><td>T6</td></tr>
+  <tr><td>2</td><td>A/B: Users có SL/BH &rarr; thấy tab TC</td><td>T7 W1</td></tr>
+  <tr><td>3</td><td>Monitor: GD usage drop + TC adoption</td><td>T7 W1-4</td></tr>
+  <tr><td>4</td><td>Graduation threshold: 80% migrated</td><td>T8</td></tr>
+  <tr><td>5</td><td>Force switch toàn bộ</td><td>Q3 end</td></tr>
+</table>
+
+<h3>7.3 Phase 3: Tab Ưu đãi (Q4/2026)</h3>
+
+<p><strong>Thay đổi nav:</strong> Tài khoản &rarr; <strong>Ưu đãi</strong><br>
+<strong>Lý do:</strong> V-Point + Voucher + HST deals đủ weight. TK lên avatar góc phải.</p>
+
+<h4>Nội dung ship</h4>
+
+<table>
+  <tr><th>Feature</th><th>Ready date</th><th>Priority</th></tr>
+  <tr><td>V-Point (loyalty)</td><td>30/9</td><td>P0</td></tr>
+  <tr><td>Voucher store (expanded)</td><td>Q4</td><td>P0</td></tr>
+  <tr><td>HST deals</td><td>Q4</td><td>P1</td></tr>
+  <tr><td>Giới thiệu bạn (referral)</td><td>Q4</td><td>P1</td></tr>
+  <tr><td>Flash deals</td><td>Q4</td><td>P2</td></tr>
+  <tr><td>Tài khoản &rarr; Avatar góc phải</td><td>Q4</td><td>P0</td></tr>
+</table>
+
+<h4>Migration Plan</h4>
+
+<table>
+  <tr><th>Bước</th><th>Action</th><th>Timeline</th></tr>
+  <tr><td>1</td><td>Ship avatar icon góc phải (alongside tab TK)</td><td>T9</td></tr>
+  <tr><td>2</td><td>Track avatar usage vs tab TK (4 tuần)</td><td>T9-T10</td></tr>
+  <tr><td>3</td><td>Feature flag tab Ưu đãi cho employees</td><td>T10</td></tr>
+  <tr><td>4</td><td>Rollout (Vinhomes &rarr; general)</td><td>T11</td></tr>
+  <tr><td>5</td><td>Remove tab TK, avatar = duy nhất</td><td>T12</td></tr>
+</table>
+
+<p><strong>Risk:</strong> User VN chưa quen avatar pattern. Mitigation: dot indicator + tooltip + rage tap detector.</p>
+
+<h3>7.4 Timeline Overview</h3>
+
+<pre>
+2026   T3    T4     T5     T6     T7     T8     T9     T10    T11    T12
+       |     |      |      |      |      |      |      |      |      |
+       |-- P1 rollout --|  |      |      |      |      |      |      |
+       |  CT->TT        |  |      |      |      |      |      |      |
+       |                |-- P2 prep -----|      |      |      |      |
+       |                |  SL/BH ship    |      |      |      |      |
+       |                |                |-- P2 rollout --|   |      |
+       |                |                |  GD->TC        |   |      |
+       |                |                |                |-- P3 rollout --|
+       |                |                |                |  TK->UD       |
+       v                v                v                v               v
+    5 tabs           5 tabs          5 tabs           5 tabs          5 tabs
+    (CT->TT)         (prep)          (GD->TC)         (prep)          (TK->UD)
+</pre>
+
+<!-- ═══════════════════ 8. WIREFRAMES ═══════════════════ -->
+
+<span class="section-num">Section 8 &mdash; 6-8 trang</span>
+<h2>8. Wireframes &amp; Detailed Tab Design</h2>
+
+<h3>8.1 Home &mdash; Widget Architecture</h3>
+
+<div class="callout">
+  <strong>Nguyên tắc 70/30:</strong> 70% above-fold utility, 30% max promo.<br>
+  MoMo = cautionary tale: 70% promo &rarr; banner blindness &rarr; engagement drop 40%.<br><br>
+  <strong>Rule:</strong> Home widgets show STATUS, tabs enable ACTION. Widget = glance. Tap &rarr; tab. Không duplicate functionality.
+</div>
+
+
+<p><strong>Widget rules:</strong></p>
+<ul>
+  <li>Widget chỉ hiện khi user đã activate sản phẩm HOẶC có data contextual (upcoming bill)</li>
+  <li>User chưa dùng sản phẩm nào &rarr; Home sạch: balance + quick actions + GD gần đây</li>
+  <li>Behavioral trigger: balance &gt;5M liên tục 3 ngày &rarr; show SL teaser widget</li>
+</ul>
+
+<div class="wireframe-row">
+  <div class="wireframe-frame">
+    <div class="frame-label">Phase 1 &mdash; 30/4</div>
+    <div class="frame-border"><iframe src="http://localhost:3000/ia/home-p1"></iframe></div>
+  </div>
+  <div class="wireframe-frame">
+    <div class="frame-label">Phase 2 &mdash; Q3</div>
+    <div class="frame-border"><iframe src="http://localhost:3000/ia/home-p2"></iframe></div>
+  </div>
+  <div class="wireframe-frame">
+    <div class="frame-label">Phase 3 &mdash; Q4</div>
+    <div class="frame-border"><iframe src="http://localhost:3000/ia/home-p3"></iframe></div>
+  </div>
+</div>
+
+<h3>8.2 Tab Thanh toán (Phase 1)</h3>
+
+<p><strong>Job:</strong> "Trả tiền cho dịch vụ" &mdash; browse, pick provider, pay.</p>
+
+
+<p><strong>Interaction:</strong> Tap service &rarr; Provider picker &rarr; Nhập mã KH &rarr; Bill lookup &rarr; Confirm &rarr; Auth &rarr; Result</p>
+<p><strong>Above fold:</strong> Search + categories + top 4 dịch vụ phổ biến nhất.</p>
+
+<div class="wireframe-row">
+  <div class="wireframe-frame">
+    <div class="frame-label">Tab Thanh toan &mdash; Phase 1</div>
+    <div class="frame-border"><iframe src="http://localhost:3000/ia/tab-thanhtoan"></iframe></div>
+  </div>
+</div>
+
+<h3>8.3 Tab Tài chính (Phase 2)</h3>
+
+<p><strong>Job:</strong> "Tiền sinh ra tiền" &mdash; review portfolio, take action.</p>
+
+
+<p><strong>Above fold:</strong> Tổng tài sản + Sinh lời card. User thấy "tiền đang grow" ngay khi mở tab.</p>
+<p><strong>Content priority:</strong> Cards cho products có AUM (SL, BĐS). Rows cho products khác (BH, CCQ, BNPL).</p>
+
+<div class="wireframe-row">
+  <div class="wireframe-frame">
+    <div class="frame-label">Tab Tai chinh &mdash; Phase 2</div>
+    <div class="frame-border"><iframe src="http://localhost:3000/ia/tab-taichinh"></iframe></div>
+  </div>
+</div>
+
+<h3>8.4 Tab Ưu đãi (Phase 3)</h3>
+
+<p><strong>Job:</strong> "Tiết kiệm khi chi tiêu" &mdash; discover deals, earn/burn points.</p>
+
+
+<div class="wireframe-row">
+  <div class="wireframe-frame">
+    <div class="frame-label">Tab Uu dai &mdash; Phase 3</div>
+    <div class="frame-border"><iframe src="http://localhost:3000/ia/tab-uudai"></iframe></div>
+  </div>
+</div>
+
+<h3>8.5 Tài khoản &mdash; Avatar Pattern (Phase 3)</h3>
+
+
+<p><strong>Findability:</strong> Settings/bảo mật luôn &le;2 taps (avatar &rarr; item). Balance luôn visible.</p>
+
+<h3>8.6 Key Interaction Patterns</h3>
+
+<table>
+  <tr><th>Pattern</th><th>Mô tả</th><th>Ví dụ</th></tr>
+  <tr><td><strong>Widget &rarr; Tab</strong></td><td>Home widget show status, tap &rarr; tab</td><td>"SL: 5M +45K" &rarr; Tab Tài chính</td></tr>
+  <tr><td><strong>Quick Action &rarr; Flow</strong></td><td>Home icon &rarr; full transaction flow</td><td>[Chuyển] &rarr; Contact &rarr; Amount &rarr; Auth</td></tr>
+  <tr><td><strong>Category &rarr; Provider &rarr; Pay</strong></td><td>Tab TT: chọn &rarr; NCC &rarr; pay</td><td>[Điện] &rarr; EVN &rarr; Mã KH &rarr; Auth</td></tr>
+  <tr><td><strong>Card &rarr; Dashboard</strong></td><td>Tab TC: product card &rarr; dashboard</td><td>[SL card] &rarr; SL Dashboard</td></tr>
+  <tr><td><strong>Saved &rarr; Quick Pay</strong></td><td>Tab TT: saved biller &rarr; confirm</td><td>EVN HN &rarr; Confirm 380K &rarr; Done</td></tr>
+</table>
+
+<!-- ═══════════════════ 9. METRICS ═══════════════════ -->
+
+<span class="section-num">Section 9 &mdash; 2 trang</span>
+<h2>9. Success Metrics &amp; KPIs</h2>
+
+<h3>9.1 North Star Metric</h3>
+
+<div class="callout">
+  <span class="kpi-label">North Star</span>
+  <span class="kpi-highlight">MATU</span>
+  <strong>Monthly Active Transacting Users</strong> &mdash; unique users hoàn thành &ge;1 giao dịch/tháng.
+</div>
+
+<table>
+  <tr><th>Tại sao MATU</th><th>Tại sao không metrics khác</th></tr>
+  <tr><td>Đo hành vi thực tế, không vanity</td><td><strong>MAU</strong> = mở app nhưng không transact</td></tr>
+  <tr><td>Cân bằng whale và long-tail</td><td><strong>TPV</strong> = bị skew bởi 1% whale users</td></tr>
+  <tr><td>Gắn trực tiếp với revenue</td><td><strong>DAU</strong> = quá sensitive với promo spike</td></tr>
+</table>
+
+<h3>9.2 Per-Tab KPIs</h3>
+
+<table>
+  <tr><th>Tab</th><th>Primary Metric</th><th>Phase 1</th><th>Phase 2</th><th>Phase 3</th></tr>
+  <tr><td><strong>Home</strong></td><td>Widget Tap-Through Rate</td><td>&gt;15%</td><td>&gt;20%</td><td>&gt;25%</td></tr>
+  <tr><td><strong>Thanh toán</strong></td><td>Transactions/User/Month</td><td>2+</td><td>4+</td><td>5+</td></tr>
+  <tr><td><strong>QR</strong></td><td>Scan Success Rate</td><td>&gt;90%</td><td>&gt;92%</td><td>&gt;95%</td></tr>
+  <tr><td><strong>Tài chính</strong></td><td>AUM growth MoM</td><td>&mdash;</td><td>20%</td><td>15%</td></tr>
+  <tr><td><strong>Ưu đãi</strong></td><td>Revenue/Active User</td><td>&mdash;</td><td>&mdash;</td><td>50K/tháng</td></tr>
+</table>
+
+<h3>9.3 Detailed KPI Table</h3>
+
+<table>
+  <tr><th>Category</th><th>KPI</th><th>Baseline</th><th>30/4</th><th>Q3</th><th>Q4</th></tr>
+  <tr><td rowspan="3"><strong>Engagement</strong></td><td>MATU</td><td>&mdash;</td><td>10K</td><td>30K</td><td>80K</td></tr>
+  <tr><td>Sessions/User/Week</td><td>3.2</td><td>4.0</td><td>5.5</td><td>7.0</td></tr>
+  <tr><td>Core Task Completion</td><td>85%</td><td>&ge;85%</td><td>&ge;85%</td><td>&ge;85%</td></tr>
+  <tr><td rowspan="4"><strong>Thanh toán</strong></td><td>Bill Payment Users</td><td>800</td><td>5K</td><td>15K</td><td>25K</td></tr>
+  <tr><td>HST Volume</td><td>&mdash;</td><td>2K/th</td><td>10K/th</td><td>30K/th</td></tr>
+  <tr><td>Saved Billers/User</td><td>0.3</td><td>1.5</td><td>3.0</td><td>4.0</td></tr>
+  <tr><td>Auto-pay Adoption</td><td>0%</td><td>5%</td><td>15%</td><td>25%</td></tr>
+  <tr><td rowspan="4"><strong>Tài chính</strong></td><td>Sinh lời AUM</td><td>&mdash;</td><td>&mdash;</td><td>5B</td><td>20B</td></tr>
+  <tr><td>SL Activation Rate</td><td>&mdash;</td><td>&mdash;</td><td>15%</td><td>25%</td></tr>
+  <tr><td>BH Policies Sold</td><td>&mdash;</td><td>500</td><td>3K</td><td>8K</td></tr>
+  <tr><td>BĐS Investors</td><td>&mdash;</td><td>200</td><td>1K</td><td>3K</td></tr>
+  <tr><td rowspan="3"><strong>Ưu đãi</strong></td><td>V-Point Active Users</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td>20K</td></tr>
+  <tr><td>Voucher Redemption</td><td>&mdash;</td><td>8%</td><td>12%</td><td>18%</td></tr>
+  <tr><td>Referral Conversion</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td>5%</td></tr>
+  <tr><td><strong>Revenue</strong></td><td>Total GMV/month</td><td>2B</td><td>10B</td><td>50B</td><td>150B</td></tr>
+</table>
+
+<h3>9.4 Revenue Trajectory 2026-2027</h3>
+
+<table>
+  <tr><th>Period</th><th>Payments</th><th>Finance</th><th>Deals</th><th>Revenue Index</th></tr>
+  <tr><td>2026 H1</td><td>95%</td><td>3%</td><td>2%</td><td>1.0x</td></tr>
+  <tr><td>2026 H2</td><td>70%</td><td>25%</td><td>5%</td><td>3.5x</td></tr>
+  <tr><td>2027 H1</td><td>50%</td><td>35%</td><td>15%</td><td>8.0x</td></tr>
+  <tr><td>2027 H2</td><td>40%</td><td>40%</td><td>20%</td><td>15.0x</td></tr>
+</table>
+
+<pre>
+Revenue Mix Evolution
+----------------------------------------------------
+2026 H1  ######################################--  95% Pay / 3% Fin / 2% Deal
+2026 H2  ######################................  70% Pay / 25% Fin / 5% Deal
+2027 H1  ##################...............=====  50% Pay / 35% Fin / 15% Deal
+2027 H2  ################................======  40% Pay / 40% Fin / 20% Deal
+----------------------------------------------------
+# = Payments    . = Finance    = = Deals/Loyalty
+
+→ Finance overtakes Payments cuoi 2027
+→ Deals/Loyalty = 20% (partner commission + V-Point breakage 15-20%)
+</pre>
+
+<h3>9.5 Guardrails</h3>
+
+<table>
+  <tr><th>Guardrail</th><th>Threshold</th><th>Action</th></tr>
+  <tr><td>Core Task Completion drop</td><td>&gt;10% trong 7 ngày</td><td>Investigate immediately, fix forward</td></tr>
+  <tr><td>Home promo ratio exceed</td><td>&gt;30% viewport</td><td>Auto-cap, remove lowest-performing promo</td></tr>
+  <tr><td>Tab switch confusion</td><td>Rage tap &gt;5% users</td><td>Activate tooltip + rage tap detector</td></tr>
+  <tr><td>Finance tab empty state</td><td>&lt;2 products ready</td><td>Delay phase launch</td></tr>
+</table>
+
+<!-- ═══════════════════ 10. IMPLEMENTATION ═══════════════════ -->
+
+<span class="section-num">Section 10 &mdash; 2 trang</span>
+<h2>10. Implementation Strategy, Risks &amp; Mitigations</h2>
+
+<h3>10.1 Chiến lược triển khai</h3>
+
+<div class="callout">
+  <strong>Nguyên tắc:</strong> Soft Launch &amp; Graduate. Roll forward, không rollback.<br>
+  App chưa mass launch = early adopters, forgiving. Tận dụng window này.
+</div>
+
+<table>
+  <tr><th>Strategy</th><th>Chi tiết</th></tr>
+  <tr><td><strong>Feature flag per segment</strong></td><td>Vingroup employees (2-4 tuần) &rarr; Vinhomes residents &rarr; General</td></tr>
+  <tr><td><strong>Behavioral graduation</strong></td><td>User đã dùng sản phẩm &rarr; thấy tab mới. 80% graduate &rarr; force switch</td></tr>
+  <tr><td><strong>"Cái mới" badge</strong></td><td>Dot indicator + 1-line tooltip. Không coach marks (completion &lt;15% VN)</td></tr>
+  <tr><td><strong>Rage tap detector</strong></td><td>Tap vị trí cũ &gt;3 lần &rarr; tooltip chỉ hướng mới</td></tr>
+  <tr><td><strong>1 metric rule</strong></td><td>Core Task Completion. Drop &gt;10% &rarr; investigate. Không rollback.</td></tr>
+</table>
+
+<h3>10.2 Technical Requirements</h3>
+
+<table>
+  <tr><th>Requirement</th><th>Scope</th><th>Owner</th></tr>
+  <tr><td>Feature flag system</td><td>Per-segment, per-tab toggle</td><td>Platform</td></tr>
+  <tr><td>Widget framework</td><td>Dynamic Home widgets by user state</td><td>Frontend</td></tr>
+  <tr><td>Analytics events</td><td>Tab switch, widget tap, rage tap, completion</td><td>Data</td></tr>
+  <tr><td>Deep link update</td><td>All features reachable via deep link</td><td>All teams</td></tr>
+  <tr><td>A/B testing infra</td><td>50/50 split per segment</td><td>Platform</td></tr>
+</table>
+
+<h3>10.3 Risk Register</h3>
+
+<table>
+  <tr><th>#</th><th>Risk</th><th>Prob.</th><th>Impact</th><th>Mitigation</th></tr>
+  <tr><td>1</td><td>User không tìm được CT sau Phase 1</td><td class="risk-med">Med</td><td class="risk-high">High</td><td>Quick action nổi bật + tooltip + rage tap</td></tr>
+  <tr><td>2</td><td>HST timeline trượt</td><td class="risk-high">High</td><td class="risk-med">Med</td><td>Tab TT không phụ thuộc HST &mdash; đủ HĐ tiện ích</td></tr>
+  <tr><td>3</td><td>Tab TC trống nếu SL/BĐS chưa ready</td><td class="risk-med">Med</td><td class="risk-high">High</td><td>Guardrail: &ge;3 products mới launch</td></tr>
+  <tr><td>4</td><td>User VN không quen avatar pattern</td><td class="risk-med">Med</td><td class="risk-med">Med</td><td>Feature flag 4 tuần + tooltip + tab song song</td></tr>
+  <tr><td>5</td><td>Promo pressure từ business (&gt;30%)</td><td class="risk-high">High</td><td class="risk-high">High</td><td>Hard cap 30% trong design system. CPO sign-off</td></tr>
+  <tr><td>6</td><td>Regulatory block sản phẩm tài chính</td><td class="risk-low">Low</td><td class="risk-high">Critical</td><td>BH/CCQ/BNPL có partner licensed. BĐS cần legal</td></tr>
+  <tr><td>7</td><td>Engineering overload (3 phase/năm)</td><td class="risk-med">Med</td><td class="risk-med">Med</td><td>1 tab/phase + 4 tuần prep. Không ship đồng thời</td></tr>
+</table>
+
+<h3>10.4 Dependency Map</h3>
+
+<pre>
+Phase 1 (30/4)
+  ├── P0: ~20 dich vu thanh toan ready    ← API partners
+  ├── P0: CT trong Home quick actions     ← Frontend only
+  └── P1: Feature flag system             ← Platform team
+
+Phase 2 (Q3)
+  ├── P0: Sinh loi full (30/6)            ← Backend + partner bank
+  ├── P0: Wallet → Lich su GD flow        ← Frontend only
+  ├── P1: BH 4 loai (30/6)               ← Insurance partner
+  └── P1: Behavioral graduation logic     ← Data + Frontend
+
+Phase 3 (Q4)
+  ├── P0: V-Point system (30/9)           ← Loyalty platform
+  ├── P0: Avatar + profile sheet          ← Frontend only
+  └── P1: HST deals integration           ← Multiple partners
+</pre>
+
+<!-- ═══════════════════ 11. NEXT STEPS ═══════════════════ -->
+
+<span class="section-num">Section 11 &mdash; 1 trang</span>
+<h2>11. Next Steps &amp; Appendix</h2>
+
+<h3>Next Steps</h3>
+
+<table>
+  <tr><th>#</th><th>Action</th><th>Owner</th><th>Deadline</th></tr>
+  <tr><td>1</td><td>Review &amp; approve IA spec (C-level + Product)</td><td>CPO</td><td>T3 W4</td></tr>
+  <tr><td>2</td><td>High-fidelity wireframes Phase 1</td><td>Design</td><td>T4 W1</td></tr>
+  <tr><td>3</td><td>Feature flag system scoping</td><td>Platform</td><td>T4 W1</td></tr>
+  <tr><td>4</td><td>Analytics event taxonomy</td><td>Data</td><td>T4 W1</td></tr>
+  <tr><td>5</td><td>A/B test plan: CT Home quick action</td><td>Product</td><td>T3 W4</td></tr>
+  <tr><td>6</td><td>Phase 1 sprint planning</td><td>Engineering</td><td>T4 W2</td></tr>
+  <tr><td>7</td><td>Phase 2 readiness check (SL + BH)</td><td>Product</td><td>T6 W2</td></tr>
+</table>
+
+<h3>Appendix A &mdash; Reference Apps</h3>
+
+<ul>
+  <li>Cash App iOS (Nov 2025) &mdash; 236 screens</li>
+  <li>Revolut iOS (May 2025) &mdash; 656 screens</li>
+  <li>OKX iOS (May 2024) &mdash; 429 screens</li>
+  <li>Monzo iOS (2025)</li>
+  <li>ZaloPay iOS (2025)</li>
+  <li>MoMo iOS (2025)</li>
+</ul>
+
+<h3>Appendix B &mdash; Input Documents</h3>
+
+<ul>
+  <li>KHHĐ Fintech 2026 (Excel) &mdash; ~50 features, phased timeline</li>
+  <li>V-Smart Pay v1.0.6 &mdash; Production screenshots (7 screens)</li>
+  <li>IA Analysis v1.0 (Vi &mdash; Design Lead, 21/03/2026)</li>
+  <li>VSP UX Documentation &mdash; 34 pages, 119 screens</li>
+</ul>
+
+<h3>Appendix C &mdash; Key Design Decisions</h3>
+
+<table>
+  <tr><th>Decision</th><th>Rationale</th><th>Alternative Rejected</th></tr>
+  <tr><td>CT &rarr; Home quick action</td><td>Mental model: CT = "di chuyển", TT = "trả cho dịch vụ"</td><td>Merge CT vào TT &mdash; mode conflict</td></tr>
+  <tr><td>GD merge vào Wallet Card</td><td>Lịch sử = context ví, không phải destination</td><td>Giữ tab GD &mdash; cần slot cho TC</td></tr>
+  <tr><td>TK &rarr; Avatar</td><td>1 lần/tháng, Cash App pattern proven</td><td>Giữ tab TK &mdash; cần slot cho ƯĐ</td></tr>
+  <tr><td>Home 70/30</td><td>MoMo 70% promo &rarr; engagement drop</td><td>50/50 &mdash; business sẽ push &gt;50%</td></tr>
+  <tr><td>Behavioral graduation</td><td>Giảm confusion, tab mới khi có context</td><td>Big bang switch &mdash; completion risk</td></tr>
+</table>
+
+<h3>Appendix D &mdash; Glossary</h3>
+
+<table>
+  <tr><th>Viết tắt</th><th>Định nghĩa</th></tr>
+  <tr><td>MATU</td><td>Monthly Active Transacting Users</td></tr>
+  <tr><td>AUM</td><td>Assets Under Management</td></tr>
+  <tr><td>HST</td><td>Hệ sinh thái (Vingroup ecosystem)</td></tr>
+  <tr><td>SL</td><td>Sinh lời (auto-interest)</td></tr>
+  <tr><td>CCQ</td><td>Chứng chỉ quỹ (mutual funds)</td></tr>
+  <tr><td>BĐS</td><td>Bất động sản (real estate)</td></tr>
+  <tr><td>BNPL</td><td>Buy Now Pay Later</td></tr>
+  <tr><td>HĐ</td><td>Hóa đơn (bills)</td></tr>
+  <tr><td>CT</td><td>Chuyển tiền (transfer)</td></tr>
+  <tr><td>TT</td><td>Thanh toán (payments)</td></tr>
+  <tr><td>TC</td><td>Tài chính (finance)</td></tr>
+  <tr><td>ƯĐ</td><td>Ưu đãi (deals/loyalty)</td></tr>
+  <tr><td>TK</td><td>Tài khoản (account)</td></tr>
+</table>
+
+<div class="footnote">
+  V-Smart Pay IA 2026 &mdash; Version 2.0 &mdash; 21/03/2026 &mdash; Product Design Specification<br>
+  Confidential &mdash; Internal use only &mdash; Vingroup Financial Technology
+</div>
+
+</body>
+</html>
