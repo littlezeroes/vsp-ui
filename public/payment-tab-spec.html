@@ -95,7 +95,90 @@
 </table>
 
 <!-- 3 -->
-<h2>3. Đề xuất IA</h2>
+<h2>3. Ba phương án IA</h2>
+
+<p>3 Senior Product Designer tranh luận 3 hướng tiếp cận khác nhau:</p>
+
+<h3>Option A: Urgency-first</h3>
+<pre>
+Search
+├── Sắp đến hạn (1-2 urgent bills, 1-tap pay)
+├── Đã lưu (chips ngang, segmented: Hoá đơn | SĐT)
+├── Thanh toán mới (grid 4 col, max 8 icon)
+└── Vingroup (3 horizontal cards — section riêng)
+</pre>
+<table>
+  <tr><th>Pros</th><th>Cons</th></tr>
+  <tr><td>2 taps cho saved bill — nhanh nhất<br>Smart sort theo urgency tự nhiên<br>Giảm cognitive load — app biết user cần gì</td><td>New user thấy trống — first impression yếu<br>Discovery kém — grid bị đẩy xuống<br>Vingroup bị chìm ở cuối scroll</td></tr>
+</table>
+<p><strong>Best for:</strong> Returning user đã lưu 3+ hoá đơn. <strong>Saved bill:</strong> 2 taps. <strong>New bill:</strong> 5 taps.</p>
+
+<h3>Option B: Category-first + Smart Sort</h3>
+<pre>
+Search
+├── Dịch vụ (grid 4 col × 3 rows, smart sort, max 12)
+│   ├── Row 1: Điện · Nước · Internet · Nạp ĐT
+│   ├── Row 2: Mua thẻ · Data · Trả vay · Học phí
+│   └── Row 3: Vinhomes · VinFast · Vinschool · Thêm
+├── Cần thanh toán (bills có HĐ, inline CTA)
+├── Đã lưu (compact rows)
+└── Gần đây (3 items)
+</pre>
+<table>
+  <tr><th>Pros</th><th>Cons</th></tr>
+  <tr><td>Cân bằng new + returning user<br><strong>Vingroup = first-class</strong> (trong grid, không tách riêng)<br>Smart sort theo tần suất — cá nhân hoá</td><td>3 taps cho saved bill — chậm hơn A<br>Grid 12 icon vẫn đông (iPhone SE bị cắt)<br>"Giống MoMo" nếu smart sort chưa hoạt động</td></tr>
+</table>
+<p><strong>Best for:</strong> Cả new + returning user. <strong>Saved bill:</strong> 3 taps. <strong>New bill:</strong> 4 taps.</p>
+
+<h3>Option C: Unified Feed ("Bill Inbox")</h3>
+<pre>
+Search
+├── Filter chips: [Tất cả] [Cần trả] [Đã TT]
+├── THÁNG 3
+│   ├── ⚡ EVN HCM — 501K · Quá hạn → [Thanh toán ngay]
+│   ├── 📶 FPT — 299K · Hạn 25/03 → [Thanh toán]
+│   ├── 📲 Nạp tiền — gợi ý hàng tháng → [Nạp 100K]
+│   └── 🏠 Vinhomes — Phí QL T3 → [Thanh toán]
+├── THÁNG 2 (đã trả, muted)
+│   ├── ✓ EVN · 485K
+│   └── ✓ FPT · 299K
+└── + Thêm hoá đơn mới (FAB)
+</pre>
+<table>
+  <tr><th>Pros</th><th>Cons</th></tr>
+  <tr><td><strong>1 tap to pay</strong> — inline CTA, nhanh nhất<br>Radical simplicity — không grid, không category<br>Vingroup ngang hàng tự nhiên trong feed</td><td>Discovery gần = 0 — new user không biết app có gì<br>Onboarding cost cao — phải manually thêm biller<br>Non-bill services (nạp tiền, data) khó ép vào feed</td></tr>
+</table>
+<p><strong>Best for:</strong> Power user đã setup 5+ biller. <strong>Saved bill:</strong> 1 tap. <strong>New bill:</strong> 6 taps.</p>
+
+<h3>So sánh 3 options</h3>
+
+<table>
+  <tr><th>Tiêu chí</th><th>A: Urgency</th><th>B: Category</th><th>C: Feed</th></tr>
+  <tr><td><strong>Saved bill taps</strong></td><td>2</td><td>3</td><td><strong>1</strong></td></tr>
+  <tr><td><strong>New bill taps</strong></td><td>5</td><td><strong>4</strong></td><td>6</td></tr>
+  <tr><td><strong>New user experience</strong></td><td>Yếu</td><td><strong>Tốt</strong></td><td>Rất yếu</td></tr>
+  <tr><td><strong>Returning user</strong></td><td>Tốt</td><td>Tốt</td><td><strong>Xuất sắc</strong></td></tr>
+  <tr><td><strong>Vingroup exposure</strong></td><td>Thấp</td><td><strong>Cao nhất</strong></td><td>Passive</td></tr>
+  <tr><td><strong>Cross-sell</strong></td><td>Thấp</td><td><strong>Cao</strong></td><td>Thấp→Cao</td></tr>
+  <tr><td><strong>Khác biệt MoMo</strong></td><td>Cao</td><td>Thấp</td><td><strong>Rất cao</strong></td></tr>
+  <tr><td><strong>Dev complexity</strong></td><td>Thấp</td><td>Trung bình</td><td>Trung bình</td></tr>
+  <tr><td><strong>Risk</strong></td><td>Empty state</td><td>"Giống MoMo"</td><td>"App nghèo nàn"</td></tr>
+</table>
+
+<!-- Recommendation -->
+<div style="background:#111; color:#fff; border-radius:20px; padding:24px; margin:20px 0; font-family:-apple-system,sans-serif;">
+  <h3 style="color:#fff; margin:0 0 12px; font-size:17px; border:none; padding:0;">Khuyến nghị: Option B + Urgency override từ A</h3>
+  <p style="color:rgba(255,255,255,0.7); font-size:13px; line-height:1.6; margin-bottom:12px;">Giữ grid category (B) cho discovery + Vingroup exposure. Thêm urgent banner (A) tự động lên trên grid khi có bill quá hạn.</p>
+  <table style="margin:0; font-size:12px;">
+    <tr><th style="border-color:rgba(255,255,255,0.2); color:rgba(255,255,255,0.5);">Trạng thái</th><th style="border-color:rgba(255,255,255,0.2); color:rgba(255,255,255,0.5);">Layout</th></tr>
+    <tr><td style="border-color:rgba(255,255,255,0.1); color:rgba(255,255,255,0.85);">Bình thường</td><td style="border-color:rgba(255,255,255,0.1); color:#fff;">Search → Grid (12 icon) → Đã lưu → Gần đây</td></tr>
+    <tr><td style="border-color:rgba(255,255,255,0.1); color:rgba(255,255,255,0.85);">Có bill quá hạn</td><td style="border-color:rgba(255,255,255,0.1); color:#fff;">Search → <strong>Urgent Banner (1-tap)</strong> → Grid → Đã lưu</td></tr>
+    <tr><td style="border-color:rgba(255,255,255,0.1); color:rgba(255,255,255,0.85);">New user</td><td style="border-color:rgba(255,255,255,0.1); color:#fff;">Search → Grid → Banner "Thanh toán hoá đơn đầu tiên →"</td></tr>
+  </table>
+  <p style="color:rgba(255,255,255,0.5); font-size:11px; margin-top:12px;">Discovery của B + Urgency của A + Vingroup first-class trong grid. Phase 1 ship static sort, Phase 2 thêm smart sort.</p>
+</div>
+
+<h2>4. Đề xuất IA chi tiết (Option B + A)</h2>
 
 <blockquote>Urgency-first + Saved-first + Category browse. Returning user: 3 tap, &lt;15 giây. New user: onboarding banner "Thêm hoá đơn đầu tiên".</blockquote>
 
