@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>V-Smart Pay — Design System & Documentation</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:-apple-system,'Helvetica Neue',sans-serif; background:#fff; color:#111; max-width:720px; margin:0 auto; padding:48px 24px 80px; }
+  h1 { font-size:28px; font-weight:800; letter-spacing:-0.4px; margin-bottom:4px; }
+  .sub { font-size:14px; color:#888; margin-bottom:40px; }
+  h2 { font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:1.5px; color:#999; margin:32px 0 12px; }
+  a { color:#111; text-decoration:none; }
+  .card { display:block; background:#fafafa; border-radius:14px; padding:16px 18px; margin:8px 0; transition:background 0.15s; }
+  .card:hover { background:#f0f0f0; }
+  .card .title { font-size:15px; font-weight:700; margin-bottom:2px; }
+  .card .desc { font-size:12px; color:#888; }
+  .grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+  .grid .card { padding:14px; }
+  .grid .card .title { font-size:13px; }
+  .badge { display:inline-block; font-size:10px; font-weight:700; background:#111; color:#fff; padding:2px 6px; border-radius:4px; margin-left:6px; }
+  .badge.new { background:#00E676; color:#111; }
+</style>
+</head>
+<body>
+
+<h1>V-Smart Pay</h1>
+<p class="sub">Design System & Documentation &middot; by Huy Kieu &copy; 2026</p>
+
+<h2>&#x1F4D1; Documentation</h2>
+
+<a href="/ia-spec.html" class="card">
+  <div class="title">IA Specification v4.1 <span class="badge new">Latest</span></div>
+  <div class="desc">Đề xuất Kiến trúc Thông tin — Premium UX Strategic Proposal. Competitive analysis, wireframes, phased rollout.</div>
+</a>
+
+<h2>&#x1F4F1; Wireframes (Live)</h2>
+
+<div class="grid">
+  <a href="/ia/home-p1" class="card">
+    <div class="title">Trang chủ GĐ1</div>
+    <div class="desc">30/04 — Nút Sinh lời, Widget TT</div>
+  </a>
+  <a href="/ia/home-p2" class="card">
+    <div class="title">Trang chủ GĐ2</div>
+    <div class="desc">30/09 — Widget tài sản, avatar</div>
+  </a>
+  <a href="/ia/home-p3" class="card">
+    <div class="title">Trang chủ GĐ3</div>
+    <div class="desc">31/12 — Tab Ưu đãi, tài sản tăng</div>
+  </a>
+  <a href="/ia/tab-thanhtoan" class="card">
+    <div class="title">Tab Thanh toán</div>
+    <div class="desc">Sắp hạn → Đã lưu → Hoá đơn → Vé</div>
+  </a>
+  <a href="/ia/tab-taichinh" class="card">
+    <div class="title">Tab Tài chính</div>
+    <div class="desc">Chart + Swipe cards + Bảo vệ</div>
+  </a>
+  <a href="/ia/tab-uudai" class="card">
+    <div class="title">Tab Ưu đãi</div>
+    <div class="desc">V-Point, deals, giới thiệu bạn</div>
+  </a>
+  <a href="/ia/tab-qr" class="card">
+    <div class="title">Tab QR</div>
+    <div class="desc">Nhận tiền / Quét mã VietQR</div>
+  </a>
+</div>
+
+<h2>&#x1F3A8; Design System</h2>
+
+<a href="/showcase" class="card">
+  <div class="title">Component Showcase</div>
+  <div class="desc">Button, Header, TextField, BottomSheet, Dialog, ItemList, Toast, FeedbackState...</div>
+</a>
+
+<h2>&#x1F4CA; Features</h2>
+
+<div class="grid">
+  <a href="/sinhloi" class="card">
+    <div class="title">Sinh lời</div>
+    <div class="desc">Dashboard, nạp/rút, lịch sử</div>
+  </a>
+  <a href="/sinhloi/states" class="card">
+    <div class="title">Sinh lời States</div>
+    <div class="desc">UI + Flow browser</div>
+  </a>
+  <a href="/bidv-link/states" class="card">
+    <div class="title">BIDV Link States</div>
+    <div class="desc">Liên kết ngân hàng</div>
+  </a>
+  <a href="/transfer/states" class="card">
+    <div class="title">Chuyển tiền States</div>
+    <div class="desc">P2P + Bank transfer</div>
+  </a>
+  <a href="/vas/states" class="card">
+    <div class="title">VAS States</div>
+    <div class="desc">Thanh toán tiện ích</div>
+  </a>
+  <a href="/rwa" class="card">
+    <div class="title">RWA</div>
+    <div class="desc">Bất động sản mã hoá</div>
+  </a>
+</div>
+
+<p style="font-size:11px; color:#ccc; margin-top:40px; text-align:center;">V-Smart Pay &middot; Vingroup Financial Technology &middot; 2026</p>
+
+</body>
+</html>
