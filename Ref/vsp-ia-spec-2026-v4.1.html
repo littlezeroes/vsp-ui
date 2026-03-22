@@ -59,11 +59,26 @@
 <div class="subtitle">Đề xuất Kiến trúc Thông tin — Premium UX Specification</div>
 <div class="meta">Version 4.1 &middot; 22/03/2026 &middot; by Huy Kieu &copy; 2026</div>
 
+<!-- Table of Contents -->
+<div style="font-family:-apple-system,sans-serif; font-size:13px; background:#fafafa; border-radius:14px; padding:16px 20px; margin-bottom:40px;">
+  <strong style="font-size:11px; text-transform:uppercase; letter-spacing:1px; color:#999; display:block; margin-bottom:8px;">Mục lục</strong>
+  <div style="display:flex; flex-direction:column; gap:4px;">
+    <a href="#s1" style="color:#111; text-decoration:none; font-weight:600; padding:4px 0;">1. Vấn đề</a>
+    <a href="#s3" style="color:#111; text-decoration:none; font-weight:600; padding:4px 0;">2. Phân tích cạnh tranh</a>
+    <a href="#s4" style="color:#111; text-decoration:none; font-weight:600; padding:4px 0;">3. Nghiên cứu người dùng</a>
+    <a href="#s5" style="color:#111; text-decoration:none; font-weight:600; padding:4px 0;">4. Phân tích hiện trạng</a>
+    <a href="#s6" style="color:#111; text-decoration:none; font-weight:600; padding:4px 0;">5. Kiến trúc thông tin đề xuất</a>
+    <a href="#s8" style="color:#111; text-decoration:none; font-weight:600; padding:4px 0;">6. Wireframe &amp; Thiết kế</a>
+    <a href="#s9" style="color:#111; text-decoration:none; font-weight:600; padding:4px 0;">7. Chỉ số thành công</a>
+    <a href="#s11" style="color:#111; text-decoration:none; font-weight:600; padding:4px 0;">8. Phụ lục</a>
+  </div>
+</div>
+
 <!-- ═══ 1 ═══ -->
 <span class="sn">1</span>
-<h2>Vấn đề</h2>
+<h2 id="s1">Vấn đề</h2>
 
-<p>V-Smart Pay phiên bản 1.0.6 có <strong>12 tính năng trên 5 tab</strong>. Kế hoạch 2026 yêu cầu thêm <strong>60+ tính năng mới</strong> trong 3 mảng: thanh toán mở rộng, tiết kiệm &amp; đầu tư, khách hàng thân thiết. Cấu trúc điều hướng hiện tại (5 tab, 12 tính năng) không đủ chỗ để tổ chức thêm 60+ tính năng mới.</p>
+<p>V-Smart Pay phiên bản 1.0.6 có <strong>12 tính năng trên 5 tab</strong>. Kế hoạch 2026 yêu cầu thêm <strong>60+ dịch vụ &amp; tính năng mới</strong> trong 3 mảng: thanh toán mở rộng, tiết kiệm &amp; đầu tư, khách hàng thân thiết. Cấu trúc điều hướng hiện tại (5 tab, 12 tính năng) không đủ chỗ để tổ chức thêm 60+ dịch vụ &amp; tính năng mới.</p>
 
 <table>
   <tr><th>Nhu cầu người dùng</th><th>Sản phẩm đáp ứng</th><th>Hiện trạng v1.0.6</th></tr>
@@ -77,7 +92,7 @@
 
 <!-- ═══ 3. CẠNH TRANH (trước — thiết lập gap) ═══ -->
 <span class="sn">3</span>
-<h2>Phân tích cạnh tranh</h2>
+<h2 id="s3">Phân tích cạnh tranh</h2>
 
 <h3>Thị trường ví điện tử Việt Nam 2026</h3>
 
@@ -205,11 +220,26 @@
 
 <div class="callout"><strong>Ultimate metric:</strong> ARPU (Average Revenue Per User) tăng mà session duration không tăng &mdash; chứng minh hiệu quả hơn, không phải spam nhiều hơn.</div>
 
+<!-- Positioning Chart -->
+<div style="font-family:-apple-system,sans-serif; margin:16px 0; padding:20px; background:#fafafa; border-radius:14px;">
+  <div style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:#999; margin-bottom:12px;">Định vị VSP</div>
+  <div style="position:relative; width:100%; height:220px; border-left:2px solid #ddd; border-bottom:2px solid #ddd;">
+    <div style="position:absolute; left:-80px; top:50%; transform:rotate(-90deg) translateX(50%); font-size:10px; font-weight:600; color:#bbb; white-space:nowrap;">Tài chính phức tạp &uarr;</div>
+    <div style="position:absolute; bottom:-22px; left:50%; transform:translateX(-50%); font-size:10px; font-weight:600; color:#bbb;">Utility-first &rarr;</div>
+    <div style="position:absolute; left:12%; top:65%; font-size:10px; font-weight:600; color:#bbb; text-align:center;"><div style="width:8px; height:8px; border-radius:50%; background:#ccc; margin:0 auto 2px;"></div>MoMo</div>
+    <div style="position:absolute; left:25%; top:72%; font-size:10px; font-weight:600; color:#bbb; text-align:center;"><div style="width:8px; height:8px; border-radius:50%; background:#ccc; margin:0 auto 2px;"></div>ZaloPay</div>
+    <div style="position:absolute; left:50%; top:50%; font-size:10px; font-weight:600; color:#aaa; text-align:center;"><div style="width:8px; height:8px; border-radius:50%; background:#aaa; margin:0 auto 2px;"></div>Cake</div>
+    <div style="position:absolute; left:72%; top:8%; font-size:10px; font-weight:600; color:#888; text-align:center;"><div style="width:8px; height:8px; border-radius:50%; background:#888; margin:0 auto 2px;"></div>Revolut</div>
+    <div style="position:absolute; left:82%; top:40%; font-size:10px; font-weight:600; color:#888; text-align:center;"><div style="width:8px; height:8px; border-radius:50%; background:#888; margin:0 auto 2px;"></div>Monzo</div>
+    <div style="position:absolute; left:65%; top:20%; font-size:12px; font-weight:800; color:#111; text-align:center;"><div style="width:14px; height:14px; border-radius:50%; background:#111; margin:0 auto 3px;"></div>VSP</div>
+  </div>
+</div>
+
 <div class="dark-card" style="background:#111; color:#fff; border-radius:20px; padding:24px; margin:20px 0; font-family:-apple-system,sans-serif;">
 
   <h3 style="color:#fff; margin:0 0 12px; font-size:17px; border:none; padding:0;">VSP khác biệt thế nào</h3>
 
-  <p style="color:rgba(255,255,255,0.7); font-size:13px; line-height:1.6; margin-bottom:16px;">VSP không đi theo MoMo (promo-heavy) hay ZaloPay (banner hero). VSP học từ Cake (clean UX, kênh bán hiệu quả) nhưng premium hơn về UI. Đặt giữa Revolut (phức tạp, đủ mạnh) và Monzo (đơn giản, sạch) &mdash; đủ chứa hệ sinh thái Vingroup, đủ đơn giản cho người dùng VN.</p>
+  <p style="color:rgba(255,255,255,0.7); font-size:13px; line-height:1.6; margin-bottom:16px;">VSP không đi theo MoMo (promo-heavy) hay ZaloPay (banner hero). VSP học từ Cake (clean UX, kênh bán hiệu quả) nhưng premium hơn về UI. Đặt giữa Revolut và Monzo &mdash; đủ chứa hệ sinh thái Vingroup, đủ đơn giản cho người dùng VN.</p>
 
   <table style="margin:0; font-size:12px;">
     <tr><th style="border-color:rgba(255,255,255,0.2); color:rgba(255,255,255,0.5);">Underserved needs</th><th style="border-color:rgba(255,255,255,0.2); color:rgba(255,255,255,0.5);">VSP chiếm bằng</th><th style="border-color:rgba(255,255,255,0.2); color:rgba(255,255,255,0.5);">Tại sao thắng</th></tr>
@@ -248,7 +278,7 @@
 
 <!-- ═══ 4. NGƯỜI DÙNG ═══ -->
 <span class="sn">4</span>
-<h2>Nghiên cứu người dùng</h2>
+<h2 id="s4">Nghiên cứu người dùng</h2>
 
 <h3>3 nhu cầu cốt lõi (Jobs-to-be-Done)</h3>
 
@@ -262,7 +292,7 @@
 
 <!-- ═══ 5. HIỆN TRẠNG (cuối — đánh giá cụ thể VSP) ═══ -->
 <span class="sn">5</span>
-<h2>Phân tích hiện trạng</h2>
+<h2 id="s5">Phân tích hiện trạng</h2>
 
 <table>
   <tr><th>Tab</th><th>Tần suất</th><th>Vấn đề</th><th>Quyết định</th></tr>
@@ -274,7 +304,7 @@
 
 <!-- ═══ 6 ═══ -->
 <span class="sn">6</span>
-<h2>Kiến trúc thông tin đề xuất</h2>
+<h2 id="s6">Kiến trúc thông tin đề xuất</h2>
 
 <blockquote>V-Smart Pay là nền tảng tài chính cá nhân tích hợp hệ sinh thái Vingroup. Tiện ích trước, quảng cáo sau. Hiển thị dần theo hành vi. Giao diện tạo niềm tin.</blockquote>
 
@@ -353,7 +383,7 @@
 
 <!-- ═══ 8 ═══ -->
 <span class="sn">8</span>
-<h2>Wireframe &amp; Thiết kế</h2>
+<h2 id="s8">Wireframe &amp; Thiết kế</h2>
 
 <!-- GĐ1 -->
 <h3>Giai đoạn 1 — 30/04/2026</h3>
@@ -556,7 +586,7 @@
 
 <!-- ═══ 9 ═══ -->
 <span class="sn">9</span>
-<h2>Chỉ số thành công</h2>
+<h2 id="s9">Chỉ số thành công</h2>
 
 <p><strong>North Star: MATU (Monthly Active Transacting Users)</strong> &mdash; Số người dùng thực hiện ít nhất 1 giao dịch mỗi tháng. Đo hành vi thực tế, gắn trực tiếp doanh thu. Không dùng MAU (mở app nhưng không giao dịch) hay TPV (bị lệch bởi người dùng lớn).</p>
 
@@ -571,7 +601,7 @@
 
 <!-- ═══ 10 ═══ -->
 <span class="sn">11</span>
-<h2>Phụ lục</h2>
+<h2 id="s11">Phụ lục</h2>
 
 <table>
   <tr><th>Thuật ngữ</th><th>Ý nghĩa</th></tr>
