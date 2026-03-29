@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VSP — 5 Options Cấu trúc App 2026</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:Georgia,'Times New Roman',serif; background:#fff; color:#111; line-height:1.8; max-width:720px; margin:0 auto; padding:48px 24px 120px; font-size:15px; }
+  h1 { font-family:-apple-system,sans-serif; font-size:24px; font-weight:800; margin-bottom:4px; }
+  .meta { font-size:13px; color:#888; margin-bottom:40px; font-family:-apple-system,sans-serif; }
+  h2 { font-family:-apple-system,sans-serif; font-size:18px; font-weight:700; margin:48px 0 12px; padding-bottom:4px; border-bottom:1px solid #ddd; }
+  h3 { font-family:-apple-system,sans-serif; font-size:15px; font-weight:700; margin:28px 0 8px; }
+  p { margin-bottom:14px; }
+  table { width:100%; border-collapse:collapse; margin:16px 0; font-size:13px; font-family:-apple-system,sans-serif; }
+  th { text-align:left; padding:8px 10px; border-bottom:2px solid #111; font-weight:700; font-size:11px; text-transform:uppercase; letter-spacing:0.5px; }
+  td { padding:8px 10px; border-bottom:1px solid #eee; vertical-align:top; }
+  .mono { font-family:'SF Mono','Fira Code',monospace; font-size:13px; background:#f8f8f8; padding:16px 20px; margin:14px 0; border-left:3px solid #ddd; white-space:pre-wrap; line-height:1.8; }
+  blockquote { border-left:3px solid #ccc; padding:8px 16px; margin:14px 0; font-style:italic; color:#555; }
+  ol, ul { margin:8px 0 14px 24px; }
+  li { margin-bottom:6px; }
+  .footnote { font-size:12px; color:#888; margin-top:40px; padding-top:12px; border-top:1px solid #eee; font-family:-apple-system,sans-serif; }
+  strong { font-weight:700; }
+  hr { border:none; border-top:1px solid #ddd; margin:32px 0; }
+
+  /* Draft UI iframes */
+  .draft-row { display:flex; gap:16px; overflow-x:auto; padding:8px 0; }
+  .draft-col { flex:0 0 auto; text-align:center; }
+  .draft-col .label { font-family:-apple-system,sans-serif; font-size:12px; font-weight:700; margin-bottom:6px; }
+  .draft-col .sublabel { font-family:-apple-system,sans-serif; font-size:10px; color:#888; margin-bottom:8px; }
+  .draft-frame { width:195px; height:422px; border:2px solid #ddd; border-radius:24px; overflow:hidden; }
+  .draft-frame iframe { width:390px; height:844px; border:none; transform:scale(0.5); transform-origin:top left; }
+  .draft-frame.rec { border-color:#111; border-width:3px; }
+</style>
+</head>
+<body>
+
+<h1>5 Options Cấu trúc App V-Smart Pay</h1>
+<div class="meta">Vi — Design Lead · 21/03/2026 · Dựa trên Production v1.0.6 · Research: Revolut, Monzo, ZaloPay</div>
+
+<!-- ════════════════════════════════════════════════════════ -->
+<h2>1. Vấn đề</h2>
+
+<p>VSP v1.0.6 có 5 tabs: <strong>Trang chủ — Chuyển tiền — QR — Giao dịch — Tài khoản</strong>. Cấu trúc của payment wallet thuần.</p>
+
+<p>Roadmap 2026 yêu cầu thêm 4 product lines: Sinh lời, Đầu tư BĐS, Tín dụng (BNPL), Bảo hiểm. Nav đã full 5 tabs, không còn slot.</p>
+
+<p>Tab "Chuyển tiền" dành 1 slot cho 1 action duy nhất. Chuyển tiền là action (giống nạp tiền), không phải category — lãng phí.</p>
+
+<p><strong>Câu hỏi:</strong> Tổ chức lại cấu trúc app thế nào để chứa 4 product lines mới, scaleable cho cuối năm, không phá thói quen user?</p>
+
+<!-- ════════════════════════════════════════════════════════ -->
+<h2>2. Khuyến nghị</h2>
+
+<p><strong>Chọn Option ② — Chuyển tiền → Tài chính.</strong></p>
+
+<ol>
+  <li><strong>Scale tốt nhất.</strong> Thêm BĐS, BNPL, BH = thêm card vào Tab Tài chính. Quyết định 1 lần, không bao giờ cần redesign nav.</li>
+  <li><strong>AUM cao nhất.</strong> Tab riêng cho financial products = user thấy mỗi lần mở app → deposit nhiều hơn.</li>
+  <li><strong>Habit break chấp nhận được.</strong> Chuyển tiền vào Home quick actions — user tap 1 lần thay vì switch tab. Nhanh hơn cách cũ.</li>
+  <li><strong>Không phụ thuộc.</strong> Sinh lời v2 đã done. VAS wireframes đã có. Ship được ngay.</li>
+  <li><strong>Benchmark confirmed.</strong> Revolut (Wealth tab, 52M users) và Monzo (Grow tab) đều có tab riêng cho financial products. ZaloPay chôn trong grid → visibility thấp → AUM thấp.</li>
+</ol>
+
+<p>Phần còn lại của document giải thích chi tiết 5 options, bảng so sánh, roadmap, và draft UI.</p>
+
+<!-- ════════════════════════════════════════════════════════ -->
+<h2>3. So sánh</h2>
+
+<table>
+  <tr>
+    <th>Tiêu chí</th>
+    <th>① Giữ nguyên</th>
+    <th>② Tài chính</th>
+    <th>③ Dịch vụ</th>
+    <th>④ Ưu đãi</th>
+    <th>⑤ Wallet Hub</th>
+  </tr>
+  <tr><td>Sinh lời visibility ¹</td><td>Thấp</td><td><strong>Cao nhất</strong></td><td>TB</td><td>Thấp</td><td>TB</td></tr>
+  <tr><td>Scale 4 verticals ²</td><td>Kém (1/5)</td><td><strong>Tốt (5/5)</strong></td><td>TB (3/5)</td><td>TB (3/5)</td><td>Kém (2/5)</td></tr>
+  <tr><td>Habit break ³</td><td>Zero</td><td>Nhẹ</td><td>Nhẹ</td><td><strong>Nặng</strong></td><td>Zero</td></tr>
+  <tr><td>Tab mới đủ content? ⁴</td><td>—</td><td>Hơi ít lúc đầu</td><td><strong>Đủ (có VAS)</strong></td><td>Trống</td><td>—</td></tr>
+  <tr><td>Phụ thuộc ngoài ⁵</td><td>Không</td><td>Không</td><td>Không</td><td><strong>Cần loyalty</strong></td><td>Không</td></tr>
+  <tr><td>Dev cost 30/4 ⁶</td><td>Thấp</td><td>TB</td><td>TB</td><td>Cao</td><td>Thấp</td></tr>
+  <tr><td>MoMo parity 30/4 ⁷</td><td>~65%</td><td><strong>~78%</strong></td><td>~75%</td><td>~60%</td><td>~55%</td></tr>
+  <tr><td>Cần redesign Q4+?</td><td><strong>Chắc chắn</strong></td><td>Không</td><td>Có thể</td><td>Có thể</td><td><strong>Chắc chắn</strong></td></tr>
+</table>
+
+<p style="font-size:12px; color:#888; font-family:-apple-system,sans-serif;">
+¹ Product quan trọng nhất 30/4 được user thấy dễ đến mức nào. Tab riêng > Card > Sub-page.<br>
+² Khi thêm BĐS, BNPL, BH → cấu trúc chứa nổi không? Hay phải redesign nav?<br>
+³ Mất tab Giao dịch > Mất tab Chuyển tiền > Không mất gì.<br>
+⁴ Tab mới mà trống → ấn tượng xấu.<br>
+⁵ Cần loyalty program? Backend mới? Hay chỉ dùng cái đã có?<br>
+⁶ Effort để ship trước 30/4.<br>
+⁷ % features thanh toán trọng yếu so với MoMo.
+</p>
+
+<!-- ════════════════════════════════════════════════════════ -->
+<h2>4. Draft UI — 5 Options</h2>
+
+<p>Mỗi option đã build thành interactive prototype dùng VSP design system. Tap bottom nav để chuyển tabs. Scroll trong frame để xem full screen.</p>
+
+<div class="draft-row">
+  <div class="draft-col">
+    <div class="label">① Giữ nguyên</div>
+    <div class="sublabel">Nav không đổi</div>
+    <div class="draft-frame"><iframe src="/architecture/opt1"></iframe></div>
+  </div>
+  <div class="draft-col">
+    <div class="label">② Tài chính ★</div>
+    <div class="sublabel">Tap Home ↔ Tài chính</div>
+    <div class="draft-frame rec"><iframe src="/architecture/opt2"></iframe></div>
+  </div>
+  <div class="draft-col">
+    <div class="label">③ Dịch vụ</div>
+    <div class="sublabel">Tap Home ↔ Dịch vụ</div>
+    <div class="draft-frame"><iframe src="/architecture/opt3"></iframe></div>
+  </div>
+  <div class="draft-col">
+    <div class="label">④ Ưu đãi</div>
+    <div class="sublabel">Tap Home ↔ Ưu đãi</div>
+    <div class="draft-frame"><iframe src="/architecture/opt4"></iframe></div>
+  </div>
+  <div class="draft-col">
+    <div class="label">⑤ Wallet Hub</div>
+    <div class="sublabel">Tap tabs trong card</div>
+    <div class="draft-frame"><iframe src="/architecture/opt5"></iframe></div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════ -->
+<h2>5. Chi tiết từng Option</h2>
+
+<!-- ──── OPTION 1 ──────────────────────────────────────── -->
+<h3>Option ① — Giữ nguyên nav, thêm vào Home</h3>
+
+<p><strong>Nav:</strong> Không đổi. Trang chủ — Chuyển tiền — QR — Giao dịch — Tài khoản.</p>
+
+<p><strong>Thay đổi:</strong> Thêm Sinh lời card và VAS redesign vào Home. Sinh lời, Đầu tư = sub-page khi tap vào card.</p>
+
+<div class="mono">Home: Wallet Card → Quick Actions (3) → <strong>Sinh lời Card [NEW]</strong> → VAS Banner [updated] → GD gần đây</div>
+
+<p><strong>Ưu:</strong> Rủi ro zero — không ai mất thói quen. Dev cost thấp nhất.</p>
+
+<p><strong>Nhược:</strong> Tab Chuyển tiền vẫn lãng phí. Sinh lời = sub-page → visibility thấp. Thêm BĐS, BNPL, BH → Home scroll rất dài → <strong>chắc chắn phải redesign cuối năm</strong>.</p>
+
+<hr>
+
+<!-- ──── OPTION 2 ──────────────────────────────────────── -->
+<h3>Option ② — Chuyển tiền → Tài chính</h3>
+
+<p><strong>Nav:</strong> Trang chủ — <strong>Tài chính</strong> — QR — Giao dịch — Tài khoản.</p>
+
+<p><strong>Thay đổi:</strong> Xoá tab Chuyển tiền, thay bằng Tài chính. Chuyển tiền gộp vào Home quick actions (icon thứ 4). Tab Tài chính chứa: Tổng tài sản, Sinh lời, Đầu tư BĐS.</p>
+
+<div class="mono">Home:  Wallet Card → Quick Actions (<strong>4: Nạp/Rút · Chuyển · Nhận · TT</strong>) → Sinh lời Card → VAS → GD
+
+Tab Tài chính:  Tổng tài sản → Sinh lời tự động → Đầu tư BĐS (teaser)</div>
+
+<p><strong>Ưu:</strong> Sinh lời/Đầu tư = tab riêng → visibility cao nhất. Scale vô hạn (thêm vertical = thêm card). Chuyển tiền trên Home nhanh hơn switch tab. Không phụ thuộc bên ngoài. Đúng pattern Revolut/Monzo.</p>
+
+<p><strong>Nhược:</strong> User mất tab Chuyển tiền (mitigate: icon trên Home). Tab Tài chính lúc đầu 2 sections (mitigate: +BĐS teaser 30/4, BĐS live Q3).</p>
+
+<hr>
+
+<!-- ──── OPTION 3 ──────────────────────────────────────── -->
+<h3>Option ③ — Chuyển tiền → Dịch vụ</h3>
+
+<p><strong>Nav:</strong> Trang chủ — <strong>Dịch vụ</strong> — QR — Giao dịch — Tài khoản.</p>
+
+<p><strong>Thay đổi:</strong> Tab Dịch vụ = hub chứa VAS (Điện/Nước/Net/ĐT) + Sinh lời + Đầu tư + BH. Chuyển tiền gộp vào Home.</p>
+
+<div class="mono">Tab Dịch vụ:  Search → Thanh toán HĐ (Điện · Nước · Net · ĐT) → Tài chính (Sinh lời · BĐS) → Mua sắm</div>
+
+<p><strong>Ưu:</strong> Tab có nhiều content ngay (VAS đã có). Scale được.</p>
+
+<p><strong>Nhược:</strong> "Dịch vụ" quá generic — Sinh lời nằm cạnh Điện/Nước → phá mental model. User VN không quen term này trên tab bar. Sinh lời bị lẫn.</p>
+
+<hr>
+
+<!-- ──── OPTION 4 ──────────────────────────────────────── -->
+<h3>Option ④ — Giao dịch → Ưu đãi</h3>
+
+<p><strong>Nav:</strong> Trang chủ — Chuyển tiền — QR — <strong>Ưu đãi</strong> — Tài khoản.</p>
+
+<p><strong>Thay đổi:</strong> Xoá tab Giao dịch (merge GD vào Home). Tab Ưu đãi = deals, cashback, partner promos. Giữ Chuyển tiền.</p>
+
+<div class="mono">Tab Ưu đãi:  Featured Deal → Categories → Deal list
+Home:  += GD gần đây mở rộng</div>
+
+<p><strong>Ưu:</strong> Ưu đãi = MAU driver (ZaloPay/MoMo đều có). Giữ Chuyển tiền.</p>
+
+<p><strong>Nhược:</strong> Mất tab Giao dịch — habit break nặng nhất (user VN check lịch sử thường xuyên). Chưa có loyalty program → tab trống. Sinh lời vẫn second-class.</p>
+
+<hr>
+
+<!-- ──── OPTION 5 ──────────────────────────────────────── -->
+<h3>Option ⑤ — Wallet Hub</h3>
+
+<p><strong>Nav:</strong> Không đổi.</p>
+
+<p><strong>Thay đổi:</strong> Wallet Card trên Home có internal tabs: [Ví] [Sinh lời] [Đầu tư]. Tap tab → card hiện balance tương ứng.</p>
+
+<div class="mono">Wallet Card:
+  ┌───────────────────────────────────┐
+  │ [Ví]  [Sinh lời]  [Đầu tư]      │  ← internal tabs
+  │ Ví V-Smart Pay · 14.328 đ        │
+  │ Tổng tài sản: 5.014.328đ         │
+  └───────────────────────────────────┘</div>
+
+<p><strong>Ưu:</strong> Zero habit break. Clever UX.</p>
+
+<p><strong>Nhược:</strong> Card quá phức tạp. Thêm BNPL + BH → 5 tabs trong 1 card trên 390px → không khả thi. <strong>Chắc chắn phải redesign cuối năm.</strong></p>
+
+<!-- ════════════════════════════════════════════════════════ -->
+<h2>6. Roadmap — Fill dần mỗi release</h2>
+
+<table>
+  <tr><th>Release</th><th>① Giữ nguyên</th><th>② Tài chính</th><th>③ Dịch vụ</th><th>④ Ưu đãi</th><th>⑤ Wallet Hub</th></tr>
+  <tr><td><strong>v2.0 (30/4)</strong></td><td>Home +SL, VAS redesign</td><td>Nav đổi, Home +CT +SL, Tab TC: TTS+SL, VAS redesign</td><td>Nav đổi, Tab DV: VAS+SL</td><td>Nav đổi, Tab ƯĐ: deals</td><td>Card tabs, VAS redesign</td></tr>
+  <tr><td><strong>v2.1 (Jun)</strong></td><td>Home +BĐS</td><td>TC +BĐS teaser</td><td>DV +BĐS</td><td>Home +BĐS</td><td>Card +Đầu tư</td></tr>
+  <tr><td><strong>v2.2 (Aug)</strong></td><td>VAS +auto-pay</td><td>TC: BĐS live + portfolio</td><td>DV: BĐS live</td><td>ƯĐ +cashback</td><td>VAS +auto-pay</td></tr>
+  <tr><td><strong>v3.0 (Oct)</strong></td><td>Home +BNPL (dài!)</td><td>TC +BNPL</td><td>DV +BNPL</td><td>Home +BNPL</td><td>Card +BNPL (nặng!)</td></tr>
+  <tr><td><strong>v3.1 (Dec)</strong></td><td>Home +BH → redesign</td><td>TC +BH → 4 verticals xong</td><td>DV +BH</td><td>Home +BH</td><td>Redesign</td></tr>
+</table>
+
+<blockquote>Option ② là duy nhất không cần redesign lại sau Q4. Mỗi vertical mới = thêm 1 card. Options ① và ⑤ chắc chắn phải redesign khi có >3 verticals.</blockquote>
+
+<!-- ════════════════════════════════════════════════════════ -->
+<h2>7. Benchmark — Supporting evidence</h2>
+
+<table>
+  <tr><th>App</th><th>Cách tổ chức Financial Products</th><th>Kết quả</th></tr>
+  <tr><td><strong>Revolut</strong></td><td>Tab "Wealth" riêng — Stocks, Crypto, Savings</td><td>52M users. AUM tăng mạnh nhờ visibility cao.</td></tr>
+  <tr><td><strong>Monzo</strong></td><td>Tab "Grow" riêng — Savings, Invest, Pension</td><td>Mental model rõ: daily money vs future money.</td></tr>
+  <tr><td><strong>ZaloPay</strong></td><td>Chôn trong service grid → sub-page</td><td>Visibility thấp. Phải dùng banner để push.</td></tr>
+  <tr><td><strong>MoMo</strong></td><td>Tab "Ví" — balance + nạp/rút + sinh lời</td><td>Hoạt động, nhưng tab quá nặng.</td></tr>
+</table>
+
+<div class="footnote">
+  V-Smart Pay — 5 Options Quy Hoạch App 2026<br>
+  Vi — Design Lead · 21/03/2026<br>
+  Sources: Production v1.0.6 · Revolut · Monzo · ZaloPay/MoMo · KHHĐ 2026
+</div>
+
+</body>
+</html>

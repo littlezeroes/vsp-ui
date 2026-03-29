@@ -55,6 +55,10 @@ See `.claude/pipeline.md` for the Figma → Code → QC → Ship workflow.
 | Token Fix Loop | `.claude/agents/token-check-fix.md` | "fix tokens", "token loop", "auto fix" |
 | Pipeline | `.claude/agents/vsp-pipeline.md` | "pipeline", "full flow", "build and check" |
 | UX Review | `.claude/agents/ux-review.md` | paste Figma URL + "review", "ux review", "audit ux" |
+| Figma Design Loop | `.claude/agents/figma-design-loop.md` | "design screen", "vẽ figma", "build figma screen" |
+| Figma Structure QC | `.claude/agents/figma-structure-qc.md` | "structure check", "QC figma", "check layers" |
+| Figma Auto Research | `.claude/agents/figma-auto-research.md` | "auto research figma", "scan figma", "design audit loop" |
+| Figma Restructure | `/restructure-figma` (command) | "restructure", "clean layers", "fix structure" |
 
 ## Agents (UXUI Pipeline — team)
 | Agent | File | Trigger |

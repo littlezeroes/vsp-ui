@@ -1,0 +1,2 @@
+var e=globalThis.parcelRequired477;(0,e.register)("e66a9",function(t,a){Object.defineProperty(t.exports,"__esModule",{value:!0}),t.exports.default=void 0;var l=r(e("42omo")),o=r(e("aSNrY"));function r(e){return e&&e.__esModule?e:{default:e}}let d=e=>l.default.createElement(o.default,Object.assign({name:"NodeIcon",dangerouslySetGlyph:'<path fill="currentcolor" d="M10 8a2 2 0 1 1-4 0 2 2 0 0 1 4 0"/>'},e));d.displayName="NodeIcon",t.exports.default=d});
+//# sourceMappingURL=node.a3f57a67.js.map

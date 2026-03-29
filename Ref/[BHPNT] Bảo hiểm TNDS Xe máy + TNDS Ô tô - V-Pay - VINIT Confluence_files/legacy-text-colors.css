@@ -1,0 +1,245 @@
+/* Copied from https://stash.atlassian.com/projects/CONFCLOUD/repos/confluence/browse/confluence-plugins/confluence-bundled-plugins/confluence-web-resources/src/main/resources/includes/css/theming/legacy-text-colors.less
+ * Removed unneeded *-color-picker classes
+ */
+/* stylelint-disable design-system/ensure-design-token-usage */
+.legacy-color-text-blue3 {
+  color: #172B4D;
+}
+html[data-color-mode=dark] .legacy-color-text-blue3 {
+  color: #B6C2CF;
+}
+.legacy-color-text-orange1 {
+  color: #993300;
+}
+html[data-color-mode=dark] .legacy-color-text-orange1 {
+  color: #EF7B46;
+}
+.legacy-color-text-khaki1 {
+  color: #333300;
+}
+html[data-color-mode=dark] .legacy-color-text-khaki1 {
+  color: #CDC991;
+}
+.legacy-color-text-green1 {
+  color: #003300;
+}
+html[data-color-mode=dark] .legacy-color-text-green1 {
+  color: #A9DCA0;
+}
+.legacy-color-text-blue1 {
+  color: #003366;
+}
+html[data-color-mode=dark] .legacy-color-text-blue1 {
+  color: #ABC3FF;
+}
+.legacy-color-text-blue2 {
+  color: #000080;
+}
+html[data-color-mode=dark] .legacy-color-text-blue2 {
+  color: #F2BFFF;
+}
+.legacy-color-text-purple1 {
+  color: #333399;
+}
+html[data-color-mode=dark] .legacy-color-text-purple1 {
+  color: #B3A0FF;
+}
+.legacy-color-text-default {
+  color: #000000;
+}
+html[data-color-mode=dark] .legacy-color-text-default {
+  color: #FFFFFF;
+}
+.legacy-color-text-red1 {
+  color: #800000;
+}
+html[data-color-mode=dark] .legacy-color-text-red1 {
+  color: #FF8F73;
+}
+.legacy-color-text-orange2 {
+  color: #FF6600;
+}
+html[data-color-mode=dark] .legacy-color-text-orange2 {
+  color: #FF944D;
+}
+.legacy-color-text-yellow1 {
+  color: #808000;
+}
+html[data-color-mode=dark] .legacy-color-text-yellow1 {
+  color: #949400;
+}
+.legacy-color-text-green2 {
+  color: #008000;
+}
+html[data-color-mode=dark] .legacy-color-text-green2 {
+  color: #4A9A4A;
+}
+.legacy-color-text-teal1 {
+  color: #008080;
+}
+html[data-color-mode=dark] .legacy-color-text-teal1 {
+  color: #2DA8A8;
+}
+.legacy-color-text-blue4 {
+  color: #0000FF;
+}
+html[data-color-mode=dark] .legacy-color-text-blue4 {
+  color: #8080FF;
+}
+.legacy-color-text-gray1 {
+  color: #666699;
+}
+html[data-color-mode=dark] .legacy-color-text-gray1 {
+  color: #9B9BC5;
+}
+.legacy-color-text-gray2 {
+  color: #7A869A;
+}
+html[data-color-mode=dark] .legacy-color-text-gray2 {
+  color: #8893A5;
+}
+.legacy-color-text-red2 {
+  color: #FF0000;
+}
+html[data-color-mode=dark] .legacy-color-text-red2 {
+  color: #FF3D3D;
+}
+.legacy-color-text-orange3 {
+  color: #FF9900;
+}
+html[data-color-mode=dark] .legacy-color-text-orange3 {
+  color: #FFC266;
+}
+.legacy-color-text-green3 {
+  color: #99CC00;
+}
+html[data-color-mode=dark] .legacy-color-text-green3 {
+  color: #AACC43;
+}
+.legacy-color-text-green4 {
+  color: #339966;
+}
+html[data-color-mode=dark] .legacy-color-text-green4 {
+  color: #53C68C;
+}
+.legacy-color-text-teal2 {
+  color: #33CCCC;
+}
+html[data-color-mode=dark] .legacy-color-text-teal2 {
+  color: #8DE2E2;
+}
+.legacy-color-text-blue5 {
+  color: #3366FF;
+}
+html[data-color-mode=dark] .legacy-color-text-blue5 {
+  color: #7094FF;
+}
+.legacy-color-text-pink1 {
+  color: #800080;
+}
+html[data-color-mode=dark] .legacy-color-text-pink1 {
+  color: #F380EE;
+}
+.legacy-color-text-gray3 {
+  color: #A5ADBA;
+}
+html[data-color-mode=dark] .legacy-color-text-gray3 {
+  color: #A5ADBA;
+}
+.legacy-color-text-pink2 {
+  color: #FF00FF;
+}
+html[data-color-mode=dark] .legacy-color-text-pink2 {
+  color: #FF80FF;
+}
+.legacy-color-text-yellow2 {
+  color: #FFCC00;
+}
+html[data-color-mode=dark] .legacy-color-text-yellow2 {
+  color: #FFEA94;
+}
+.legacy-color-text-yellow3 {
+  color: #FFFF00;
+}
+html[data-color-mode=dark] .legacy-color-text-yellow3 {
+  color: #FFFF6B;
+}
+.legacy-color-text-green5 {
+  color: #00FF00;
+}
+html[data-color-mode=dark] .legacy-color-text-green5 {
+  color: #61FF61;
+}
+.legacy-color-text-teal3 {
+  color: #00FFFF;
+}
+html[data-color-mode=dark] .legacy-color-text-teal3 {
+  color: #57FFFF;
+}
+.legacy-color-text-blue6 {
+  color: #00CCFF;
+}
+html[data-color-mode=dark] .legacy-color-text-blue6 {
+  color: #57DDFF;
+}
+.legacy-color-text-pink3 {
+  color: #993366;
+}
+html[data-color-mode=dark] .legacy-color-text-pink3 {
+  color: #DE73A3;
+}
+.legacy-color-text-gray4 {
+  color: #C1C7D0;
+}
+html[data-color-mode=dark] .legacy-color-text-gray4 {
+  color: #C1C7D0;
+}
+.legacy-color-text-pink4 {
+  color: #FF99CC;
+}
+html[data-color-mode=dark] .legacy-color-text-pink4 {
+  color: #E5579E;
+}
+.legacy-color-text-tan1 {
+  color: #FFCC99;
+}
+html[data-color-mode=dark] .legacy-color-text-tan1 {
+  color: #FFA347;
+}
+.legacy-color-text-yellow4 {
+  color: #FFFF99;
+}
+html[data-color-mode=dark] .legacy-color-text-yellow4 {
+  color: #E5E545;
+}
+.legacy-color-text-green6 {
+  color: #CCFFCC;
+}
+html[data-color-mode=dark] .legacy-color-text-green6 {
+  color: #61D661;
+}
+.legacy-color-text-teal4 {
+  color: #CCFFFF;
+}
+html[data-color-mode=dark] .legacy-color-text-teal4 {
+  color: #8AFFFF;
+}
+.legacy-color-text-blue7 {
+  color: #99CCFF;
+}
+html[data-color-mode=dark] .legacy-color-text-blue7 {
+  color: #56ABFF;
+}
+.legacy-color-text-purple2 {
+  color: #CC99FF;
+}
+html[data-color-mode=dark] .legacy-color-text-purple2 {
+  color: #BA75FF;
+}
+.legacy-color-text-inverse {
+  color: #FFFFFF;
+}
+html[data-color-mode=dark] .legacy-color-text-inverse {
+  color: #000000;
+}
+/* stylelint-enable design-system/ensure-design-token-usage */

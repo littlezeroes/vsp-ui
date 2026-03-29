@@ -7,6 +7,13 @@ import { Header } from "@/components/ui/header"
 import { FeedbackState } from "@/components/ui/feedback-state"
 import { Button } from "@/components/ui/button"
 import { Dialog } from "@/components/ui/dialog"
+import { MOCK_USER } from "../data"
+
+/* ── Mask phone ────────────────────────────────────────────────── */
+function maskPhone(phone: string) {
+  if (phone.length < 7) return phone
+  return phone.slice(0, 3) + "****" + phone.slice(-3)
+}
 
 /* ── PIN Cell — BIDV pattern ──────────────────────────────────── */
 function PinCell({ filled, error }: { filled: boolean; error: boolean }) {
@@ -29,23 +36,80 @@ export default function OtpPage() {
 function OtpContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const context = searchParams.get("context") || "activate" // activate | cancel
+  const context = searchParams.get("context") || "activate" // activate | cancel | deposit | withdraw
+  const stateParam = searchParams.get("state")
 
   const [otp, setOtp] = React.useState("")
   const [error, setError] = React.useState("")
   const [verifying, setVerifying] = React.useState(false)
   const [countdown, setCountdown] = React.useState(60)
-  const [apiError, setApiError] = React.useState(false)
+  const [apiError, setApiError] = React.useState(stateParam === "api-error")
   const [networkDialog, setNetworkDialog] = React.useState(false)
+  const [attempts, setAttempts] = React.useState(0)
+  const [resendCount, setResendCount] = React.useState(0)
+  const [locked, setLocked] = React.useState(false)
+  const [lockCountdown, setLockCountdown] = React.useState(0)
+
+  const maskedPhone = maskPhone(MOCK_USER.phone)
+  const MAX_ATTEMPTS = 3
+  const MAX_RESENDS = 3
+  const LOCK_DURATION = 300 // 5 minutes in seconds
+
+  // Init state from query params
+  React.useEffect(() => {
+    if (stateParam === "wrong") {
+      setError("Ma OTP khong chinh xac. Vui long thu lai.")
+      setAttempts(1)
+    } else if (stateParam === "expired") {
+      setCountdown(0)
+    }
+  }, [stateParam])
 
   // Countdown timer
   React.useEffect(() => {
-    if (countdown <= 0) return
+    if (countdown <= 0 || locked) return
     const timer = setInterval(() => setCountdown((c) => c - 1), 1000)
     return () => clearInterval(timer)
-  }, [countdown])
+  }, [countdown, locked])
+
+  // Lock countdown timer
+  React.useEffect(() => {
+    if (lockCountdown <= 0) return
+    const timer = setInterval(() => {
+      setLockCountdown((c) => {
+        if (c <= 1) {
+          setLocked(false)
+          setAttempts(0)
+          setResendCount(0)
+          return 0
+        }
+        return c - 1
+      })
+    }, 1000)
+    return () => clearInterval(timer)
+  }, [lockCountdown])
+
+  const getContextTitle = () => {
+    switch (context) {
+      case "activate": return "Kich hoat sinh loi"
+      case "cancel": return "Huy sinh loi"
+      case "deposit": return "Nap tien"
+      case "withdraw": return "Rut tien"
+      default: return "Xac thuc"
+    }
+  }
+
+  const getSuccessRoute = () => {
+    switch (context) {
+      case "activate": return "/sinhloi/result-activate?status=success"
+      case "cancel": return "/sinhloi/result-cancel?status=success"
+      default: return "/sinhloi/dashboard"
+    }
+  }
 
   const handleDigit = (digit: string) => {
+    if (locked || verifying) return
+
     if (digit === "backspace") {
       setOtp((prev) => prev.slice(0, -1))
       setError("")
@@ -59,15 +123,25 @@ function OtpContent() {
         setVerifying(true)
         setTimeout(() => {
           if (newOtp === "123456") {
-            if (context === "activate") {
-              router.push("/sinhloi/result-activate?status=success")
-            } else {
-              router.push("/sinhloi/result-cancel?status=success")
-            }
+            router.push(getSuccessRoute())
           } else {
+            const newAttempts = attempts + 1
+            setAttempts(newAttempts)
             setVerifying(false)
-            setError("Ma OTP khong dung")
             setOtp("")
+
+            if (newAttempts >= MAX_ATTEMPTS) {
+              setLocked(true)
+              setLockCountdown(LOCK_DURATION)
+              setError("Ban da thu qua nhieu lan. Vui long thu lai sau 5 phut.")
+            } else {
+              const remaining = MAX_ATTEMPTS - newAttempts
+              setError(
+                remaining === 1
+                  ? "Ma OTP khong chinh xac. Ban con 1 lan thu."
+                  : `Ma OTP khong chinh xac. Vui long thu lai.`
+              )
+            }
           }
         }, 1200)
       }
@@ -75,11 +149,31 @@ function OtpContent() {
   }
 
   const handleResend = () => {
+    if (locked) return
+
+    const newResendCount = resendCount + 1
+    setResendCount(newResendCount)
+
+    if (newResendCount >= MAX_RESENDS) {
+      setLocked(true)
+      setLockCountdown(LOCK_DURATION)
+      setError("Ban da gui lai qua nhieu lan. Vui long thu lai sau 5 phut.")
+      return
+    }
+
     setCountdown(60)
     setError("")
     setOtp("")
+    setAttempts(0)
   }
 
+  const formatLockTime = (seconds: number) => {
+    const m = Math.floor(seconds / 60)
+    const s = seconds % 60
+    return `${m}:${s.toString().padStart(2, "0")}`
+  }
+
+  /* ── API Error state ─────────────────────────────────────────── */
   if (apiError) {
     return (
       <div className="relative w-full max-w-[390px] min-h-screen bg-secondary text-foreground flex flex-col">
@@ -127,7 +221,7 @@ function OtpContent() {
       <div className="bg-foreground px-[22px] pt-[54px] pb-[60px] flex flex-col items-center">
         <p className="text-sm font-semibold text-background mb-[8px]">V-Smart Pay</p>
         <p className="text-[28px] font-bold leading-[34px] text-background">
-          {context === "activate" ? "Kich hoat sinh loi" : "Huy sinh loi"}
+          {getContextTitle()}
         </p>
       </div>
 
@@ -135,7 +229,10 @@ function OtpContent() {
       <div className="px-[22px] -mt-[32px]">
         <div className="bg-background rounded-[28px] px-[20px] py-[24px] shadow-sm">
           <p className="text-sm text-foreground-secondary text-center mb-[4px]">
-            Ma OTP da duoc gui den so dien thoai cua ban
+            Ma OTP da duoc gui den so dien thoai
+          </p>
+          <p className="text-sm font-semibold text-foreground text-center">
+            {maskedPhone}
           </p>
         </div>
       </div>
@@ -147,13 +244,20 @@ function OtpContent() {
             <p className="text-sm font-semibold leading-5 text-foreground mb-[16px]">Nhap ma OTP</p>
             <div className="flex gap-[8px]">
               {Array.from({ length: 6 }).map((_, i) => (
-                <PinCell key={i} filled={i < otp.length} error={!!error} />
+                <PinCell key={i} filled={i < otp.length} error={!!error && !locked} />
               ))}
             </div>
             {error && (
-              <p className="text-xs font-normal leading-5 text-danger mt-[8px]">{error}</p>
+              <p className={`text-xs font-normal leading-5 mt-[8px] text-center px-4 ${locked ? "text-foreground-secondary" : "text-danger"}`}>
+                {error}
+              </p>
             )}
-            {verifying && (
+            {locked && lockCountdown > 0 && (
+              <p className="text-xs font-normal leading-5 text-foreground-secondary mt-[4px]">
+                Thu lai sau {formatLockTime(lockCountdown)}
+              </p>
+            )}
+            {verifying && !error && (
               <p className="text-xs font-normal leading-5 text-foreground-secondary mt-[8px]">Dang xac thuc...</p>
             )}
           </div>
@@ -161,7 +265,7 @@ function OtpContent() {
 
         {/* Countdown / Resend */}
         <div className="pt-[16px] flex justify-center">
-          {countdown > 0 ? (
+          {locked ? null : countdown > 0 ? (
             <p className="text-sm text-foreground-secondary">
               Gui lai OTP sau {countdown}s
             </p>
@@ -180,9 +284,9 @@ function OtpContent() {
                 <button
                   key={key || "empty"}
                   type="button"
-                  disabled={!key || verifying}
+                  disabled={!key || verifying || locked}
                   onClick={() => key && handleDigit(key)}
-                  className={`h-[52px] flex items-center justify-center text-lg font-semibold text-foreground active:bg-background rounded-[8px] transition-colors ${!key ? "invisible" : ""}`}
+                  className={`h-[52px] flex items-center justify-center text-lg font-semibold text-foreground active:bg-background rounded-[8px] transition-colors ${!key ? "invisible" : ""} ${locked ? "opacity-30" : ""}`}
                 >
                   {key === "backspace" ? (
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

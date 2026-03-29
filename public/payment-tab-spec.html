@@ -99,6 +99,29 @@
 
 <p>3 Senior Product Designer tranh luận 3 hướng tiếp cận khác nhau:</p>
 
+<style>
+  .opt-row { display:flex; gap:16px; margin:16px 0; flex-wrap:wrap; }
+  .opt-frame { width:200px; flex-shrink:0; }
+  .opt-frame .opt-label { font-family:-apple-system,sans-serif; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:#999; text-align:center; margin-bottom:6px; }
+  .opt-frame .opt-border { border:2px solid #111; border-radius:24px; overflow:hidden; height:420px; background:#fff; }
+  .opt-frame iframe { width:390px; height:844px; border:none; transform:scale(0.512); transform-origin:top left; pointer-events:none; }
+</style>
+
+<div class="opt-row">
+  <div class="opt-frame">
+    <div class="opt-label">Option A</div>
+    <div class="opt-border"><iframe src="http://localhost:3000/ia/tt-option-a"></iframe></div>
+  </div>
+  <div class="opt-frame">
+    <div class="opt-label">Option B</div>
+    <div class="opt-border"><iframe src="http://localhost:3000/ia/tt-option-b"></iframe></div>
+  </div>
+  <div class="opt-frame">
+    <div class="opt-label">Option C</div>
+    <div class="opt-border"><iframe src="http://localhost:3000/ia/tt-option-c"></iframe></div>
+  </div>
+</div>
+
 <h3>Option A: Urgency-first</h3>
 <pre>
 Search

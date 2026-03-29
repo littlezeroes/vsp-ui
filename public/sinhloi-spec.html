@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sinh lời tự động — Spec trực quan hoá</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: Georgia, 'Times New Roman', serif;
+    background: #fafafa;
+    color: #1a1a1a;
+    line-height: 1.7;
+    padding: 60px 20px 80px;
+  }
+
+  .container { max-width: 960px; margin: 0 auto; }
+
+  h1, h2, h3, h4 {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    line-height: 1.3;
+  }
+
+  h1 {
+    font-size: 36px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    margin-bottom: 8px;
+  }
+
+  .subtitle {
+    font-size: 18px;
+    color: #666;
+    margin-bottom: 48px;
+  }
+
+  h2 {
+    font-size: 24px;
+    font-weight: 700;
+    margin-top: 56px;
+    margin-bottom: 20px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #1a1a1a;
+  }
+
+  h3 {
+    font-size: 18px;
+    font-weight: 700;
+    margin-top: 32px;
+    margin-bottom: 12px;
+  }
+
+  p { margin-bottom: 14px; font-size: 16px; }
+
+  .tag {
+    display: inline-block;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 100px;
+    background: #1a1a1a;
+    color: #fff;
+    margin-right: 8px;
+    margin-bottom: 8px;
+  }
+
+  .tag.outline {
+    background: transparent;
+    color: #1a1a1a;
+    border: 1.5px solid #1a1a1a;
+  }
+
+  ul, ol { padding-left: 24px; margin-bottom: 16px; }
+  li { margin-bottom: 6px; font-size: 15px; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0 24px;
+    font-size: 14px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+
+  th, td {
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 1px solid #e5e5e5;
+  }
+
+  th {
+    font-weight: 700;
+    background: #f5f5f5;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  td { vertical-align: top; }
+
+  .check { color: #1a1a1a; font-weight: 600; }
+  .cross { color: #999; }
+
+  .card {
+    background: #fff;
+    border: 1px solid #e5e5e5;
+    border-radius: 16px;
+    padding: 28px;
+    margin: 20px 0;
+  }
+
+  .dark-card {
+    background: #1a1a1a;
+    color: #fff;
+    border-radius: 16px;
+    padding: 32px;
+    margin: 28px 0;
+  }
+
+  .dark-card h3 { color: #fff; margin-top: 0; }
+  .dark-card p { color: #ccc; }
+  .dark-card strong { color: #fff; }
+
+  .wireframe-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 24px;
+    margin: 32px 0;
+  }
+
+  .wireframe-col {
+    text-align: center;
+  }
+
+  .wireframe-col h4 {
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 12px;
+  }
+
+  .wireframe-col p {
+    font-size: 12px;
+    color: #888;
+    margin-top: 8px;
+  }
+
+  .wireframe-frame {
+    width: 100%;
+    aspect-ratio: 390 / 844;
+    border: 2px solid #e5e5e5;
+    border-radius: 32px;
+    overflow: hidden;
+    background: #fff;
+    position: relative;
+  }
+
+  .wireframe-frame iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 390px;
+    height: 844px;
+    border: none;
+    transform-origin: top left;
+    /* Scale will be set by JS */
+  }
+
+  .pros-cons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 12px 0 20px;
+  }
+
+  .pros-cons div { font-size: 14px; }
+  .pros-cons .label {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-weight: 700;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+  }
+
+  .divider {
+    height: 1px;
+    background: #e5e5e5;
+    margin: 48px 0;
+  }
+
+  .footer {
+    margin-top: 64px;
+    padding-top: 24px;
+    border-top: 1px solid #e5e5e5;
+    font-size: 13px;
+    color: #999;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+
+  code {
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 13px;
+    background: #f0f0f0;
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
+
+  .highlight-box {
+    border-left: 4px solid #1a1a1a;
+    padding: 16px 20px;
+    background: #f9f9f9;
+    margin: 20px 0;
+    font-size: 15px;
+  }
+
+  .warning-box {
+    border-left: 4px solid #b45309;
+    padding: 16px 20px;
+    background: #fffbeb;
+    margin: 20px 0;
+    font-size: 15px;
+  }
+
+  @media (max-width: 720px) {
+    .wireframe-row {
+      grid-template-columns: 1fr;
+      max-width: 320px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>Sinh lời tự động</h1>
+<p class="subtitle">Spec trực quan hoá Dashboard — V-Smart Pay 2026</p>
+
+<div>
+  <span class="tag">Product Design</span>
+  <span class="tag outline">Visualization</span>
+  <span class="tag outline">Dashboard UX</span>
+</div>
+
+<!-- ─── 1. SẢN PHẨM ──────────────────────────────────────── -->
+<h2>1. Sản phẩm</h2>
+
+<div class="highlight-box">
+  <strong>Sinh lời tự động</strong> là một loại số dư có lãi suất (interest-bearing balance) trong ví V-Smart Pay.
+  Tiền trong ví sinh lời được cho vay qua đối tác tài chính.
+  <br><br>
+  Trong tương lai, sản phẩm này sẽ được thay thế bằng <strong>CASA</strong> (Current Account Savings Account) — tài khoản thanh toán có lãi.
+</div>
+
+<h3>Mô hình tính lãi</h3>
+
+<div class="warning-box">
+  <strong>QUAN TRỌNG:</strong> Hiểu đúng mô hình tính lãi là nền tảng của mọi quyết định thiết kế.
+</div>
+
+<table>
+  <tr><th>Khía cạnh</th><th>Chi tiết</th></tr>
+  <tr><td><strong>Tính lãi</strong></td><td>Tính hàng ngày trên số dư cuối ngày</td></tr>
+  <tr><td><strong>Trả lãi</strong></td><td>Trả vào số dư 1 lần/tháng vào <strong>ngày 27</strong></td></tr>
+  <tr><td><strong>Hiển thị (T-1)</strong></td><td>User chỉ thấy lãi ngày hôm qua ("Lợi nhuận hôm qua"), không phải hôm nay</td></tr>
+  <tr><td><strong>Lãi tạm tính</strong></td><td>Lãi tích luỹ trong tháng nhưng chưa trả — hiển thị riêng biệt với lãi đã nhận</td></tr>
+  <tr><td><strong>Lãi đã nhận</strong></td><td>Lãi đã được cộng vào số dư (chỉ xảy ra ngày 27)</td></tr>
+  <tr><td><strong>Giao dịch hôm nay</strong></td><td>Nạp/rút hôm nay sẽ phản ánh vào lãi ngày mai (T+1)</td></tr>
+  <tr><td><strong>Cooldown</strong></td><td>Sau khi nạp tiền có thời gian chờ trước khi rút (chống arbitrage)</td></tr>
+</table>
+
+<div class="highlight-box">
+  <strong>Hệ quả cho biểu đồ:</strong>
+  <ul style="margin-top:8px; margin-bottom:0;">
+    <li>Line chart "tăng trưởng số dư" sẽ gây hiểu lầm vì lãi chỉ vào số dư ngày 27 — số dư phẳng 29 ngày rồi nhảy 1 ngày</li>
+    <li>Bar chart "lợi nhuận tạm tính mỗi ngày" hợp lý hơn — mỗi cột = lãi 1 ngày</li>
+    <li>Phải phân biệt rõ "Tạm tính" (chưa trả) vs "Đã nhận" (đã vào số dư)</li>
+  </ul>
+</div>
+
+<h3>Nguyên tắc thiết kế</h3>
+<ul>
+  <li><strong>Không thêm feature mới</strong> — chỉ cải thiện cách hiển thị dữ liệu hiện có</li>
+  <li><strong>Không gamification</strong> — không streak, challenge, goal, leaderboard, social</li>
+  <li><strong>Dữ liệu trung tâm</strong> — số dư, lợi nhuận hôm qua (T-1), tạm tính tháng, đã nhận, ngày trả lãi</li>
+  <li><strong>Hành động chính</strong> — 1 nút [Nạp / Rút] mở bottom sheet chọn hướng (không 2 nút riêng)</li>
+  <li><strong>T-1 labeling</strong> — luôn dùng "Lợi nhuận hôm qua", không bao giờ "hôm nay"</li>
+  <li><strong>Phân biệt Tạm tính vs Đã nhận</strong> — user phải hiểu rõ tiền nào đang tích luỹ, tiền nào đã vào ví</li>
+</ul>
+
+<h3>Dữ liệu hiển thị</h3>
+<table>
+  <tr><th>Trường</th><th>Giá trị mẫu</th><th>Mô tả</th></tr>
+  <tr><td><code>balance</code></td><td>5.000.000đ</td><td>Số dư sinh lời hiện tại</td></tr>
+  <tr><td><code>yesterdayInterest</code></td><td>+685đ</td><td>Lãi tính được hôm qua (T-1)</td></tr>
+  <tr><td><code>monthEstimated</code></td><td>12.500đ</td><td>Lãi tạm tính tháng này (chưa trả)</td></tr>
+  <tr><td><code>lastMonthReceived</code></td><td>18.200đ</td><td>Lãi đã nhận tháng trước (ngày 27)</td></tr>
+  <tr><td><code>totalReceived</code></td><td>275.000đ</td><td>Tổng lãi đã nhận từ khi kích hoạt</td></tr>
+  <tr><td><code>interestRate</code></td><td>4.5%/năm</td><td>Lãi suất hiện tại</td></tr>
+  <tr><td><code>payoutDay</code></td><td>27/04</td><td>Ngày trả lãi tiếp theo</td></tr>
+  <tr><td><code>dailyInterest[]</code></td><td>7 ngày</td><td>Lãi tạm tính từng ngày (T-1)</td></tr>
+  <tr><td><code>transactions[]</code></td><td>Nạp, rút, trả lãi</td><td>Lịch sử giao dịch</td></tr>
+  <tr><td><code>membershipTier</code></td><td>Cơ bản → Kim cương</td><td>Hạng mức lãi suất (4.5% → 5.0%)</td></tr>
+</table>
+
+<h3>Hạng mức lãi suất</h3>
+<table>
+  <tr><th>Hạng</th><th>Lãi suất</th></tr>
+  <tr><td>Cơ bản</td><td>4.5%/năm</td></tr>
+  <tr><td>Bạc</td><td>4.6%/năm</td></tr>
+  <tr><td>Vàng</td><td>4.8%/năm</td></tr>
+  <tr><td>Kim cương</td><td>5.0%/năm</td></tr>
+</table>
+
+<!-- ─── 2. HIỆN TRẠNG ─────────────────────────────────────── -->
+<h2>2. Hiện trạng Dashboard</h2>
+
+<p>Dashboard hiện tại (<code>/sinhloi/dashboard</code>) sử dụng layout:</p>
+
+<ol>
+  <li><strong>Dark hero</strong> — số dư lớn trung tâm, lãi hôm nay + tổng lãi bên dưới, lãi suất, quick action chips</li>
+  <li><strong>White card overlap</strong> — lãi hôm qua (trái) + tổng lãi (phải) + biểu đồ cột 7 ngày</li>
+  <li><strong>Giao dịch gần nhất</strong> — 3 giao dịch, nút "Xem tất cả"</li>
+  <li><strong>Nudge CTA</strong> — khuyến khích nạp thêm</li>
+  <li><strong>Nâng cấp lãi suất</strong> — hiện tier badges</li>
+  <li><strong>Khám phá</strong> — Hạng thành viên, Cơ chế sinh lời</li>
+  <li><strong>Đánh giá</strong> — 5 sao</li>
+  <li><strong>Fixed bottom</strong> — [Nạp tiền] [Rút tiền] (2 nút riêng)</li>
+</ol>
+
+<p>Vấn đề: quá nhiều section, thông tin phân tán, không rõ hierarchy. User phải cuộn nhiều để thấy giao dịch. Hai nút Nạp/Rút riêng biệt tốn không gian. Không phân biệt rõ lãi tạm tính vs đã nhận.</p>
+
+<!-- ─── 3. BA PHƯƠNG ÁN ───────────────────────────────────── -->
+<h2>3. Ba phương án trực quan hoá</h2>
+
+<!-- Option A -->
+<h3>Option A — Daily Interest Focus (Bar chart)</h3>
+<div class="card">
+  <div>
+    <span class="tag">Daily focus</span>
+    <span class="tag outline">Bar chart T-1</span>
+  </div>
+  <p style="margin-top:16px">Trọng tâm là lợi nhuận tạm tính mỗi ngày. Bar chart 7 ngày cho user thấy lãi tích luỹ đều đặn. Phù hợp vì lãi tính hàng ngày nhưng trả hàng tháng — bar chart phản ánh đúng thực tế hơn line chart tăng trưởng số dư.</p>
+
+  <h4 style="margin-top:20px; font-family:-apple-system,sans-serif; font-size:14px;">Layout từ trên xuống</h4>
+  <ol>
+    <li>Dark hero: Số dư 5.000.000đ + "Lợi nhuận hôm qua: +685đ"</li>
+    <li>Bar chart: 7 ngày lợi nhuận tạm tính (mỗi cột = 1 ngày, dữ liệu T-1)</li>
+    <li>Card: Tạm tính tháng này 12.500đ + Ngày trả lãi 27/04</li>
+    <li>Card: Lãi suất 4.5%/năm + Tổng đã nhận 275.000đ + tier badge</li>
+    <li>Giao dịch gần nhất</li>
+    <li>Fixed bottom: 1 nút [Nạp / Rút]</li>
+  </ol>
+
+  <div class="pros-cons">
+    <div>
+      <p class="label">Ưu điểm</p>
+      <ul>
+        <li>Bar chart phản ánh đúng mô hình tính lãi hàng ngày</li>
+        <li>T-1 data rõ ràng — không gây hiểu lầm</li>
+        <li>User thấy lãi tích luỹ đều đặn mỗi ngày</li>
+      </ul>
+    </div>
+    <div>
+      <p class="label">Nhược điểm</p>
+      <ul>
+        <li>Bar chart chiếm vertical space</li>
+        <li>Số nhỏ (vài trăm đồng/ngày) có thể underwhelming</li>
+        <li>New user ít data sẽ thấy chart thưa</li>
+      </ul>
+    </div>
+  </div>
+  <p><strong>Phù hợp nhất cho:</strong> user muốn thấy lãi tích luỹ hàng ngày, analytical mindset.</p>
+</div>
+
+<!-- Option B -->
+<h3>Option B — Monthly Payout Focus (Progress bar)</h3>
+<div class="card">
+  <div>
+    <span class="tag">Monthly focus</span>
+    <span class="tag outline">Payout progress</span>
+  </div>
+  <p style="margin-top:16px">Trọng tâm là chu kỳ trả lãi hàng tháng. Breakdown rõ ràng: tạm tính vs đã nhận vs tổng. Progress bar đếm ngược đến ngày trả lãi (27). Phản ánh đúng tâm lý "chờ ngày 27 để nhận lãi".</p>
+
+  <h4 style="margin-top:20px; font-family:-apple-system,sans-serif; font-size:14px;">Layout từ trên xuống</h4>
+  <ol>
+    <li>Dark hero: Số dư 5.000.000đ + "Lợi nhuận hôm qua: +685đ"</li>
+    <li>Card "Lãi tháng 3": Tạm tính 12.500đ (đang tích luỹ) + Đã nhận tháng 2: 18.200đ + Tổng đã nhận: 275.000đ</li>
+    <li>Card progress bar: "Còn 5 ngày đến ngày trả lãi (27/04)"</li>
+    <li>Card: Lãi suất + tier progress</li>
+    <li>Giao dịch gần nhất</li>
+    <li>Fixed bottom: 1 nút [Nạp / Rút]</li>
+  </ol>
+
+  <div class="pros-cons">
+    <div>
+      <p class="label">Ưu điểm</p>
+      <ul>
+        <li>Phân biệt rõ nhất Tạm tính vs Đã nhận</li>
+        <li>Progress bar tạo anticipation tự nhiên</li>
+        <li>Breakdown chi tiết — user hiểu rõ dòng tiền</li>
+      </ul>
+    </div>
+    <div>
+      <p class="label">Nhược điểm</p>
+      <ul>
+        <li>Nhiều card → cuộn nhiều</li>
+        <li>Progress bar có thể tạo cảm giác "chờ đợi"</li>
+        <li>Phức tạp hơn cho user mới</li>
+      </ul>
+    </div>
+  </div>
+  <p><strong>Phù hợp nhất cho:</strong> user muốn chi tiết, hiểu rõ chu kỳ trả lãi, power user.</p>
+</div>
+
+<!-- Option C -->
+<h3>Option C — Minimal Balance (Cash App style)</h3>
+<div class="card">
+  <div>
+    <span class="tag">Minimal</span>
+    <span class="tag outline">Action-first</span>
+  </div>
+  <p style="margin-top:16px">Số dư khổng lồ ở giữa, subtitle gộp lợi nhuận hôm qua + lãi suất. 1 nút hành động lớn ngay dưới. Stats gộp 3 cột: tạm tính tháng | đã nhận | ngày trả. Không biểu đồ trên main screen.</p>
+
+  <h4 style="margin-top:20px; font-family:-apple-system,sans-serif; font-size:14px;">Layout từ trên xuống</h4>
+  <ol>
+    <li>Số dư centered khổng lồ (48px) + "Lợi nhuận hôm qua +685đ · Lãi suất 4,5%/năm"</li>
+    <li>1 nút lớn: [Nạp / Rút]</li>
+    <li>Stat row: Tạm tính tháng 12.500đ | Đã nhận 275.000đ | Ngày trả 27/04</li>
+    <li>Giao dịch — danh sách minimal</li>
+    <li>Không biểu đồ trên main screen</li>
+  </ol>
+
+  <div class="pros-cons">
+    <div>
+      <p class="label">Ưu điểm</p>
+      <ul>
+        <li>Cực kỳ rõ ràng — 1 số, 1 nút</li>
+        <li>Nhanh nhất để hành động</li>
+        <li>Không overwhelm user mới</li>
+      </ul>
+    </div>
+    <div>
+      <p class="label">Nhược điểm</p>
+      <ul>
+        <li>Thiếu biểu đồ → không thấy trend</li>
+        <li>Ít thông tin → user tò mò phải tap thêm</li>
+        <li>Có thể "quá đơn giản" cho power user</li>
+      </ul>
+    </div>
+  </div>
+  <p><strong>Phù hợp nhất cho:</strong> user mới, người ưu tiên hành động nhanh, sản phẩm đơn giản.</p>
+</div>
+
+<!-- ─── 4. SO SÁNH ────────────────────────────────────────── -->
+<h2>4. So sánh 3 phương án</h2>
+
+<table>
+  <tr>
+    <th>Tiêu chí</th>
+    <th>A — Daily Interest</th>
+    <th>B — Monthly Payout</th>
+    <th>C — Minimal</th>
+  </tr>
+  <tr>
+    <td>Hiển thị số dư</td>
+    <td>Dark hero card</td>
+    <td>Dark hero card</td>
+    <td>Khổng lồ, centered</td>
+  </tr>
+  <tr>
+    <td>Lợi nhuận hôm qua</td>
+    <td class="check">Trong hero + chart highlight</td>
+    <td class="check">Trong hero</td>
+    <td>Subtitle nhỏ</td>
+  </tr>
+  <tr>
+    <td>Biểu đồ</td>
+    <td class="check">Bar chart 7 ngày (T-1)</td>
+    <td>Progress bar đến ngày trả</td>
+    <td class="cross">Không có</td>
+  </tr>
+  <tr>
+    <td>Tạm tính vs Đã nhận</td>
+    <td>Card riêng</td>
+    <td class="check">Breakdown chi tiết nhất</td>
+    <td>Stat row gộp</td>
+  </tr>
+  <tr>
+    <td>Ngày trả lãi</td>
+    <td>Trong card</td>
+    <td class="check">Progress bar + countdown</td>
+    <td>Stat row</td>
+  </tr>
+  <tr>
+    <td>Hạng mức tier</td>
+    <td>Badge trong card</td>
+    <td class="check">Card riêng + progress</td>
+    <td class="cross">Không hiện</td>
+  </tr>
+  <tr>
+    <td>Nút hành động</td>
+    <td>Fixed: [Nạp / Rút]</td>
+    <td>Fixed: [Nạp / Rút]</td>
+    <td class="check">Inline lớn: [Nạp / Rút]</td>
+  </tr>
+  <tr>
+    <td>Chiều dài trang</td>
+    <td>Trung bình</td>
+    <td>Dài nhất</td>
+    <td class="check">Ngắn nhất</td>
+  </tr>
+  <tr>
+    <td>First impression</td>
+    <td>"Lãi tích luỹ đều mỗi ngày"</td>
+    <td>"Sắp nhận lãi rồi"</td>
+    <td>"Đơn giản, nhanh"</td>
+  </tr>
+  <tr>
+    <td>User phù hợp</td>
+    <td>Analytical, theo dõi daily</td>
+    <td>Power user, muốn chi tiết</td>
+    <td>User mới, casual</td>
+  </tr>
+</table>
+
+<!-- ─── 5. WIREFRAMES ─────────────────────────────────────── -->
+<h2>5. Wireframes</h2>
+
+<p>3 wireframe chạy song song trên localhost:3000. Mỗi wireframe là 1 phương án trực quan hoá cùng bộ dữ liệu (5.000.000đ, lãi hôm qua 685đ, tạm tính tháng 12.500đ, đã nhận 275.000đ).</p>
+
+<div class="wireframe-row">
+  <div class="wireframe-col">
+    <h4>A — Daily Interest</h4>
+    <div class="wireframe-frame">
+      <iframe src="/ia/sl-viz-a" style="width:390px;height:844px;border:none;" loading="lazy"></iframe>
+    </div>
+    <p>Bar chart 7 ngày T-1 + monthly estimate</p>
+  </div>
+  <div class="wireframe-col">
+    <h4>B — Monthly Payout</h4>
+    <div class="wireframe-frame">
+      <iframe src="/ia/sl-viz-b" style="width:390px;height:844px;border:none;" loading="lazy"></iframe>
+    </div>
+    <p>Breakdown tạm tính/đã nhận + progress bar</p>
+  </div>
+  <div class="wireframe-col">
+    <h4>C — Minimal</h4>
+    <div class="wireframe-frame">
+      <iframe src="/ia/sl-viz-c" style="width:390px;height:844px;border:none;" loading="lazy"></iframe>
+    </div>
+    <p>Giant balance + stat row + 1 nút</p>
+  </div>
+</div>
+
+<!-- ─── 6. GHI CHÚ SẢN PHẨM ──────────────────────────────── -->
+<h2>6. Ghi chú sản phẩm quan trọng</h2>
+
+<h3>Cooldown sau khi nạp tiền</h3>
+<div class="highlight-box">
+  Sau khi nạp tiền vào Sinh lời, có thời gian chờ (cooldown) trước khi user được phép rút. Đây là cơ chế chống arbitrage — tránh user nạp rút liên tục để lợi dụng lãi suất.
+  <br><br>
+  <strong>UX impact:</strong> Khi user vừa nạp và bấm Rút, hiện thông báo "Bạn cần chờ X giờ/ngày sau khi nạp tiền trước khi rút" thay vì disable nút rút (user không hiểu tại sao).
+</div>
+
+<h3>Nút [Nạp / Rút] thống nhất</h3>
+<div class="highlight-box">
+  Thay vì 2 nút [Nạp thêm] và [Rút tiền] riêng biệt, dùng 1 nút duy nhất [Nạp / Rút]. Khi bấm → mở bottom sheet với 2 lựa chọn.
+  <br><br>
+  <strong>Lý do:</strong> Tiết kiệm không gian, giảm cognitive load. Đây là pattern phổ biến trong fintech (e.g., Revolut "Add/Send" → sheet).
+</div>
+
+<h3>Migration sang CASA</h3>
+<div class="highlight-box">
+  Sản phẩm Sinh lời tự động là dạng balance product, sẽ migrate sang CASA (Current Account Savings Account) trong tương lai. Thiết kế dashboard cần modular để dễ thích ứng khi chuyển đổi mô hình sản phẩm.
+</div>
+
+<!-- ─── 7. KHUYẾN NGHỊ ────────────────────────────────────── -->
+<h2>7. Khuyến nghị</h2>
+
+<div class="dark-card">
+  <h3>Option B — Monthly Payout Focus</h3>
+  <p>Khuyến nghị chọn <strong>Option B</strong> làm hướng chính cho dashboard Sinh lời.</p>
+
+  <p style="margin-top:20px"><strong>Lý do:</strong></p>
+  <ul style="padding-left:20px; margin-top:8px;">
+    <li style="color:#ccc; margin-bottom:8px;">
+      <strong style="color:#fff">Phản ánh đúng mô hình sản phẩm</strong> — Lãi tính hàng ngày nhưng trả hàng tháng. Option B giúp user hiểu rõ chu kỳ này qua breakdown Tạm tính / Đã nhận và progress bar đến ngày trả.
+    </li>
+    <li style="color:#ccc; margin-bottom:8px;">
+      <strong style="color:#fff">Phân biệt rõ Tạm tính vs Đã nhận</strong> — Tránh user nghĩ "tạm tính" là tiền đã có trong ví. Breakdown rõ ràng giúp set đúng kỳ vọng.
+    </li>
+    <li style="color:#ccc; margin-bottom:8px;">
+      <strong style="color:#fff">Progress bar tạo anticipation tự nhiên</strong> — "Còn 5 ngày" tạo cảm giác tích cực mà không cần gamification.
+    </li>
+    <li style="color:#ccc; margin-bottom:8px;">
+      <strong style="color:#fff">Dễ chuyển sang CASA</strong> — Khi sản phẩm nâng cấp, chỉ cần thêm/đổi card mà không phải redesign toàn bộ.
+    </li>
+    <li style="color:#ccc; margin-bottom:8px;">
+      <strong style="color:#fff">1 nút [Nạp / Rút]</strong> — Tiết kiệm không gian, flow rõ ràng hơn 2 nút riêng.
+    </li>
+  </ul>
+
+  <p style="margin-top:20px; color:#999; font-size:14px;">
+    Option A (Daily Interest) nên dùng cho trang chi tiết hoặc drill-down từ dashboard chính.
+    Option C (Minimal) phù hợp cho zero-state hoặc onboarding view.
+  </p>
+</div>
+
+<div class="highlight-box">
+  <strong>Bước tiếp theo:</strong> Review 3 wireframe với PO → chọn option → đưa vào design system → build production dashboard.
+</div>
+
+<div class="footer">
+  <p>by Huy Kieu &copy; 2026 &mdash; V-Smart Pay Product Design</p>
+  <p style="margin-top:4px;">Tài liệu nội bộ. Không chia sẻ ra ngoài.</p>
+</div>
+
+</div>
+
+<script>
+function scaleIframes() {
+  document.querySelectorAll('.wireframe-frame').forEach(function(frame) {
+    var iframe = frame.querySelector('iframe');
+    if (iframe) {
+      var scale = frame.offsetWidth / 390;
+      iframe.style.transform = 'scale(' + scale + ')';
+    }
+  });
+}
+window.addEventListener('load', scaleIframes);
+window.addEventListener('resize', scaleIframes);
+</script>
+</body>
+</html>

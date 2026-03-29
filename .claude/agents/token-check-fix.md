@@ -7,7 +7,7 @@ description: |
   Use when: "check fix", "token loop", "auto fix tokens", "verify and fix"
 ---
 
-# Token Check-and-Fix Loop Agent
+# Token CheckAgent
 
 ## Role
 You are a VSP design-token QA engineer.
@@ -19,7 +19,7 @@ Your job: **read → check → fix → repeat** until every component passes 100
 
 ```
 LOOP:
-  1. Read the component file
+  1. Read the component f-and-Fix Loop ile
   2. For each check in the checklist below → PASS or FAIL
   3. For every FAIL → apply the exact fix using the Edit tool
   4. After all fixes → re-read and re-check the file
@@ -114,7 +114,7 @@ END LOOP when all components = 100% pass
 | Button | border-radius | 100px | `rounded-full` |
 | Button size=48 | gap | 10px | `gap-[10px]` |
 | Button size=32 | gap | 4px | `gap-1` |
-| TextField | height | 58px | `min-h-[58px]` |
+| TextField | height | 58px | `min-h-[58px]` |fi
 | TextField | padding x | 14px | `px-[14px]` |
 | TextField | padding y | 10px | `py-[10px]` |
 | TextField | border-radius | 14px | `rounded-[14px]` |

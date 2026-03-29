@@ -30,6 +30,15 @@ async function buildAll() {
   const finalHtml = template.replace('/* __UI_SCRIPT__ */', uiJs);
   fs.writeFileSync('dist/ui.html', finalHtml);
 
+  // 3. Restructure plugin (no UI)
+  await esbuild.build({
+    entryPoints: ['src/restructure-hugeicons.ts'],
+    bundle: true,
+    outfile: 'dist/restructure-hugeicons.js',
+    platform: 'browser',
+    target: ['es2017'],
+  });
+
   console.log('[VSP Plugin] Build complete ✓');
 }
 

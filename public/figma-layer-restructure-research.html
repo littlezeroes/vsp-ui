@@ -1,0 +1,1158 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Research: Figma Layer Restructure — Messy → Clean</title>
+<style>
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --surface-2: #1c2333;
+    --border: #30363d;
+    --text: #e6edf3;
+    --text-2: #8b949e;
+    --accent: #58a6ff;
+    --green: #3fb950;
+    --yellow: #d29922;
+    --red: #f85149;
+    --purple: #bc8cff;
+    --orange: #f0883e;
+    --cyan: #39d2c0;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    padding: 0;
+  }
+
+  /* Hero */
+  .hero {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    padding: 80px 40px 60px;
+    text-align: center;
+    border-bottom: 1px solid var(--border);
+  }
+  .hero h1 {
+    font-size: 42px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin-bottom: 16px;
+    background: linear-gradient(135deg, #58a6ff, #bc8cff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .hero .subtitle {
+    font-size: 18px;
+    color: var(--text-2);
+    max-width: 600px;
+    margin: 0 auto 24px;
+  }
+  .hero .meta {
+    font-size: 13px;
+    color: var(--text-2);
+    opacity: 0.7;
+  }
+
+  /* Layout */
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  /* TOC */
+  .toc {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px 32px;
+    margin: 40px auto;
+    max-width: 700px;
+  }
+  .toc h2 {
+    font-size: 16px;
+    color: var(--text-2);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 16px;
+  }
+  .toc ol {
+    list-style: none;
+    counter-reset: toc;
+  }
+  .toc ol li {
+    counter-increment: toc;
+    margin-bottom: 8px;
+  }
+  .toc ol li::before {
+    content: counter(toc) ".";
+    color: var(--accent);
+    font-weight: 700;
+    margin-right: 8px;
+  }
+  .toc a {
+    color: var(--text);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.2s;
+  }
+  .toc a:hover { border-bottom-color: var(--accent); }
+
+  /* Sections */
+  section {
+    margin: 60px 0;
+  }
+  section h2 {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  section h2 .num {
+    background: var(--accent);
+    color: #000;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: 800;
+    flex-shrink: 0;
+  }
+  h3 {
+    font-size: 20px;
+    font-weight: 600;
+    margin: 32px 0 12px;
+    color: var(--accent);
+  }
+  h4 {
+    font-size: 16px;
+    font-weight: 600;
+    margin: 24px 0 8px;
+    color: var(--purple);
+  }
+  p, li {
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+  ul, ol {
+    padding-left: 24px;
+  }
+
+  /* Tables */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0 24px;
+    font-size: 14px;
+  }
+  thead th {
+    background: var(--surface-2);
+    color: var(--text-2);
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 11px;
+    letter-spacing: 0.05em;
+    padding: 10px 12px;
+    text-align: left;
+    border-bottom: 2px solid var(--border);
+    position: sticky;
+    top: 0;
+  }
+  td {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  tr:hover td {
+    background: var(--surface);
+  }
+
+  /* Badges */
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .badge-green { background: rgba(63,185,80,0.15); color: var(--green); }
+  .badge-yellow { background: rgba(210,153,34,0.15); color: var(--yellow); }
+  .badge-red { background: rgba(248,81,73,0.15); color: var(--red); }
+  .badge-blue { background: rgba(88,166,255,0.15); color: var(--accent); }
+  .badge-purple { background: rgba(188,140,255,0.15); color: var(--purple); }
+  .badge-orange { background: rgba(240,136,62,0.15); color: var(--orange); }
+
+  /* Cards */
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 16px;
+    margin: 16px 0;
+  }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    transition: border-color 0.2s;
+  }
+  .card:hover { border-color: var(--accent); }
+  .card h4 {
+    margin: 0 0 8px;
+    color: var(--text);
+    font-size: 16px;
+  }
+  .card .card-desc {
+    color: var(--text-2);
+    font-size: 14px;
+    margin-bottom: 12px;
+  }
+  .card .card-tags {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  /* Code */
+  code {
+    background: var(--surface-2);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 13px;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    color: var(--cyan);
+  }
+  pre {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    overflow-x: auto;
+    margin: 12px 0;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  pre code {
+    background: none;
+    padding: 0;
+    color: var(--text);
+  }
+
+  /* Callout */
+  .callout {
+    border-left: 4px solid var(--accent);
+    background: var(--surface);
+    padding: 16px 20px;
+    border-radius: 0 8px 8px 0;
+    margin: 16px 0;
+  }
+  .callout.warning {
+    border-left-color: var(--yellow);
+  }
+  .callout.danger {
+    border-left-color: var(--red);
+  }
+  .callout.success {
+    border-left-color: var(--green);
+  }
+  .callout strong {
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  /* Comparison */
+  .vs-grid {
+    display: grid;
+    grid-template-columns: 1fr 40px 1fr;
+    gap: 0;
+    align-items: stretch;
+    margin: 16px 0;
+  }
+  .vs-col {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+  }
+  .vs-col.bad { border-color: var(--red); }
+  .vs-col.good { border-color: var(--green); }
+  .vs-divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--text-2);
+  }
+
+  /* Tree */
+  .tree {
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 13px;
+    line-height: 1.8;
+    padding: 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin: 12px 0;
+    white-space: pre;
+  }
+  .tree .dim { color: var(--text-2); }
+  .tree .hl { color: var(--accent); font-weight: 600; }
+  .tree .bad { color: var(--red); }
+  .tree .good { color: var(--green); }
+
+  /* Flow */
+  .flow {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 24px 0;
+    flex-wrap: wrap;
+  }
+  .flow-step {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 16px;
+    text-align: center;
+    min-width: 120px;
+  }
+  .flow-step .step-num {
+    font-size: 11px;
+    color: var(--accent);
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .flow-step .step-title {
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .flow-arrow {
+    font-size: 20px;
+    color: var(--text-2);
+  }
+
+  /* Recommendation */
+  .reco {
+    background: linear-gradient(135deg, rgba(63,185,80,0.08), rgba(88,166,255,0.08));
+    border: 1px solid var(--green);
+    border-radius: 12px;
+    padding: 24px;
+    margin: 24px 0;
+  }
+  .reco h3 {
+    color: var(--green);
+    margin-top: 0;
+  }
+
+  /* Footer */
+  .footer {
+    text-align: center;
+    padding: 40px;
+    color: var(--text-2);
+    font-size: 13px;
+    border-top: 1px solid var(--border);
+    margin-top: 60px;
+  }
+
+  /* Scrollable table wrapper */
+  .table-scroll {
+    overflow-x: auto;
+    margin: 16px 0;
+  }
+
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <h1>Figma Layer Restructure</h1>
+  <p class="subtitle">Research Report: Biến layer rối thành structure chuẩn, giữ nguyên visual UI</p>
+  <p class="meta">VSP Design Team &middot; 28/03/2026 &middot; Deep Research by Claude</p>
+</div>
+
+<div class="container">
+
+<!-- TOC -->
+<nav class="toc">
+  <h2>Mục lục</h2>
+  <ol>
+    <li><a href="#problem">Bài toán & Ví dụ trực quan</a></li>
+    <li><a href="#api">Figma Plugin API — Khả năng & Giới hạn</a></li>
+    <li><a href="#plugins">Plugin Community — So sánh 12 plugins</a></li>
+    <li><a href="#mcp">MCP Approaches — Official vs Community</a></li>
+    <li><a href="#risks">Rủi ro & Mitigation</a></li>
+    <li><a href="#best-practices">Best Practices — Layer Organization</a></li>
+    <li><a href="#comparison">So sánh tổng hợp tất cả approaches</a></li>
+    <li><a href="#recommendation">Khuyến nghị cho VSP</a></li>
+  </ol>
+</nav>
+
+<!-- 1. PROBLEM -->
+<section id="problem">
+  <h2><span class="num">1</span> Bài toán</h2>
+
+  <p>Khi design nhanh hoặc copy-paste từ nguồn khác, layer tree trong Figma thường rơi vào trạng thái "rối" — tên generic, nesting thừa, không có semantic grouping. Bài toán: <strong>restructure layers → clean hierarchy + semantic naming, giữ nguyên pixel-perfect UI.</strong></p>
+
+  <div class="vs-grid">
+    <div class="vs-col bad">
+      <h4 style="color: var(--red); margin-top: 0;">Trước (Rối)</h4>
+      <div class="tree"><span class="bad">[Screen] Hop dong</span>
+  <span class="dim">├──</span> Section_Header
+  <span class="dim">├──</span> Tab
+  <span class="dim">├──</span> <span class="bad">[Section]</span>
+  <span class="dim">│   ├──</span> <span class="bad">Frame 1321321</span>
+  <span class="dim">│   │   ├──</span> <span class="bad">Frame 1321321</span>
+  <span class="dim">│   │   │   ├──</span> <span class="bad">Frame 1212</span>
+  <span class="dim">│   │   │   │   ├──</span> <span class="bad">Frame 1212</span>
+  <span class="dim">│   │   │   │   │   ├──</span> <span class="bad">Frame 1212</span>
+  <span class="dim">│   │   │   │   │   ├──</span> divider
+  <span class="dim">│   │   │   │   │   └──</span> <span class="bad">Frame 1321321</span>
+  <span class="dim">│   │   ├──</span> divider
+  <span class="dim">│   │   └──</span> <span class="bad">Frame 1321321</span>
+  <span class="dim">│   ├──</span> Contract card – Complete
+  <span class="dim">│   │   ├──</span> Contract info
+  <span class="dim">│   │   ├──</span> divider
+  <span class="dim">│   │   └──</span> Contract item status
+  <span class="dim">└──</span> Insurance bottom navigation bar</div>
+    </div>
+    <div class="vs-divider">→</div>
+    <div class="vs-col good">
+      <h4 style="color: var(--green); margin-top: 0;">Sau (Chuẩn)</h4>
+      <div class="tree"><span class="good">[Screen] Hop dong</span>
+  <span class="dim">├──</span> <span class="good">Section_Header</span>
+  <span class="dim">├──</span> <span class="good">Tab</span>
+  <span class="dim">├──</span> <span class="good">[Section] Contract listing</span>
+  <span class="dim">│   ├──</span> <span class="good">Contract card – Pending</span>
+  <span class="dim">│   ├──</span> <span class="good">Contract card</span>
+  <span class="dim">│   └──</span> <span class="good">Contract card</span>
+  <span class="dim">├──</span> <span class="good">Insurance bottom navigation bar</span>
+  <span class="dim">└──</span> <span class="good">Toast wrapper</span></div>
+      <p style="margin-top: 12px; font-size: 13px; color: var(--text-2);">Flat, semantic, dễ đọc. Dev nhìn là hiểu.</p>
+    </div>
+  </div>
+
+  <h3>3 bước cốt lõi</h3>
+  <div class="flow">
+    <div class="flow-step">
+      <div class="step-num">Step 1</div>
+      <div class="step-title">Flatten</div>
+      <p style="font-size: 12px; color: var(--text-2);">Bỏ wrapper thừa</p>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step">
+      <div class="step-num">Step 2</div>
+      <div class="step-title">Rename</div>
+      <p style="font-size: 12px; color: var(--text-2);">Đặt tên semantic</p>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step">
+      <div class="step-num">Step 3</div>
+      <div class="step-title">Regroup</div>
+      <p style="font-size: 12px; color: var(--text-2);">Gom thành section</p>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step" style="border-color: var(--green);">
+      <div class="step-num" style="color: var(--green);">Verify</div>
+      <div class="step-title">Screenshot</div>
+      <p style="font-size: 12px; color: var(--text-2);">So sánh UI</p>
+    </div>
+  </div>
+</section>
+
+<!-- 2. API -->
+<section id="api">
+  <h2><span class="num">2</span> Figma Plugin API — Khả năng & Giới hạn</h2>
+
+  <h3>API chính cho restructure</h3>
+  <table>
+    <thead>
+      <tr><th>Operation</th><th>API</th><th>Ghi chú</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Rename</strong></td>
+        <td><code>node.name = "..."</code></td>
+        <td>Hoạt động trên mọi node type. Trivial.</td>
+      </tr>
+      <tr>
+        <td><strong>Reparent</strong></td>
+        <td><code>parent.appendChild(child)</code><br><code>parent.insertChild(i, child)</code></td>
+        <td>Move node sang parent mới. Cần tính lại x/y.</td>
+      </tr>
+      <tr>
+        <td><strong>Ungroup</strong></td>
+        <td><code>figma.ungroup(node)</code></td>
+        <td>= Cmd+Shift+G. Không dùng được trên Instance/Component.</td>
+      </tr>
+      <tr>
+        <td><strong>Group</strong></td>
+        <td><code>figma.group(nodes, parent)</code></td>
+        <td>Tạo group mới, giữ absolute position.</td>
+      </tr>
+      <tr>
+        <td><strong>Create Frame</strong></td>
+        <td><code>figma.createFrame()</code></td>
+        <td>Tạo frame mới cho semantic section.</td>
+      </tr>
+      <tr>
+        <td><strong>Delete</strong></td>
+        <td><code>node.remove()</code></td>
+        <td>Cẩn thận: xóa container = xóa luôn children.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>Giữ visual position khi reparent</h3>
+  <pre><code>// Lưu vị trí tuyệt đối trước khi move
+const absX = node.absoluteTransform[0][2];
+const absY = node.absoluteTransform[1][2];
+
+// Reparent
+newParent.appendChild(node);
+
+// Tính lại relative position
+const parentAbsX = newParent.absoluteTransform[0][2];
+const parentAbsY = newParent.absoluteTransform[1][2];
+node.x = absX - parentAbsX;
+node.y = absY - parentAbsY;</code></pre>
+
+  <h3>Những gì KHÔNG làm được</h3>
+  <table>
+    <thead>
+      <tr><th>Hạn chế</th><th>Lý do</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Sửa bên trong <code>InstanceNode</code></td>
+        <td>Readonly structure — phải <code>detachInstance()</code> trước (mất link component)</td>
+      </tr>
+      <tr>
+        <td>Ungroup <code>ComponentNode</code></td>
+        <td>Figma throw error — component phải giữ nguyên</td>
+      </tr>
+      <tr>
+        <td>Undo granular</td>
+        <td>Plugin API không có undo — chỉ dựa vào Figma version history</td>
+      </tr>
+      <tr>
+        <td><code>figma.notify()</code></td>
+        <td>Không hoạt động trong <code>use_figma</code> runtime</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- 3. PLUGINS -->
+<section id="plugins">
+  <h2><span class="num">3</span> Figma Plugins — So sánh</h2>
+
+  <h3>Rename Plugins (AI-powered)</h3>
+  <div class="card-grid">
+    <div class="card">
+      <h4>Hints</h4>
+      <p class="card-desc">AI rename + restructure + auto-layout suggestions. Dùng model Qwen. <strong>Plugin duy nhất combine cả 3 bước.</strong></p>
+      <div class="card-tags">
+        <span class="badge badge-green">Rename</span>
+        <span class="badge badge-purple">Restructure</span>
+        <span class="badge badge-blue">Auto-layout</span>
+        <span class="badge badge-yellow">AI</span>
+      </div>
+    </div>
+    <div class="card">
+      <h4>LayerSense</h4>
+      <p class="card-desc">AI rename miễn phí. Phân tích content + hierarchy + context để đặt tên semantic.</p>
+      <div class="card-tags">
+        <span class="badge badge-green">Rename</span>
+        <span class="badge badge-green">Free</span>
+        <span class="badge badge-yellow">AI</span>
+      </div>
+    </div>
+    <div class="card">
+      <h4>AI Rename Layers</h4>
+      <p class="card-desc">Rename dựa trên content và context. Hỗ trợ batch rename.</p>
+      <div class="card-tags">
+        <span class="badge badge-green">Rename</span>
+        <span class="badge badge-yellow">AI</span>
+      </div>
+    </div>
+    <div class="card">
+      <h4>Magic Renamer AI</h4>
+      <p class="card-desc">Bulk rename 120 layers/lần. BYOK (OpenAI, DeepSeek, Perplexity). Hỗ trợ design token naming.</p>
+      <div class="card-tags">
+        <span class="badge badge-green">Rename</span>
+        <span class="badge badge-orange">BYOK</span>
+        <span class="badge badge-yellow">AI</span>
+      </div>
+    </div>
+    <div class="card">
+      <h4>Figma Native AI Rename</h4>
+      <p class="card-desc">Built-in Figma. Right-click → Rename layers. Chỉ rename layer có tên default.</p>
+      <div class="card-tags">
+        <span class="badge badge-green">Rename</span>
+        <span class="badge badge-blue">Native</span>
+        <span class="badge badge-red">Paid plan</span>
+      </div>
+    </div>
+    <div class="card">
+      <h4>Autoname (OSS)</h4>
+      <p class="card-desc">Open source, dùng image classification (không phải LLM). Sponsored by Hugging Face.</p>
+      <div class="card-tags">
+        <span class="badge badge-green">Rename</span>
+        <span class="badge badge-green">Free/OSS</span>
+      </div>
+    </div>
+  </div>
+
+  <h3>Cleanup Plugins (Rule-based)</h3>
+  <div class="card-grid">
+    <div class="card">
+      <h4>Structure Cleaner</h4>
+      <p class="card-desc">Xóa frame chứa đúng 1 child mà không có visual properties. Flatten focus.</p>
+      <div class="card-tags">
+        <span class="badge badge-purple">Flatten</span>
+        <span class="badge badge-green">Free</span>
+      </div>
+    </div>
+    <div class="card">
+      <h4>Layer Cleaner</h4>
+      <p class="card-desc">Detect + remove redundant nested containers và empty frames.</p>
+      <div class="card-tags">
+        <span class="badge badge-purple">Flatten</span>
+        <span class="badge badge-green">Free</span>
+      </div>
+    </div>
+    <div class="card">
+      <h4>Clean Document (OSS)</h4>
+      <p class="card-desc">Delete hidden layers, ungroup single-child groups, round to pixel, intelligent rename (by type).</p>
+      <div class="card-tags">
+        <span class="badge badge-purple">Flatten</span>
+        <span class="badge badge-green">Rename</span>
+        <span class="badge badge-green">Free/OSS</span>
+      </div>
+    </div>
+    <div class="card">
+      <h4>Cleaner</h4>
+      <p class="card-desc">Toàn diện nhất: remove unused properties, hidden components, auto-layout, guides, ungroup.</p>
+      <div class="card-tags">
+        <span class="badge badge-purple">Flatten</span>
+        <span class="badge badge-green">Rename</span>
+        <span class="badge badge-green">Free</span>
+      </div>
+    </div>
+    <div class="card">
+      <h4>Smart Cleaner</h4>
+      <p class="card-desc">Auto-cleanup: hidden layers, empty frames, duplicates. Production-ready focus.</p>
+      <div class="card-tags">
+        <span class="badge badge-purple">Cleanup</span>
+        <span class="badge badge-green">Free</span>
+      </div>
+    </div>
+    <div class="card">
+      <h4>CleanUp Layers</h4>
+      <p class="card-desc">Smart rename + cleanup combined. Content-based rename.</p>
+      <div class="card-tags">
+        <span class="badge badge-green">Rename</span>
+        <span class="badge badge-purple">Cleanup</span>
+        <span class="badge badge-green">Free</span>
+      </div>
+    </div>
+  </div>
+
+  <h3>Hỗ trợ (Read-only / Export)</h3>
+  <div class="card-grid">
+    <div class="card">
+      <h4>Layer Tree for AI</h4>
+      <p class="card-desc">Export layer structure dạng tree view + JSON, tối ưu cho AI/LLM consumption. Tốt cho bước "analyze".</p>
+      <div class="card-tags">
+        <span class="badge badge-blue">Export</span>
+        <span class="badge badge-green">Free</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 4. MCP -->
+<section id="mcp">
+  <h2><span class="num">4</span> MCP Approaches</h2>
+
+  <h3>A. Official Figma MCP (<code>use_figma</code>)</h3>
+  <div class="callout">
+    <strong>Đây là tool mình đang có sẵn trong Claude Code.</strong>
+    Chạy Plugin API JavaScript trực tiếp trong Figma. Có thể rename, reparent, ungroup, regroup — đủ cho restructure.
+  </div>
+
+  <table>
+    <thead><tr><th>Ưu</th><th>Nhược</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>Đã tích hợp sẵn, không cần cài thêm</td>
+        <td>Mỗi call = 1 network round-trip → chậm với nhiều layer</td>
+      </tr>
+      <tr>
+        <td>Claude phân tích + quyết định semantic naming</td>
+        <td>Cần paid Figma plan cho write access</td>
+      </tr>
+      <tr>
+        <td>Incremental workflow: đọc → plan → execute → verify</td>
+        <td>Beta — API có thể thay đổi</td>
+      </tr>
+      <tr>
+        <td>Screenshot verify sau mỗi bước</td>
+        <td>Không có transactional rollback</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>B. claude-talk-to-figma-mcp (Community)</h3>
+  <div class="callout success">
+    <strong>Approach phù hợp nhất cho restructure.</strong>
+    Có sẵn các tool chuyên biệt: <code>rename_node</code>, <code>group_nodes</code>, <code>ungroup_nodes</code>, <code>insert_child</code>, <code>delete_node</code>, <code>get_document_info</code>.
+  </div>
+
+  <table>
+    <thead><tr><th>Ưu</th><th>Nhược</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>Tool granular: rename, move, group, ungroup riêng biệt</td>
+        <td>Cần cài thêm: Figma Plugin + MCP server</td>
+      </tr>
+      <tr>
+        <td>Hoạt động trên mọi Figma account (kể cả free)</td>
+        <td>WebSocket bridge — cần plugin chạy trong Figma</td>
+      </tr>
+      <tr>
+        <td><code>get_document_info</code> → full tree cho AI analyze</td>
+        <td>Maintenance: community project, có thể outdated</td>
+      </tr>
+      <tr>
+        <td>Không cần paid plan</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>C. figma-console-mcp (Community)</h3>
+  <div class="callout warning">
+    <strong>Nuclear option — chạy arbitrary JavaScript.</strong>
+    Tool <code>figma_execute</code> cho phép gửi script Plugin API phức tạp, chạy atomic bên trong Figma. Mạnh nhất nhưng cần biết Plugin API.
+  </div>
+
+  <table>
+    <thead><tr><th>Ưu</th><th>Nhược</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>Chạy bất kỳ Plugin API code nào</td>
+        <td>Cần cài Desktop Bridge plugin</td>
+      </tr>
+      <tr>
+        <td>Script atomic — lỗi thì không thay đổi gì</td>
+        <td>90+ tools — phức tạp</td>
+      </tr>
+      <tr>
+        <td>Batch operations trong 1 call</td>
+        <td>Community project</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>So sánh 3 MCP approaches</h3>
+  <table>
+    <thead>
+      <tr><th>Tiêu chí</th><th>Official <code>use_figma</code></th><th>claude-talk-to-figma</th><th>figma-console</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Cài đặt</strong></td>
+        <td><span class="badge badge-green">Có sẵn</span></td>
+        <td><span class="badge badge-yellow">Cần cài</span></td>
+        <td><span class="badge badge-yellow">Cần cài</span></td>
+      </tr>
+      <tr>
+        <td><strong>Rename</strong></td>
+        <td><span class="badge badge-green">OK</span></td>
+        <td><span class="badge badge-green">Tool riêng</span></td>
+        <td><span class="badge badge-green">JS script</span></td>
+      </tr>
+      <tr>
+        <td><strong>Flatten</strong></td>
+        <td><span class="badge badge-green">OK</span></td>
+        <td><span class="badge badge-green">ungroup_nodes</span></td>
+        <td><span class="badge badge-green">figma.ungroup()</span></td>
+      </tr>
+      <tr>
+        <td><strong>Regroup</strong></td>
+        <td><span class="badge badge-green">OK</span></td>
+        <td><span class="badge badge-green">group_nodes + insert_child</span></td>
+        <td><span class="badge badge-green">Full API</span></td>
+      </tr>
+      <tr>
+        <td><strong>Tốc độ</strong></td>
+        <td><span class="badge badge-yellow">Chậm</span></td>
+        <td><span class="badge badge-yellow">Trung bình</span></td>
+        <td><span class="badge badge-green">Nhanh (batch)</span></td>
+      </tr>
+      <tr>
+        <td><strong>Figma plan</strong></td>
+        <td><span class="badge badge-red">Paid only</span></td>
+        <td><span class="badge badge-green">Any</span></td>
+        <td><span class="badge badge-green">Any</span></td>
+      </tr>
+      <tr>
+        <td><strong>Độ tin cậy</strong></td>
+        <td><span class="badge badge-green">Official</span></td>
+        <td><span class="badge badge-yellow">Community</span></td>
+        <td><span class="badge badge-yellow">Community</span></td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- 5. RISKS -->
+<section id="risks">
+  <h2><span class="num">5</span> Rủi ro & Mitigation</h2>
+
+  <table>
+    <thead>
+      <tr><th>Rủi ro</th><th>Khi nào xảy ra</th><th>Mức độ</th><th>Mitigation</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Auto-layout bể</strong></td>
+        <td>Reparent node giữa các auto-layout frame</td>
+        <td><span class="badge badge-red">Cao</span></td>
+        <td>Check <code>layoutMode</code> trước. Set <code>layoutPositioning: "ABSOLUTE"</code> nếu cần.</td>
+      </tr>
+      <tr>
+        <td><strong>Position lệch</strong></td>
+        <td>Move child ra khỏi frame có offset</td>
+        <td><span class="badge badge-yellow">Trung bình</span></td>
+        <td>Dùng <code>absoluteTransform</code> để tính lại x/y sau khi reparent.</td>
+      </tr>
+      <tr>
+        <td><strong>Fill/stroke mất</strong></td>
+        <td>Xóa wrapper frame có background/border</td>
+        <td><span class="badge badge-yellow">Trung bình</span></td>
+        <td>Check fills, strokes, effects trước khi ungroup. Chỉ ungroup frame "trống".</td>
+      </tr>
+      <tr>
+        <td><strong>Instance hỏng</strong></td>
+        <td>Sửa internal structure của component instance</td>
+        <td><span class="badge badge-red">Cao</span></td>
+        <td>KHÔNG bao giờ sửa bên trong instance. Skip hoặc detach trước.</td>
+      </tr>
+      <tr>
+        <td><strong>Mất children</strong></td>
+        <td><code>node.remove()</code> xóa container</td>
+        <td><span class="badge badge-red">Cao</span></td>
+        <td>Luôn move children ra trước, rồi mới remove container rỗng.</td>
+      </tr>
+      <tr>
+        <td><strong>Không undo được</strong></td>
+        <td>Script chạy xong, kết quả sai</td>
+        <td><span class="badge badge-yellow">Trung bình</span></td>
+        <td>Dựa vào Figma version history. Hoặc duplicate screen trước khi restructure.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout danger">
+    <strong>Rule vàng: Luôn DUPLICATE screen trước khi restructure.</strong>
+    Đặt tên "[Backup] Hop dong — before restructure". Nếu mọi thứ bể, vẫn còn bản gốc.
+  </div>
+</section>
+
+<!-- 6. BEST PRACTICES -->
+<section id="best-practices">
+  <h2><span class="num">6</span> Best Practices — Layer Organization</h2>
+
+  <h3>Naming Convention</h3>
+  <table>
+    <thead>
+      <tr><th>Pattern</th><th>Ví dụ</th><th>Khi dùng</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Role-based</td><td><code>Header</code>, <code>Content</code>, <code>Footer</code></td><td>Page sections</td></tr>
+      <tr><td>Section prefix</td><td><code>[Section] Contract listing</code></td><td>Semantic groups</td></tr>
+      <tr><td>Screen prefix</td><td><code>[Screen] Hop dong</code></td><td>Top-level screens</td></tr>
+      <tr><td>Element type</td><td><code>Contract card</code>, <code>Tab</code>, <code>Divider</code></td><td>UI components</td></tr>
+      <tr><td>State suffix</td><td><code>Contract card – Pending</code>, <code>– Complete</code></td><td>Variants/states</td></tr>
+      <tr><td>Slash hierarchy</td><td><code>Button/Primary/Default</code></td><td>Design system components</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout">
+    <strong>Anti-patterns:</strong> <code>Frame 123</code>, <code>Rectangle 45</code>, <code>Group 7</code>, <code>Copy</code>, <code>Copy 2</code> — Figma defaults, vô nghĩa, không bao giờ nên giữ.
+  </div>
+
+  <h3>Hierarchy Depth</h3>
+  <ul>
+    <li><strong>Target:</strong> 3–5 levels max</li>
+    <li>Mỗi level nesting = nhân layout calculations (đặc biệt với nested components)</li>
+    <li><strong>Rule:</strong> Nếu frame chứa đúng 1 child + không có fill/stroke/effect → wrapper thừa, xóa đi</li>
+    <li>Deep nesting → performance drop đáng kể trong Figma</li>
+  </ul>
+
+  <h3>Component Instance Rules</h3>
+  <table>
+    <thead>
+      <tr><th>Operation</th><th>Main Component</th><th>Instance</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Rename</td><td><span class="badge badge-green">OK</span></td><td><span class="badge badge-green">OK</span> (override)</td></tr>
+      <tr><td>Move/Reparent</td><td><span class="badge badge-green">OK</span></td><td><span class="badge badge-green">OK</span> (top level only)</td></tr>
+      <tr><td>Ungroup</td><td><span class="badge badge-red">Error</span></td><td><span class="badge badge-red">Error</span></td></tr>
+      <tr><td>Delete internal layer</td><td><span class="badge badge-green">OK</span></td><td><span class="badge badge-red">Error</span></td></tr>
+      <tr><td>Detach</td><td>N/A</td><td><span class="badge badge-yellow">OK</span> (mất link)</td></tr>
+      <tr><td>Reorder children</td><td><span class="badge badge-green">OK</span></td><td><span class="badge badge-red">Phải detach trước</span></td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- 7. COMPARISON -->
+<section id="comparison">
+  <h2><span class="num">7</span> So sánh tổng hợp</h2>
+
+  <div class="table-scroll">
+    <table>
+      <thead>
+        <tr>
+          <th>Approach</th>
+          <th>Rename</th>
+          <th>Flatten</th>
+          <th>Regroup</th>
+          <th>AI Analysis</th>
+          <th>Visual Safe</th>
+          <th>Risk</th>
+          <th>Cost</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Clean Document</strong> (plugin)</td>
+          <td><span class="badge badge-yellow">By type</span></td>
+          <td><span class="badge badge-green">OK</span></td>
+          <td><span class="badge badge-red">No</span></td>
+          <td><span class="badge badge-red">No</span></td>
+          <td><span class="badge badge-green">High</span></td>
+          <td><span class="badge badge-green">Low</span></td>
+          <td>Free/OSS</td>
+        </tr>
+        <tr>
+          <td><strong>Structure Cleaner</strong> (plugin)</td>
+          <td><span class="badge badge-red">No</span></td>
+          <td><span class="badge badge-green">Focus</span></td>
+          <td><span class="badge badge-red">No</span></td>
+          <td><span class="badge badge-red">No</span></td>
+          <td><span class="badge badge-green">High</span></td>
+          <td><span class="badge badge-green">Low</span></td>
+          <td>Free</td>
+        </tr>
+        <tr>
+          <td><strong>Hints</strong> (AI plugin)</td>
+          <td><span class="badge badge-green">AI</span></td>
+          <td><span class="badge badge-yellow">Suggest</span></td>
+          <td><span class="badge badge-yellow">Suggest</span></td>
+          <td><span class="badge badge-green">Qwen</span></td>
+          <td><span class="badge badge-yellow">Medium</span></td>
+          <td><span class="badge badge-yellow">Medium</span></td>
+          <td>Unknown</td>
+        </tr>
+        <tr>
+          <td><strong>LayerSense</strong> (AI plugin)</td>
+          <td><span class="badge badge-green">AI</span></td>
+          <td><span class="badge badge-red">No</span></td>
+          <td><span class="badge badge-red">No</span></td>
+          <td><span class="badge badge-yellow">Partial</span></td>
+          <td><span class="badge badge-green">High</span></td>
+          <td><span class="badge badge-green">Low</span></td>
+          <td>Free</td>
+        </tr>
+        <tr>
+          <td><strong>Figma AI Rename</strong> (native)</td>
+          <td><span class="badge badge-green">AI</span></td>
+          <td><span class="badge badge-red">No</span></td>
+          <td><span class="badge badge-red">No</span></td>
+          <td><span class="badge badge-yellow">Partial</span></td>
+          <td><span class="badge badge-green">High</span></td>
+          <td><span class="badge badge-green">Low</span></td>
+          <td>Paid plan</td>
+        </tr>
+        <tr style="background: rgba(63,185,80,0.05);">
+          <td><strong>Official MCP</strong> (<code>use_figma</code>)</td>
+          <td><span class="badge badge-green">OK</span></td>
+          <td><span class="badge badge-green">OK</span></td>
+          <td><span class="badge badge-green">OK</span></td>
+          <td><span class="badge badge-green">Claude</span></td>
+          <td><span class="badge badge-yellow">Medium</span></td>
+          <td><span class="badge badge-yellow">Medium</span></td>
+          <td>Paid plan</td>
+        </tr>
+        <tr style="background: rgba(88,166,255,0.05);">
+          <td><strong>claude-talk-to-figma</strong></td>
+          <td><span class="badge badge-green">Tool riêng</span></td>
+          <td><span class="badge badge-green">Tool riêng</span></td>
+          <td><span class="badge badge-green">Tool riêng</span></td>
+          <td><span class="badge badge-green">Claude</span></td>
+          <td><span class="badge badge-yellow">Medium</span></td>
+          <td><span class="badge badge-yellow">Medium</span></td>
+          <td>Free</td>
+        </tr>
+        <tr>
+          <td><strong>figma-console-mcp</strong></td>
+          <td><span class="badge badge-green">JS</span></td>
+          <td><span class="badge badge-green">JS</span></td>
+          <td><span class="badge badge-green">JS</span></td>
+          <td><span class="badge badge-green">Claude</span></td>
+          <td><span class="badge badge-yellow">Medium</span></td>
+          <td><span class="badge badge-yellow">Medium</span></td>
+          <td>Free</td>
+        </tr>
+        <tr>
+          <td><strong>Custom Skill + MCP</strong></td>
+          <td><span class="badge badge-green">OK</span></td>
+          <td><span class="badge badge-green">OK</span></td>
+          <td><span class="badge badge-green">OK</span></td>
+          <td><span class="badge badge-green">Claude</span></td>
+          <td><span class="badge badge-green">Tunable</span></td>
+          <td><span class="badge badge-yellow">Medium</span></td>
+          <td>Dev time</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- 8. RECOMMENDATION -->
+<section id="recommendation">
+  <h2><span class="num">8</span> Khuyến nghị cho VSP</h2>
+
+  <div class="reco">
+    <h3>Recommended: Dùng Official MCP (<code>use_figma</code>) — đã có sẵn</h3>
+    <p>VSP đã tích hợp Figma MCP server với đầy đủ skill. Không cần cài thêm gì. Workflow:</p>
+
+    <div class="flow">
+      <div class="flow-step">
+        <div class="step-num">1</div>
+        <div class="step-title">Backup</div>
+        <p style="font-size: 12px; color: var(--text-2);">Duplicate screen</p>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <div class="step-num">2</div>
+        <div class="step-title">Read Tree</div>
+        <p style="font-size: 12px; color: var(--text-2);"><code>get_metadata</code></p>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <div class="step-num">3</div>
+        <div class="step-title">AI Analyze</div>
+        <p style="font-size: 12px; color: var(--text-2);">Claude đề xuất plan</p>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <div class="step-num">4</div>
+        <div class="step-title">Rename</div>
+        <p style="font-size: 12px; color: var(--text-2);"><code>use_figma</code></p>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <div class="step-num">5</div>
+        <div class="step-title">Flatten</div>
+        <p style="font-size: 12px; color: var(--text-2);"><code>use_figma</code></p>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <div class="step-num">6</div>
+        <div class="step-title">Regroup</div>
+        <p style="font-size: 12px; color: var(--text-2);"><code>use_figma</code></p>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step" style="border-color: var(--green);">
+        <div class="step-num" style="color: var(--green);">7</div>
+        <div class="step-title">Verify</div>
+        <p style="font-size: 12px; color: var(--text-2);"><code>get_screenshot</code></p>
+      </div>
+    </div>
+  </div>
+
+  <h3>Fallback: Plugin combo (nếu MCP gặp issue)</h3>
+  <div class="flow">
+    <div class="flow-step">
+      <div class="step-num">Plugin 1</div>
+      <div class="step-title">Structure Cleaner</div>
+      <p style="font-size: 12px; color: var(--text-2);">Flatten wrappers</p>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step">
+      <div class="step-num">Plugin 2</div>
+      <div class="step-title">Hints hoặc LayerSense</div>
+      <p style="font-size: 12px; color: var(--text-2);">AI rename</p>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step">
+      <div class="step-num">Manual</div>
+      <div class="step-title">Tay gom section</div>
+      <p style="font-size: 12px; color: var(--text-2);">Regroup</p>
+    </div>
+  </div>
+
+  <h3>Tương lai: Custom Skill</h3>
+  <p>Nếu cần restructure nhiều screen, nên build 1 custom Claude Code skill (<code>.claude/commands/restructure-figma.md</code>) tự động hóa toàn bộ workflow. Có thể tái sử dụng cho mọi screen trong project.</p>
+
+  <div class="callout success">
+    <strong>Bottom line:</strong> Dùng <code>use_figma</code> mình đang có là đủ. Chạy incremental: đọc tree → plan → rename → flatten → regroup → screenshot verify. Luôn backup screen trước khi bắt đầu.
+  </div>
+</section>
+
+</div>
+
+<!-- SOURCES -->
+<div class="container" style="margin-top: 60px;">
+  <h2 style="font-size: 20px; margin-bottom: 16px; color: var(--text-2);">Sources</h2>
+  <div style="columns: 2; column-gap: 24px; font-size: 13px; line-height: 2;">
+    <p><a href="https://www.figma.com/community/plugin/767379019764649932/clean-document">Clean Document (OSS)</a></p>
+    <p><a href="https://www.figma.com/community/plugin/1397274717374299509/structure-cleaner">Structure Cleaner</a></p>
+    <p><a href="https://www.figma.com/community/plugin/1587362778645810650/layer-cleaner">Layer Cleaner</a></p>
+    <p><a href="https://www.figma.com/community/plugin/1264993877076633643/cleaner">Cleaner</a></p>
+    <p><a href="https://www.figma.com/community/plugin/1570839352708065271/smart-cleaner">Smart Cleaner</a></p>
+    <p><a href="https://www.figma.com/community/plugin/1506710660472611021/hints">Hints (AI)</a></p>
+    <p><a href="https://www.figma.com/community/plugin/1578034340595628711/layersense">LayerSense (AI)</a></p>
+    <p><a href="https://www.figma.com/community/plugin/1505245191151634455/rename-layers-ai-magic-token-mode">Magic Renamer AI</a></p>
+    <p><a href="https://www.autoname.org/">Autoname (OSS)</a></p>
+    <p><a href="https://help.figma.com/hc/en-us/articles/24004711129879-Rename-layers-with-AI">Figma Native AI Rename</a></p>
+    <p><a href="https://www.figma.com/community/plugin/1610263940715306059/cleanup-layers">CleanUp Layers</a></p>
+    <p><a href="https://www.figma.com/community/plugin/1583070887663699105/layer-tree-for-ai">Layer Tree for AI</a></p>
+    <p><a href="https://github.com/arinspunk/claude-talk-to-figma-mcp">claude-talk-to-figma-mcp</a></p>
+    <p><a href="https://github.com/southleft/figma-console-mcp">figma-console-mcp</a></p>
+    <p><a href="https://help.figma.com/hc/en-us/articles/39166810751895-Figma-skills-for-MCP">Figma Skills for MCP</a></p>
+    <p><a href="https://developers.figma.com/docs/figma-mcp-server/create-skills/">Create Custom Skills</a></p>
+    <p><a href="https://www.figma.com/blog/the-figma-canvas-is-now-open-to-agents/">Agents Meet the Canvas</a></p>
+    <p><a href="https://www.figma.com/blog/introducing-claude-code-to-figma/">Claude Code to Figma</a></p>
+  </div>
+</div>
+
+<div class="footer">
+  VSP Design Team &middot; Research by Claude &middot; 28/03/2026
+</div>
+
+</body>
+</html>

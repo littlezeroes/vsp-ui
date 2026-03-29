@@ -60,6 +60,8 @@ const EPICS: Epic[] = [
         states: [
           { label: "success", param: "?status=success" },
           { label: "failed", param: "?status=failed" },
+          { label: "processing", param: "?status=processing" },
+          { label: "non-retryable", param: "?status=failed&error=non-retryable" },
         ],
       },
     ],
@@ -71,13 +73,20 @@ const EPICS: Epic[] = [
     color: "#22c55e",
     screens: [
       {
-        screen: "S5: Dashboard",
+        screen: "S5: Dashboard — Tab San pham",
         route: "/sinhloi/dashboard",
         states: [
           { label: "loaded", param: "" },
           { label: "balance-hidden", param: "?state=dashboard-hidden" },
           { label: "zero-balance", param: "?state=dashboard-zero" },
           { label: "error", param: "?state=dashboard-error" },
+        ],
+      },
+      {
+        screen: "S5b: Dashboard — Tab Quan ly",
+        route: "/sinhloi/dashboard",
+        states: [
+          { label: "default", param: "?tab=manage" },
         ],
       },
     ],
@@ -145,11 +154,24 @@ const EPICS: Epic[] = [
         ],
       },
       {
-        screen: "S12: Chi tiet giao dich",
-        route: "/sinhloi/history/tx001",
+        screen: "S12: Chi tiet giao dich (success)",
+        route: "/sinhloi/history/t1",
         states: [
           { label: "loaded", param: "" },
-          { label: "not-found", param: "?state=not-found" },
+        ],
+      },
+      {
+        screen: "S12: Chi tiet giao dich (failed)",
+        route: "/sinhloi/history/t10",
+        states: [
+          { label: "loaded", param: "" },
+        ],
+      },
+      {
+        screen: "S12: Chi tiet giao dich (not found)",
+        route: "/sinhloi/history/tx-invalid",
+        states: [
+          { label: "not-found", param: "" },
         ],
       },
     ],
@@ -179,6 +201,57 @@ const EPICS: Epic[] = [
         states: [
           { label: "success", param: "?status=success" },
           { label: "failed", param: "?status=failed" },
+        ],
+      },
+    ],
+  },
+  {
+    id: "e6",
+    title: "Epic 6 — Gamification & Hang",
+    desc: "S17 · S18 · S19",
+    color: "#f59e0b",
+    screens: [
+      {
+        screen: "S17: Nang cap lai suat",
+        route: "/sinhloi/upgrade",
+        states: [
+          { label: "default", param: "" },
+        ],
+      },
+      {
+        screen: "S18: Hang thanh vien",
+        route: "/sinhloi/membership",
+        states: [
+          { label: "Hang Bac (current)", param: "" },
+        ],
+      },
+      {
+        screen: "S19: Chi tiet tai khoan",
+        route: "/sinhloi/account-detail",
+        states: [
+          { label: "default", param: "" },
+        ],
+      },
+    ],
+  },
+  {
+    id: "e7",
+    title: "Epic 7 — Cai dat & FAQ",
+    desc: "S20 · S21",
+    color: "#06b6d4",
+    screens: [
+      {
+        screen: "S20: Cai dat",
+        route: "/sinhloi/settings",
+        states: [
+          { label: "default", param: "" },
+        ],
+      },
+      {
+        screen: "S21: Cau hoi thuong gap",
+        route: "/sinhloi/faq",
+        states: [
+          { label: "default", param: "" },
         ],
       },
     ],
@@ -314,6 +387,59 @@ const FLOW_CHARTS: Record<string, string> = {
   class S16S ok
   class S16F fl
   class REFUND,SKIP ac`,
+
+  e6: `flowchart TD
+  START((Tu\\nDashboard)) --> S17[S17: Nang cap lai suat\\nTier + Nhiem vu]
+  S17 --> D17{Lam nhiem vu?}
+  D17 -->|Thanh toan 3 lan| T1[Unlock 4.6%]
+  D17 -->|Nap 5tr| T2[Unlock 4.8%]
+  D17 -->|Moi 2 ban be| T3[Unlock 5.0%]
+  T1 --> DASH((Dashboard))
+  T2 --> DASH
+  T3 --> DASH
+  START --> S18[S18: Hang thanh vien\\nBac · Vang · Kim cuong]
+  S18 --> DASH
+  START --> S19[S19: Chi tiet tai khoan\\nBreakdown + Settings]
+  S19 --> D19{Hanh dong?}
+  D19 -->|Xem lich su| LS[Go Epic 4]
+  D19 -->|Bat Nhan tien TD| SET[Toggle ON]
+  D19 -->|Cai dat TT| S20[Go S20: Cai dat]
+  SET --> S19
+  classDef st fill:#f59e0b,stroke:#d97706,color:#fff
+  classDef sc fill:#1a1a2e,stroke:#374151,color:#e5e5e5
+  classDef dc fill:#0f172a,stroke:#f59e0b,color:#fde68a
+  classDef ok fill:#052e16,stroke:#22c55e,color:#86efac
+  classDef lk fill:#162032,stroke:#3b82f6,color:#93c5fd
+  class START,DASH st
+  class S17,S18,S19 sc
+  class D17,D19 dc
+  class T1,T2,T3 ok
+  class LS,SET,S20 lk`,
+
+  e7: `flowchart TD
+  START((Tu\\nDashboard)) --> S20[S20: Cai dat\\n3 toggles]
+  S20 --> D20{Thay doi?}
+  D20 -->|Toggle Nhan tien TD| ON1[Auto-receive ON/OFF]
+  D20 -->|Toggle TT tu SDSL| ON2[Pay-from-balance ON/OFF]
+  D20 -->|Toggle Hien thi| ON3[Show-balance ON/OFF]
+  ON1 --> S20
+  ON2 --> S20
+  ON3 --> S20
+  START --> S21[S21: FAQ\\nChon chu de]
+  S21 --> D21{Chon?}
+  D21 -->|Chu de| QA[Xem cau hoi + tra loi]
+  D21 -->|Chinh sach| TERMS[Go S14: Dieu khoan]
+  QA --> S21
+  classDef st fill:#06b6d4,stroke:#0891b2,color:#fff
+  classDef sc fill:#1a1a2e,stroke:#374151,color:#e5e5e5
+  classDef dc fill:#0f172a,stroke:#06b6d4,color:#a5f3fc
+  classDef ac fill:#162032,stroke:#3b82f6,color:#93c5fd
+  classDef lk fill:#1e1b4b,stroke:#818cf8,color:#c7d2fe
+  class START st
+  class S20,S21 sc
+  class D20,D21 dc
+  class ON1,ON2,ON3,QA ac
+  class TERMS lk`,
 }
 
 /* Flatten for Prev/Next navigation */

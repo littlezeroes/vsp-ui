@@ -1,0 +1,2 @@
+var e=globalThis.parcelRequired477;(0,e.register)("iZCav",function(t,l){Object.defineProperty(t.exports,"__esModule",{value:!0,configurable:!0}),Object.defineProperty(t.exports,"default",{get:()=>r,set:void 0,enumerable:!0,configurable:!0});var o=e("l998X");function r({label:t="Commit",size:l,testId:a}){var i;return(0,o.jsx)(e("kXb3C").default,{label:t,size:l,testId:a,icon:(i=e("fZeLS"))&&i.__esModule?i.default:i,color:"var(--ds-icon-accent-yellow, #B38600)"})}e("42omo")});
+//# sourceMappingURL=commit.b8c711d2.js.map

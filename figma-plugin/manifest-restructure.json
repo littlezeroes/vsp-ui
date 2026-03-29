@@ -1,0 +1,7 @@
+{
+  "name": "VSP Hugeicons Restructure",
+  "id": "vsp-hugeicons-restructure",
+  "api": "1.0.0",
+  "main": "dist/restructure-hugeicons.js",
+  "editorType": ["figma"]
+}

@@ -1,0 +1,2 @@
+var e=globalThis.parcelRequired477;(0,e.register)("cKqka",function(r,t){Object.defineProperty(r.exports,"__esModule",{value:!0,configurable:!0}),Object.defineProperty(r.exports,"default",{get:()=>o,set:void 0,enumerable:!0,configurable:!0});var l=e("l998X");function o({label:r="Incident",size:t,testId:a}){var i;return(0,l.jsx)(e("kXb3C").default,{label:r,size:t,testId:a,icon:(i=e("5LN4K"))&&i.__esModule?i.default:i,color:"var(--ds-icon-accent-red, #C9372C)"})}e("42omo")});
+//# sourceMappingURL=incident.9e4821e1.js.map

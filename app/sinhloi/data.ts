@@ -161,3 +161,154 @@ export function getTxIcon(type: TransactionType): { bg: string; color: string; s
 export function calculateInterest(amount: number, rate: number): number {
   return Math.round((amount * rate) / 100)
 }
+
+/* ── Interest Tiers (Gamification) ─────────────────────────────── */
+export interface InterestTier {
+  rate: number
+  label: string
+  unlocked: boolean
+  mission?: string
+}
+
+export const INTEREST_TIERS: InterestTier[] = [
+  { rate: 4.5, label: "Co ban", unlocked: true },
+  { rate: 4.6, label: "Bac", unlocked: false, mission: "Thanh toan 3 lan trong thang" },
+  { rate: 4.8, label: "Vang", unlocked: false, mission: "Nap them 5.000.000 d" },
+  { rate: 5.0, label: "Kim cuong", unlocked: false, mission: "Moi 2 ban be su dung" },
+]
+
+export const CURRENT_TIER_IDX = 0
+
+/* ── Membership Ranks ──────────────────────────────────────────── */
+export interface MembershipRank {
+  id: string
+  name: string
+  color: string
+  benefits: { text: string; available: boolean }[]
+  isCurrent: boolean
+}
+
+export const MEMBERSHIP_RANKS: MembershipRank[] = [
+  {
+    id: "silver",
+    name: "Hang Bac",
+    color: "#94a3b8",
+    isCurrent: true,
+    benefits: [
+      { text: "Mien phi rut them 50 trieu", available: true },
+      { text: "Them 0.1%/nam lai suat", available: true },
+      { text: "Hoan tien 0.5% khi thanh toan", available: false },
+      { text: "x2 toc do len hang", available: true },
+    ],
+  },
+  {
+    id: "gold",
+    name: "Hang Vang",
+    color: "#f59e0b",
+    isCurrent: false,
+    benefits: [
+      { text: "Mien phi rut them 100 trieu", available: true },
+      { text: "Them 0.2%/nam lai suat", available: true },
+      { text: "Hoan tien 1% khi thanh toan", available: true },
+      { text: "x3 toc do len hang", available: true },
+    ],
+  },
+  {
+    id: "diamond",
+    name: "Hang Kim cuong",
+    color: "#818cf8",
+    isCurrent: false,
+    benefits: [
+      { text: "Mien phi rut khong gioi han", available: true },
+      { text: "Them 0.5%/nam lai suat", available: true },
+      { text: "Hoan tien 2% khi thanh toan", available: true },
+      { text: "x5 toc do len hang", available: true },
+    ],
+  },
+]
+
+/* ── Account Breakdown ─────────────────────────────────────────── */
+export const MOCK_ACCOUNT_BREAKDOWN = {
+  totalDeposited: 12_376_681,
+  totalInterest: 100_000,
+  totalWithdrawn: 1_645_633,
+}
+
+/* ── Monthly Stats ─────────────────────────────────────────────── */
+export const MOCK_MONTHLY_STATS = {
+  month: "Thang 3/2026",
+  totalIn: 8_150_000,
+  totalOut: 1_700_000,
+  interestMonth: 8_036,
+  cashbackMonth: 0,
+}
+
+/* ── Settings ──────────────────────────────────────────────────── */
+export interface SinhLoiSettings {
+  autoReceive: boolean
+  payFromBalance: boolean
+  showBalance: boolean
+}
+
+export const MOCK_SETTINGS: SinhLoiSettings = {
+  autoReceive: false,
+  payFromBalance: false,
+  showBalance: true,
+}
+
+/* ── FAQ ───────────────────────────────────────────────────────── */
+export interface FaqCategory {
+  icon: string
+  label: string
+  items: { q: string; a: string }[]
+}
+
+export const FAQ_DATA: FaqCategory[] = [
+  {
+    icon: "user-plus",
+    label: "Bat dau / Dang ky",
+    items: [
+      { q: "Sinh loi tu dong la gi?", a: "La tinh nang giup so du trong vi cua ban tu dong sinh loi voi lai suat canh tranh, khong can cam ket thoi gian." },
+      { q: "Lam sao de kich hoat?", a: "Vao muc Sinh loi > Bam Kich hoat > Xac nhan dieu khoan > Nhap OTP." },
+    ],
+  },
+  {
+    icon: "settings",
+    label: "Quan ly tai khoan",
+    items: [
+      { q: "Toi co the thay doi cai dat khong?", a: "Co, ban vao Cai dat de bat/tat cac tuy chon nhu Nhan tien tu dong, Thanh toan tu so du sinh loi." },
+    ],
+  },
+  {
+    icon: "dollar-sign",
+    label: "Nap tien",
+    items: [
+      { q: "Han muc nap toi da la bao nhieu?", a: "So du toi da trong vi sinh loi la 100.000.000 d." },
+      { q: "Nap tien mat bao lau?", a: "Tien nap se duoc ghi nhan ngay lap tuc." },
+    ],
+  },
+  {
+    icon: "arrow-up-right",
+    label: "Rut & Thanh toan",
+    items: [
+      { q: "Rut tien mat phi khong?", a: "Khong mat phi rut tien. Tien se ve vi V-Smart Pay ngay lap tuc." },
+      { q: "Han muc rut toi da?", a: "Toi da 30.000.000 d/ngay." },
+      { q: "Thanh toan truc tiep la gi?", a: "Ban co the dung so du sinh loi de thanh toan QR, chuyen tien ma khong can rut ve vi truoc." },
+    ],
+  },
+  {
+    icon: "trending-up",
+    label: "Tien loi",
+    items: [
+      { q: "Lai suat duoc tinh nhu the nao?", a: "Lai suat duoc tinh tren so du cuoi ngay, tra ve tai khoan moi thang vao ngay cuoi thang." },
+      { q: "Lai suat co thay doi khong?", a: "Lai suat co the thay doi theo thoa thuan voi doi tac tai chinh. Ban se duoc thong bao truoc khi thay doi." },
+    ],
+  },
+  {
+    icon: "shield",
+    label: "An toan & Bao mat",
+    items: [
+      { q: "Tien cua toi co an toan khong?", a: "Tien cua ban duoc luu ky tai ngan hang doi tac uy tin va duoc bao ve theo quy dinh phap luat." },
+    ],
+  },
+]

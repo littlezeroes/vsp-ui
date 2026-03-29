@@ -1,0 +1,2 @@
+var e=globalThis.parcelRequired477;(0,e.register)("57Wda",function(r,t){Object.defineProperty(r.exports,"__esModule",{value:!0,configurable:!0}),Object.defineProperty(r.exports,"default",{get:()=>l,set:void 0,enumerable:!0,configurable:!0});var a=e("l998X");function l({label:r="Database",size:t,testId:o}){var i;return(0,a.jsx)(e("kXb3C").default,{label:r,size:t,testId:o,icon:(i=e("6B0jU"))&&i.__esModule?i.default:i,color:"var(--ds-icon-accent-purple, #AF59E1)"})}e("42omo")});
+//# sourceMappingURL=database.7bd12ec5.js.map

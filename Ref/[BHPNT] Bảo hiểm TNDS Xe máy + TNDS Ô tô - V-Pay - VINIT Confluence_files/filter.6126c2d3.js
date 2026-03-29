@@ -1,0 +1,2 @@
+var e=globalThis.parcelRequired477;(0,e.register)("4AkKf",function(l,r){Object.defineProperty(l.exports,"__esModule",{value:!0}),l.exports.default=void 0;var t=a(e("42omo")),o=a(e("aSNrY"));function a(e){return e&&e.__esModule?e:{default:e}}let d=e=>t.default.createElement(o.default,Object.assign({name:"FilterIcon",dangerouslySetGlyph:'<path fill="currentcolor" fill-rule="evenodd" d="M15 3.5H1V2h14zm-2 5.25H3v-1.5h10zM11 14H5v-1.5h6z" clip-rule="evenodd"/>'},e));d.displayName="FilterIcon",l.exports.default=d});
+//# sourceMappingURL=filter.6126c2d3.js.map

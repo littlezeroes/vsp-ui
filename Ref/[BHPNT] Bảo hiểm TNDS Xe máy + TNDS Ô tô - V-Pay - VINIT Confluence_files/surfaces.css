@@ -1,0 +1,11 @@
+html[data-surface="overlay"] {
+  --ds-elevation-surface-current: var(--ds-surface-overlay);
+}
+
+html[data-surface="raised"] {
+  --ds-elevation-surface-current: var(--ds-surface-raised);
+}
+
+html[data-surface="sunken"] {
+  --ds-elevation-surface-current: var(--ds-surface-sunken);
+}

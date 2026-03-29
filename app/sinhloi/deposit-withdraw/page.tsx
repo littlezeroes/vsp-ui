@@ -2,11 +2,23 @@
 
 import * as React from "react"
 import { useRouter, useSearchParams } from "next/navigation"
-import { ChevronLeft, Delete } from "lucide-react"
+import { ChevronLeft, Delete, Info } from "lucide-react"
 import { Header } from "@/components/ui/header"
 import { Button } from "@/components/ui/button"
 import { Dialog } from "@/components/ui/dialog"
-import { SINHLOI_CONFIG, MOCK_USER, MOCK_BALANCE, QUICK_AMOUNTS, formatVND, calculateInterest } from "../data"
+import { InformMessage } from "@/components/ui/inform-message"
+import {
+  SINHLOI_CONFIG,
+  MOCK_USER,
+  MOCK_BALANCE,
+  QUICK_AMOUNTS,
+  formatVND,
+  calculateInterest,
+} from "../data"
+
+/* ── Constants ─────────────────────────────────────────────────── */
+const MIN_AMOUNT = 10_000
+const MOCK_MONTHLY_DEPOSITED = 15_000_000 // amount already deposited this month
 
 /* ── Helpers ───────────────────────────────────────────────────── */
 function formatChip(value: number): string {
@@ -53,7 +65,7 @@ function TabSwitcher({
 }
 
 /* ── Custom Numpad — BIDV pattern ──────────────────────────────── */
-function Numpad({ onInput }: { onInput: (key: string) => void }) {
+function Numpad({ onInput, disabled }: { onInput: (key: string) => void; disabled?: boolean }) {
   const keys = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "000", "0", "backspace"]
   return (
     <div className="grid grid-cols-3">
@@ -61,8 +73,9 @@ function Numpad({ onInput }: { onInput: (key: string) => void }) {
         <button
           key={key}
           type="button"
+          disabled={disabled}
           onClick={() => onInput(key)}
-          className="h-[52px] flex items-center justify-center text-[20px] font-semibold text-foreground active:bg-secondary rounded-[8px] transition-colors"
+          className="h-[52px] flex items-center justify-center text-[20px] font-semibold text-foreground active:bg-secondary rounded-[8px] transition-colors disabled:opacity-40"
         >
           {key === "backspace" ? (
             <Delete size={24} className="text-foreground" />
@@ -93,22 +106,40 @@ function DepositWithdrawContent() {
   const isDeposit = activeTab === "deposit"
   const walletBalance = MOCK_USER.walletBalance
   const sinhloiBalance = MOCK_BALANCE.balance
-  const { maxBalance, dailyWithdrawLimit, interestRate } = SINHLOI_CONFIG
+  const { maxBalance, dailyWithdrawLimit, interestRate, monthlyDepositLimit } = SINHLOI_CONFIG
 
-  // Validation
-  const getError = () => {
+  // Monthly remaining limit
+  const monthlyRemaining = monthlyDepositLimit - MOCK_MONTHLY_DEPOSITED
+
+  // Validation — per decisions.md: min 10K, monthly limit, max balance
+  const getError = (): string | undefined => {
     if (amount === 0) return undefined
-    if (isDeposit && amount > walletBalance) return "So tien nap vuot qua so du nguon tien"
-    if (isDeposit && amount + sinhloiBalance > maxBalance) return "So du vi sinh loi vuot qua 100 trieu VND"
-    if (!isDeposit && amount > sinhloiBalance) return "So tien rut vuot qua so du nguon tien"
-    if (!isDeposit && amount > dailyWithdrawLimit) return "So tien rut vuot qua han muc"
+    if (amount < MIN_AMOUNT) return "So tien toi thieu la 10.000d"
+
+    if (isDeposit) {
+      if (amount > walletBalance) return "So du vi khong du"
+      if (amount + sinhloiBalance > maxBalance) {
+        const remaining = maxBalance - sinhloiBalance
+        return `Vuot han muc toi da 100.000.000d. Co the nap them: ${remaining.toLocaleString("vi-VN")}d`
+      }
+      if (amount > monthlyRemaining) {
+        return `Da dat han muc nap thang. Han muc con lai: ${monthlyRemaining.toLocaleString("vi-VN")}d`
+      }
+    } else {
+      if (amount > sinhloiBalance) return "So du sinh loi khong du"
+      if (amount > dailyWithdrawLimit) {
+        return `Vuot han muc rut ${dailyWithdrawLimit.toLocaleString("vi-VN")}d/ngay`
+      }
+    }
     return undefined
   }
 
   const error = getError()
-  const isValid = amount > 0 && !error
+  const isValid = amount >= MIN_AMOUNT && !error
 
+  // Tiered auth per decisions.md: Nap <= 5M → skip auth, Nap > 5M → OTP, Rut → always OTP
   const handleContinue = () => {
+    if (!isValid) return
     setLoading(true)
     setTimeout(() => {
       setLoading(false)
@@ -122,12 +153,12 @@ function DepositWithdrawContent() {
     } else if (digit === "000") {
       setAmount((prev) => {
         const next = prev * 1000
-        return next > 999999999 ? prev : next
+        return next > 999_999_999 ? prev : next
       })
     } else {
       setAmount((prev) => {
         const next = prev * 10 + parseInt(digit)
-        return next > 999999999 ? prev : next
+        return next > 999_999_999 ? prev : next
       })
     }
   }
@@ -142,7 +173,11 @@ function DepositWithdrawContent() {
     setAmount(maxWithdraw)
   }
 
-  const estimatedInterest = calculateInterest(amount, interestRate)
+  const estimatedInterestYear = calculateInterest(amount, interestRate)
+  const estimatedInterestDay = Math.round(estimatedInterestYear / 365)
+  const estimatedInterestMonth = Math.round(estimatedInterestYear / 12)
+
+  const isWalletEmpty = isDeposit && walletBalance === 0
 
   return (
     <div className="relative w-full max-w-[390px] min-h-screen bg-background text-foreground flex flex-col">
@@ -164,7 +199,20 @@ function DepositWithdrawContent() {
       <TabSwitcher active={activeTab} onSwitch={handleTabSwitch} />
 
       <div className="flex-1 flex flex-col pb-[100px]">
-        {/* Balance display — centered */}
+        {/* Wallet empty warning */}
+        {isWalletEmpty && (
+          <div className="px-[22px] pt-[12px]">
+            <InformMessage
+              hierarchy="primary"
+              icon={<Info size={20} />}
+              body="So du vi khong du. Nap tien vao vi truoc."
+              actionLabel="Nap vi"
+              onAction={() => router.push("/")}
+            />
+          </div>
+        )}
+
+        {/* Balance source display — centered */}
         <div className="px-[22px] pt-[16px] flex justify-center">
           <p className="text-sm font-normal leading-5 text-foreground-secondary">
             {isDeposit ? "Tu Vi V-Smart Pay" : "Den Vi V-Smart Pay"}{" "}
@@ -173,6 +221,15 @@ function DepositWithdrawContent() {
             </span>
           </p>
         </div>
+
+        {/* Monthly limit display (deposit only) — per decisions.md C3 */}
+        {isDeposit && (
+          <div className="px-[22px] pt-[4px] flex justify-center">
+            <p className="text-xs font-normal leading-4 text-foreground-secondary">
+              Han muc con lai thang nay: {monthlyRemaining.toLocaleString("vi-VN")}d
+            </p>
+          </div>
+        )}
 
         {/* Amount display — BIDV big amount center */}
         <div className="px-[22px] pt-[24px] flex flex-col items-center">
@@ -184,7 +241,7 @@ function DepositWithdrawContent() {
             <div className="w-[2px] h-[36px] bg-info animate-pulse rounded-full" />
           </div>
           {error && (
-            <p className="text-xs font-normal leading-5 text-danger mt-[4px]">{error}</p>
+            <p className="text-xs font-normal leading-5 text-danger mt-[4px] text-center px-[16px]">{error}</p>
           )}
         </div>
 
@@ -219,25 +276,38 @@ function DepositWithdrawContent() {
           </div>
         )}
 
-        {/* Interest info */}
-        {amount > 0 && (
+        {/* Interest estimate info — per spec: estimated gain/loss */}
+        {amount > 0 && !error && (
           <div className="px-[22px] pt-[12px]">
             {isDeposit ? (
-              <p className="text-sm text-foreground-secondary text-center">
-                Lai du kien cho so tien nay: <span className="text-success">+{formatVND(estimatedInterest)}/nam</span>
-              </p>
+              <div className="flex flex-col items-center gap-[2px]">
+                <p className="text-sm text-foreground-secondary text-center">
+                  Uoc tinh lai them: <span className="text-success font-semibold">+{estimatedInterestYear.toLocaleString("vi-VN")}d/nam</span>
+                </p>
+              </div>
             ) : (
-              <p className="text-sm text-foreground-secondary text-center">
-                Ban co the mat so tien lai nam du kien: <span className="text-danger">-{formatVND(estimatedInterest)}</span>
-              </p>
+              <div className="flex flex-col items-center gap-[2px]">
+                <p className="text-sm text-foreground-secondary text-center">
+                  Lai bi giam uoc tinh: <span className="text-danger font-semibold">-{estimatedInterestYear.toLocaleString("vi-VN")}d/nam</span>
+                </p>
+              </div>
             )}
+          </div>
+        )}
+
+        {/* Withdraw all warning */}
+        {!isDeposit && amount > 0 && amount === sinhloiBalance && (
+          <div className="px-[22px] pt-[8px]">
+            <p className="text-xs text-warning text-center">
+              Ban se mat tien lai hom nay: {estimatedInterestDay.toLocaleString("vi-VN")}d
+            </p>
           </div>
         )}
 
         {/* Custom Numpad — BIDV pattern */}
         <div className="pt-[32px] mt-auto">
           <div className="px-[22px]">
-            <Numpad onInput={handleAmountInput} />
+            <Numpad onInput={handleAmountInput} disabled={isWalletEmpty} />
           </div>
         </div>
       </div>
@@ -248,7 +318,7 @@ function DepositWithdrawContent() {
           variant="primary"
           size="48"
           className="w-full"
-          disabled={!isValid || loading}
+          disabled={!isValid || loading || isWalletEmpty}
           isLoading={loading}
           onClick={handleContinue}
         >

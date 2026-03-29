@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VSP App Architecture — Roadmap 2026</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:-apple-system,'Segoe UI',sans-serif; background:#fff; color:#111; line-height:1.6; max-width:960px; margin:0 auto; padding:40px 24px 120px; }
+  h1 { font-size:28px; font-weight:800; margin-bottom:4px; letter-spacing:-0.5px; }
+  .sub { font-size:13px; color:#888; margin-bottom:32px; }
+  h2 { font-size:20px; font-weight:700; margin:56px 0 16px; padding-bottom:6px; border-bottom:2px solid #111; }
+  h3 { font-size:16px; font-weight:700; margin:28px 0 10px; }
+  h4 { font-size:12px; font-weight:700; margin:20px 0 8px; text-transform:uppercase; letter-spacing:0.5px; color:#888; }
+  p { font-size:14px; color:#444; margin-bottom:12px; }
+  table { width:100%; border-collapse:collapse; margin:12px 0; font-size:13px; }
+  th { text-align:left; padding:8px 10px; background:#111; color:#fff; font-weight:600; font-size:11px; }
+  td { padding:8px 10px; border-bottom:1px solid #f0f0f0; vertical-align:top; }
+  tr:nth-child(even) td { background:#fafafa; }
+  .tag { display:inline-block; font-size:9px; font-weight:700; padding:2px 6px; border-radius:4px; }
+  .tag-green { background:#e8f8f0; color:#00b182; }
+  .tag-blue { background:#EAF4FF; color:#2196F3; }
+  .tag-yellow { background:#fff8e1; color:#e67e22; }
+  .tag-red { background:#fde8e8; color:#c0392b; }
+  .tag-gray { background:#f0f0f0; color:#888; }
+  .tag-black { background:#111; color:#fff; }
+  .card { background:#fafafa; border-radius:12px; padding:16px 20px; margin-bottom:12px; }
+  .card-title { font-size:13px; font-weight:700; margin-bottom:6px; }
+  .card p { margin-bottom:6px; font-size:13px; }
+  .cols-2 { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .cols-3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; }
+  .cols-4 { display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:12px; }
+  @media (max-width:600px) { .cols-2,.cols-3,.cols-4 { grid-template-columns:1fr; } }
+  .sep { height:1px; background:#eee; margin:32px 0; }
+  .flow { background:#fafafa; border-radius:12px; padding:16px 20px; margin:12px 0; font-family:'SF Mono','Fira Code',monospace; font-size:12px; line-height:2; white-space:pre-wrap; border:1px solid #eee; }
+  .anno { background:#FFFDE7; border-left:3px solid #f5a623; padding:8px 12px; margin:12px 0; border-radius:0 6px 6px 0; font-size:11px; color:#666; }
+  .anno strong { color:#111; }
+  .metric { border:1.5px solid #e0e0e0; border-radius:12px; padding:16px; text-align:center; }
+  .metric-val { font-size:28px; font-weight:800; }
+  .metric-label { font-size:11px; color:#888; margin-top:4px; }
+  .progress { height:8px; background:#eee; border-radius:4px; overflow:hidden; margin:6px 0; }
+  .progress-fill { height:100%; border-radius:4px; }
+  .screenshot-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(120px, 1fr)); gap:12px; margin:16px 0; }
+  .screenshot-item { text-align:center; }
+  .screenshot-item img { width:100%; border-radius:10px; border:1px solid #e0e0e0; box-shadow:0 2px 8px rgba(0,0,0,0.06); }
+  .screenshot-item .caption { font-size:9px; color:#888; margin-top:4px; font-weight:600; }
+  /* IA Tree */
+  .ia-tree { background:#fafafa; border-radius:12px; padding:20px; margin:12px 0; }
+  .ia-node { padding:6px 12px; margin:4px 0; border-radius:8px; font-size:12px; font-weight:600; display:inline-block; }
+  .ia-l0 { background:#111; color:#fff; font-size:14px; }
+  .ia-l1 { background:#333; color:#fff; }
+  .ia-l2 { background:#f0f0f0; color:#333; margin-left:24px; }
+  .ia-l3 { background:#fff; border:1px solid #e0e0e0; color:#555; margin-left:48px; font-weight:500; }
+  .ia-connector { color:#ccc; margin-left:12px; font-size:11px; }
+  /* Verdict */
+  .verdict { background:#111; color:#fff; border-radius:16px; padding:28px; margin:24px 0; }
+  .verdict h3 { color:#fff; margin-top:0; }
+  .verdict p { color:rgba(255,255,255,0.7); }
+  .verdict li { color:rgba(255,255,255,0.85); margin-bottom:6px; }
+  .verdict strong { color:#fff; }
+</style>
+</head>
+<body>
+
+<h1>V-Smart Pay — App Architecture 2026</h1>
+<p class="sub">Vi — Design Lead &middot; 21/03/2026 &middot; Quy hoạch cấu trúc app cho 30/4 &middot; Metrics-driven</p>
+
+<!-- ════════════════════════════════════════════════════════ -->
+<h2>1. Current State — App v1.0.6</h2>
+
+<h4>Screenshots Production</h4>
+<div class="screenshot-grid">
+  <div class="screenshot-item"><img src="../Downloads/UI/photo_2026-03-21 12.40.02.jpeg"><div class="caption">Trang chủ</div></div>
+  <div class="screenshot-item"><img src="../Downloads/UI/photo_2026-03-21 12.40.05.jpeg"><div class="caption">Chuyển tiền</div></div>
+  <div class="screenshot-item"><img src="../Downloads/UI/photo_2026-03-21 12.40.01.jpeg"><div class="caption">VAS Home</div></div>
+  <div class="screenshot-item"><img src="../Downloads/UI/photo_2026-03-21 12.39.58.jpeg"><div class="caption">Nạp/Rút</div></div>
+  <div class="screenshot-item"><img src="../Downloads/UI/photo_2026-03-21 12.40.00.jpeg"><div class="caption">Mã nhận tiền</div></div>
+  <div class="screenshot-item"><img src="../Downloads/UI/photo_2026-03-21 12.40.04.jpeg"><div class="caption">Lịch sử GD</div></div>
+  <div class="screenshot-item"><img src="../Downloads/UI/photo_2026-03-21 12.40.03.jpeg"><div class="caption">Tài khoản</div></div>
+</div>
+
+<h3>1.1 Current Bottom Nav</h3>
+<div class="flow">🏠 Trang chủ  |  ↔️ Chuyển tiền  |  📱 QR (center)  |  🕐 Giao dịch  |  👤 Tài khoản</div>
+
+<h3>1.2 Current Feature Map</h3>
+<table>
+  <tr><th>Product Line</th><th>Features có</th><th>Status</th></tr>
+  <tr>
+    <td><strong>Ví cơ bản</strong></td>
+    <td>Đăng ký/Đăng nhập, eKYC, Nạp/Rút tiền, Số dư, PIN/Biometric</td>
+    <td><span class="tag tag-green">Live</span></td>
+  </tr>
+  <tr>
+    <td><strong>Chuyển tiền</strong></td>
+    <td>P2P (ví→ví), Chuyển NH, QR scan/show, Nhận tiền</td>
+    <td><span class="tag tag-green">Live</span></td>
+  </tr>
+  <tr>
+    <td><strong>Thanh toán HĐ</strong></td>
+    <td>Điện, Nước, Internet, Nạp ĐT, Mua thẻ cào</td>
+    <td><span class="tag tag-yellow">Basic UI</span></td>
+  </tr>
+  <tr>
+    <td><strong>Quản lý TK</strong></td>
+    <td>Profile, Liên kết NH (TCB + Napas), Bảo mật, Ngôn ngữ</td>
+    <td><span class="tag tag-green">Live</span></td>
+  </tr>
+  <tr>
+    <td><strong>Lịch sử</strong></td>
+    <td>GD grouped by date, Filter</td>
+    <td><span class="tag tag-green">Live</span></td>
+  </tr>
+  <tr><td><strong>Sinh lời</strong></td><td>—</td><td><span class="tag tag-red">Chưa có</span></td></tr>
+  <tr><td><strong>Đầu tư BĐS</strong></td><td>—</td><td><span class="tag tag-red">Chưa có</span></td></tr>
+  <tr><td><strong>Tín dụng / BNPL</strong></td><td>—</td><td><span class="tag tag-red">Chưa có</span></td></tr>
+  <tr><td><strong>Bảo hiểm</strong></td><td>—</td><td><span class="tag tag-red">Chưa có</span></td></tr>
+</table>
+
+<div class="anno"><strong>Hiện trạng:</strong> VSP v1.0.6 = ví thanh toán thuần (payment wallet). Chưa có sản phẩm tài chính (sinh lời, đầu tư, tín dụng, bảo hiểm). So với MoMo (10+ năm) đang ở mức ~30% feature parity.</div>
+
+<!-- ════════════════════════════════════════════════════════ -->
+<h2>2. Roadmap 2026 — 4 Product Lines</h2>
+
+<p>Từ KHHĐ 2026 — 4 trụ cột sản phẩm:</p>
+
+<div class="cols-2">
+  <div class="card" style="border-left:3px solid #00b182;">
+    <div class="card-title">① Tài khoản & Thanh toán</div>
+    <p>Hoàn thiện 80% dịch vụ TT so với MoMo/ZaloPay/VNPAY</p>
+    <p>Nhúng ví vào HST: Vinhomes, VinPearl, XanhSM, Duhat, trạm đổi pin</p>
+    <p><span class="tag tag-green">Core — Phase 1</span></p>
+  </div>
+  <div class="card" style="border-left:3px solid #2196F3;">
+    <div class="card-title">② Đầu tư & Sinh lời</div>
+    <p>Tích luỹ sinh lời tự động (giữ chân dòng tiền ví)</p>
+    <p>BĐS mã hoá (RWA tokenization) — đầu tiên tại VN</p>
+    <p><span class="tag tag-blue">Growth — Phase 1-2</span></p>
+  </div>
+  <div class="card" style="border-left:3px solid #e67e22;">
+    <div class="card-title">③ Tín dụng</div>
+    <p>Chấm điểm tín dụng nội bộ</p>
+    <p>Ví trả sau (BNPL) kích cầu tiêu dùng TĐ</p>
+    <p><span class="tag tag-yellow">Expand — Phase 2-3</span></p>
+  </div>
+  <div class="card" style="border-left:3px solid #9c27b0;">
+    <div class="card-title">④ Bảo hiểm</div>
+    <p>Phân phối BH xe, du lịch, sức khỏe cho KH HST</p>
+    <p>BH dựa trên dữ liệu hành vi (VinFast usage-based)</p>
+    <p><span class="tag tag-gray">Extend — Phase 3</span></p>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════ -->
+<h2>3. Metrics-Driven Approach</h2>
+
+<p>Mỗi product line phục vụ 1 metric chính. Metric quyết định priority.</p>
+
+<div class="cols-4">
+  <div class="metric">
+    <div class="metric-val" style="color:#00b182;">MAU</div>
+    <div class="metric-label">Monthly Active Users</div>
+    <div style="font-size:11px; color:#444; margin-top:8px;">① Thanh toán<br>Dùng hàng ngày → tăng MAU</div>
+  </div>
+  <div class="metric">
+    <div class="metric-val" style="color:#2196F3;">AUM</div>
+    <div class="metric-label">Assets Under Mgmt</div>
+    <div style="font-size:11px; color:#444; margin-top:8px;">② Sinh lời / Đầu tư<br>Giữ tiền trong ví → tăng AUM</div>
+  </div>
+  <div class="metric">
+    <div class="metric-val" style="color:#e67e22;">TPV</div>
+    <div class="metric-label">Total Payment Volume</div>
+    <div style="font-size:11px; color:#444; margin-top:8px;">③ Tín dụng<br>BNPL tăng spending → TPV</div>
+  </div>
+  <div class="metric">
+    <div class="metric-val" style="color:#9c27b0;">Rev</div>
+    <div class="metric-label">Revenue per User</div>
+    <div style="font-size:11px; color:#444; margin-top:8px;">④ Bảo hiểm<br>Cross-sell → tăng Rev/user</div>
+  </div>
+</div>
+
+<h3>3.1 Priority Matrix cho 30/4</h3>
+
+<table>
+  <tr><th>Product</th><th>Metric</th><th>30/4 Scope</th><th>Priority</th></tr>
+  <tr>
+    <td><strong>① Thanh toán</strong></td>
+    <td>MAU</td>
+    <td>VAS redesign (8 flows) + Saved billers + Search<br>Chuyển tiền improvements<br>HST integration entry points</td>
+    <td><span class="tag tag-black">P0</span></td>
+  </tr>
+  <tr>
+    <td><strong>② Sinh lời</strong></td>
+    <td>AUM</td>
+    <td>Sinh lời tự động v1 (đã build sinhloi-v2)<br>Entry point từ Home + Wallet card</td>
+    <td><span class="tag tag-green">P1</span></td>
+  </tr>
+  <tr>
+    <td><strong>② Đầu tư BĐS</strong></td>
+    <td>AUM</td>
+    <td>RWA wireframes (đã có trong crypto/)<br>Entry point + teaser trên Home</td>
+    <td><span class="tag tag-blue">P1</span></td>
+  </tr>
+  <tr>
+    <td><strong>③ Tín dụng</strong></td>
+    <td>TPV</td>
+    <td>Chưa có backend. 30/4 = placeholder entry + "Sắp ra mắt"</td>
+    <td><span class="tag tag-yellow">P2</span></td>
+  </tr>
+  <tr>
+    <td><strong>④ Bảo hiểm</strong></td>
+    <td>Rev</td>
+    <td>Chưa có. 30/4 = không cần UI</td>
+    <td><span class="tag tag-gray">P3</span></td>
+  </tr>
+</table>
+
+<!-- ════════════════════════════════════════════════════════ -->
+<h2>4. Benchmark — MoMo / ZaloPay / VNPAY</h2>
+
+<h3>4.1 Bottom Nav Comparison</h3>
+
+<table>
+  <tr><th>App</th><th>Tab 1</th><th>Tab 2</th><th>Tab 3 (Center)</th><th>Tab 4</th><th>Tab 5</th></tr>
+  <tr>
+    <td><strong>MoMo</strong></td>
+    <td>Trang chủ</td>
+    <td>Ưu đãi</td>
+    <td>—</td>
+    <td>Ví</td>
+    <td>Cá nhân</td>
+  </tr>
+  <tr>
+    <td><strong>ZaloPay</strong></td>
+    <td>Trang chủ</td>
+    <td>Ưu đãi</td>
+    <td>QR</td>
+    <td>Giao dịch</td>
+    <td>Tôi</td>
+  </tr>
+  <tr>
+    <td><strong>VNPAY</strong></td>
+    <td>Trang chủ</td>
+    <td>Ưu đãi</td>
+    <td>QR</td>
+    <td>Thông báo</td>
+    <td>Tài khoản</td>
+  </tr>
+  <tr style="background:#f0f0f0;">
+    <td><strong>VSP hiện tại</strong></td>
+    <td>Trang chủ</td>
+    <td>Chuyển tiền</td>
+    <td>QR</td>
+    <td>Giao dịch</td>
+    <td>Tài khoản</td>
+  </tr>
+</table>
+
+<div class="anno">
+  <strong>Insight:</strong> MoMo, ZaloPay, VNPAY đều có tab "Ưu đãi" (deals/cashback) — driver chính cho MAU retention.<br>
+  VSP dùng 1 tab cho "Chuyển tiền" — feature đơn lẻ chiếm 1 tab là lãng phí. Chuyển tiền nên là entry từ Home hoặc QR tab.<br>
+  <strong>Khi thêm Sinh lời + Đầu tư:</strong> cần chỗ cho tab mới mà không phá bottom nav.
+</div>
+
+<h3>4.2 How Super Apps Scale — Feature Organization</h3>
+
+<table>
+  <tr><th>Approach</th><th>App</th><th>Mô tả</th></tr>
+  <tr>
+    <td><strong>Home = Launchpad</strong></td>
+    <td>MoMo, ZaloPay</td>
+    <td>Home chứa service grid (20-40 icons) + balance card + promo banners. Mỗi icon = entry vào sub-flow. Scale bằng cách thêm icon.</td>
+  </tr>
+  <tr>
+    <td><strong>Wallet Tab riêng</strong></td>
+    <td>MoMo</td>
+    <td>Tab "Ví" chứa: balance, nạp/rút, liên kết NH, sinh lời, tín dụng — gom tất cả tài chính vào 1 tab.</td>
+  </tr>
+  <tr>
+    <td><strong>Discovery/Explore</strong></td>
+    <td>Grab, Gojek</td>
+    <td>Tab Explore cho dịch vụ mới (bảo hiểm, đầu tư). Không chiếm Home space.</td>
+  </tr>
+</table>
+
+<!-- ════════════════════════════════════════════════════════ -->
+<h2>5. Proposed App Architecture — 30/4</h2>
+
+<h3>5.1 New Bottom Nav</h3>
+
+<div class="flow"><strong>Proposed Bottom Nav (5 tabs):</strong>
+
+🏠 Trang chủ  |  💰 Tài chính  |  📱 QR (center)  |  🕐 Giao dịch  |  👤 Tài khoản
+
+<strong>Thay đổi:</strong>
+- "Chuyển tiền" → gộp vào Home (quick action) + QR tab
+- "Tài chính" = TAB MỚI → chứa: Sinh lời, Đầu tư, (Tín dụng P2), (BH P3)
+- QR, Giao dịch, Tài khoản → giữ nguyên</div>
+
+<div class="anno">
+  <strong>Tại sao đổi "Chuyển tiền" → "Tài chính"?</strong><br>
+  1. Chuyển tiền là 1 action, không phải 1 category. Nó nằm tự nhiên ở Home (quick action) hoặc QR tab.<br>
+  2. Tab "Tài chính" tạo chỗ cho 3 product lines mới (Sinh lời, Đầu tư, Tín dụng) mà không cần redesign nav sau này.<br>
+  3. MoMo làm tương tự: tab "Ví" chứa balance + tài chính. ZaloPay dùng Home service grid.<br>
+  4. Scale-ready: khi thêm BH, Tín dụng → chỉ cần thêm entry trong tab Tài chính.
+</div>
+
+<h3>5.2 Full Information Architecture</h3>
+
+<div class="ia-tree">
+  <div><span class="ia-node ia-l0">V-Smart Pay</span></div>
+  <br>
+  <div class="ia-connector">├──</div><span class="ia-node ia-l1">🏠 Trang chủ</span>
+  <div><span class="ia-node ia-l2">Wallet Card (balance + ẩn/hiện)</span></div>
+  <div><span class="ia-node ia-l2">Quick Actions: Nạp · Rút · Chuyển tiền · Nhận tiền</span></div>
+  <div><span class="ia-node ia-l2">Sinh lời Card (AUM + lãi suất) <span class="tag tag-blue">NEW</span></span></div>
+  <div><span class="ia-node ia-l2">Service Grid: VAS · Sinh lời · Đầu tư · ...</span></div>
+  <div><span class="ia-node ia-l2">Banner: HST promo (Vinhomes, XanhSM...)</span></div>
+  <div><span class="ia-node ia-l2">GD gần đây (3 items + "Xem tất cả")</span></div>
+  <br>
+  <div class="ia-connector">├──</div><span class="ia-node ia-l1">💰 Tài chính <span class="tag tag-blue">NEW TAB</span></span>
+  <div><span class="ia-node ia-l2">Tổng tài sản (balance + sinh lời + đầu tư)</span></div>
+  <div><span class="ia-node ia-l2">Sinh lời tự động <span class="tag tag-green">P1 — sinhloi-v2 done</span></span></div>
+  <div><span class="ia-node ia-l3">Dashboard · Kích hoạt · Nạp/Rút · Lịch sử</span></div>
+  <div><span class="ia-node ia-l2">Đầu tư BĐS (RWA) <span class="tag tag-blue">P1 — wireframes done</span></span></div>
+  <div><span class="ia-node ia-l3">Dự án · Chi tiết · Đặt mua · Portfolio</span></div>
+  <div><span class="ia-node ia-l2">Ví trả sau (BNPL) <span class="tag tag-yellow">P2 — placeholder</span></span></div>
+  <div><span class="ia-node ia-l3">"Sắp ra mắt" + Đăng ký quan tâm</span></div>
+  <div><span class="ia-node ia-l2">Bảo hiểm <span class="tag tag-gray">P3 — chưa cần</span></span></div>
+  <br>
+  <div class="ia-connector">├──</div><span class="ia-node ia-l1">📱 QR (center)</span>
+  <div><span class="ia-node ia-l2">Quét mã QR (thanh toán)</span></div>
+  <div><span class="ia-node ia-l2">Mã nhận tiền (show QR)</span></div>
+  <div><span class="ia-node ia-l2">Chuyển tiền nhanh (từ QR tab)</span></div>
+  <br>
+  <div class="ia-connector">├──</div><span class="ia-node ia-l1">🕐 Giao dịch</span>
+  <div><span class="ia-node ia-l2">Lịch sử GD (grouped by date)</span></div>
+  <div><span class="ia-node ia-l2">Filter (loại GD, thời gian)</span></div>
+  <div><span class="ia-node ia-l2">Chi tiết GD</span></div>
+  <br>
+  <div class="ia-connector">└──</div><span class="ia-node ia-l1">👤 Tài khoản</span>
+  <div><span class="ia-node ia-l2">Profile + eKYC status</span></div>
+  <div><span class="ia-node ia-l2">Liên kết ngân hàng</span></div>
+  <div><span class="ia-node ia-l2">Trung tâm bảo mật (PIN, Biometric, Fido)</span></div>
+  <div><span class="ia-node ia-l2">Cài đặt ứng dụng</span></div>
+  <div><span class="ia-node ia-l2">Hỗ trợ</span></div>
+  <br>
+  <div class="ia-connector" style="margin-left:0;">Sub-flows (từ Home/QR):</div>
+  <div><span class="ia-node ia-l2">Nạp tiền / Rút tiền</span></div>
+  <div><span class="ia-node ia-l2">Chuyển tiền (P2P + NH)</span></div>
+  <div><span class="ia-node ia-l2">VAS Hub (Điện/Nước/Internet/Topup/Data/Thẻ/Tài chính)</span></div>
+</div>
+
+<h3>5.3 Home Screen — Redesigned</h3>
+
+<div class="flow"><strong>HOME (scroll vertical)</strong>
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+NavBar: "Xin chào Huy" + 🔔 (12)
+
+Wallet Card:
+  ┌─────────────────────────────┐
+  │ Ví V-Smart Pay              │
+  │ Tài khoản của bạn 👁        │
+  │ 14.328 đ              [logo]│
+  └─────────────────────────────┘
+
+Quick Actions (4 icons):
+  [Nạp/Rút]  [Chuyển tiền]  [Nhận tiền]  [Thanh toán]
+                                            ↓ VAS Hub
+
+Sinh lời Card: <span style="color:#2196F3;">← NEW (P1)</span>
+  ┌─────────────────────────────┐
+  │ 💰 Sinh lời tự động         │
+  │ Lãi suất lên đến 5.5%/năm  │
+  │                [Kích hoạt →]│
+  └─────────────────────────────┘
+  <em>Sau khi kích hoạt → hiện AUM + lãi accumulated</em>
+
+Service Grid (2 rows): <span style="color:#2196F3;">← EXPANDED</span>
+  [⚡ Điện] [💧 Nước] [📶 Internet] [📲 Nạp ĐT]
+  [📊 Đầu tư] [🎫 Ưu đãi] [🔗 HST] [••• Tất cả]
+
+Banner Carousel:
+  ┌─────────────────────────────┐
+  │ 🏠 Đầu tư BĐS mã hoá      │
+  │ Sở hữu BĐS từ 1 triệu     │
+  │               [Tìm hiểu →] │
+  └─────────────────────────────┘
+
+GD gần đây:
+  Chuyển tiền CONG TY CO...  -38.000đ
+  Chuyển tiền HO THI MY MY  -100.000đ
+                       Xem tất cả →
+</div>
+
+<h3>5.4 Tab Tài chính — New</h3>
+
+<div class="flow"><strong>TÀI CHÍNH TAB</strong>
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+NavBar: "Tài chính"
+
+Tổng tài sản:
+  ┌─────────────────────────────┐
+  │ Tổng tài sản                │
+  │ 5.014.328 đ                 │
+  │ Ví: 14.328đ · Sinh lời: 5Mđ│
+  └─────────────────────────────┘
+
+Sinh lời tự động:                 <span style="color:#00b182;">LIVE</span>
+  ┌─────────────────────────────┐
+  │ 📈 Sinh lời tự động         │
+  │ 5.000.000 đ    +12.500đ lãi│
+  │ 5.5%/năm         [Chi tiết]│
+  └─────────────────────────────┘
+
+Đầu tư BĐS:                     <span style="color:#2196F3;">COMING</span>
+  ┌─────────────────────────────┐
+  │ 🏠 Đầu tư BĐS mã hoá      │
+  │ Vinhomes Grand Park         │
+  │ Từ 1.000.000đ    [Khám phá]│
+  └─────────────────────────────┘
+
+Ví trả sau:                      <span style="color:#e67e22;">P2</span>
+  ┌─────────────────────────────┐
+  │ 💳 Ví trả sau               │
+  │ Mua trước, trả sau 0% LS   │
+  │ Sắp ra mắt   [Đăng ký sớm]│
+  └─────────────────────────────┘
+</div>
+
+<!-- ════════════════════════════════════════════════════════ -->
+<h2>6. 30/4 Scope — What to Ship</h2>
+
+<h3>6.1 Phân Phase</h3>
+
+<table>
+  <tr><th>Phase</th><th>Timeline</th><th>Deliverables</th><th>Metric</th></tr>
+  <tr>
+    <td><span class="tag tag-black">30/4</span></td>
+    <td>~40 ngày</td>
+    <td>
+      <strong>① Thanh toán:</strong> VAS redesign (Home + 8 flows + saved billers)<br>
+      <strong>② Sinh lời:</strong> Entry point trên Home + Tab Tài chính shell<br>
+      <strong>Home:</strong> Restructure (quick actions, service grid, sinh lời card)<br>
+      <strong>Nav:</strong> Đổi "Chuyển tiền" → "Tài chính"<br>
+      <strong>Chuyển tiền:</strong> Gộp vào Home quick action + QR tab
+    </td>
+    <td>MAU + AUM</td>
+  </tr>
+  <tr>
+    <td><span class="tag tag-blue">Q3</span></td>
+    <td>Jul-Sep</td>
+    <td>
+      <strong>② Đầu tư BĐS:</strong> Full RWA flows (đã có wireframes)<br>
+      <strong>① VAS Phase 2:</strong> Auto-pay, Nhắc nợ, Nạp tự động<br>
+      <strong>HST:</strong> Duhat chat integration, XanhSM entry
+    </td>
+    <td>AUM + MAU</td>
+  </tr>
+  <tr>
+    <td><span class="tag tag-yellow">Q4</span></td>
+    <td>Oct-Dec</td>
+    <td>
+      <strong>③ Tín dụng:</strong> Credit scoring + Ví trả sau v1<br>
+      <strong>④ Bảo hiểm:</strong> BH xe VinFast, BH du lịch VinPearl<br>
+      <strong>Ưu đãi:</strong> Loyalty program / cashback
+    </td>
+    <td>TPV + Rev</td>
+  </tr>
+</table>
+
+<h3>6.2 Screen Inventory cho 30/4</h3>
+
+<table>
+  <tr><th>Area</th><th>Screen</th><th>Status</th><th>Effort</th></tr>
+  <tr><td rowspan="3"><strong>Home</strong></td><td>Home restructure (quick actions + sinh lời card + service grid)</td><td><span class="tag tag-red">Redesign</span></td><td>Medium</td></tr>
+  <tr><td>Bottom nav (Chuyển tiền → Tài chính)</td><td><span class="tag tag-red">Change</span></td><td>Low</td></tr>
+  <tr><td>Chuyển tiền → move to Home quick action</td><td><span class="tag tag-yellow">Move</span></td><td>Low</td></tr>
+  <tr><td rowspan="6"><strong>VAS</strong></td><td>VAS Home (search + grid + saved list)</td><td><span class="tag tag-red">Redesign</span></td><td>Medium</td></tr>
+  <tr><td>Chọn NCC (grouped)</td><td><span class="tag tag-red">New</span></td><td>Medium</td></tr>
+  <tr><td>Nhập mã KH (hybrid + scan)</td><td><span class="tag tag-red">New</span></td><td>Medium</td></tr>
+  <tr><td>Bill Detail + Confirm</td><td><span class="tag tag-red">New</span></td><td>Medium</td></tr>
+  <tr><td>Topup + Mua thẻ + Data (refresh)</td><td><span class="tag tag-yellow">Refresh</span></td><td>Low</td></tr>
+  <tr><td>Tài chính multi-input</td><td><span class="tag tag-red">New</span></td><td>Medium</td></tr>
+  <tr><td rowspan="2"><strong>Tài chính Tab</strong></td><td>Tab shell (tổng tài sản + cards)</td><td><span class="tag tag-red">New</span></td><td>Low</td></tr>
+  <tr><td>Sinh lời entry (link to sinhloi-v2)</td><td><span class="tag tag-green">Done</span></td><td>—</td></tr>
+</table>
+
+<!-- ════════════════════════════════════════════════════════ -->
+<h2>7. Feature Parity Tracker — vs MoMo</h2>
+
+<p>Target 30/4: 80% parity trên thanh toán trọng yếu.</p>
+
+<h4>Thanh toán (core wallet)</h4>
+<table>
+  <tr><th>Feature</th><th>MoMo</th><th>VSP Now</th><th>VSP 30/4</th></tr>
+  <tr><td>Nạp/Rút tiền</td><td>✅</td><td>✅</td><td>✅</td></tr>
+  <tr><td>Chuyển tiền P2P</td><td>✅</td><td>✅</td><td>✅</td></tr>
+  <tr><td>Chuyển tiền ngân hàng</td><td>✅</td><td>✅</td><td>✅</td></tr>
+  <tr><td>QR scan + show</td><td>✅</td><td>✅</td><td>✅</td></tr>
+  <tr><td>Thanh toán HĐ (Điện/Nước/Net)</td><td>✅</td><td>⚠️ Basic</td><td><strong>✅ Redesign</strong></td></tr>
+  <tr><td>Nạp ĐT + Mua thẻ</td><td>✅</td><td>✅</td><td>✅</td></tr>
+  <tr><td>Mua data</td><td>✅</td><td>❌</td><td><strong>✅ New</strong></td></tr>
+  <tr><td>Thanh toán tài chính</td><td>✅</td><td>❌</td><td><strong>✅ New</strong></td></tr>
+  <tr><td>Saved billers + Quick Pay</td><td>✅</td><td>❌</td><td><strong>✅ New</strong></td></tr>
+  <tr><td>Bill auto-fetch</td><td>✅</td><td>❌</td><td><strong>✅ New</strong></td></tr>
+  <tr><td>Camera scan mã HĐ</td><td>✅</td><td>❌</td><td><strong>✅ New</strong></td></tr>
+  <tr><td>Auto-pay recurring</td><td>✅</td><td>❌</td><td>❌ → Q3</td></tr>
+  <tr><td>Liên kết ngân hàng</td><td>✅ (20+ banks)</td><td>⚠️ TCB only</td><td>⚠️ +Napas</td></tr>
+  <tr><td>Loyalty / Cashback</td><td>✅</td><td>❌</td><td>❌ → Q4</td></tr>
+</table>
+
+<div style="margin-top:12px;">
+  <div style="display:flex; align-items:center; gap:12px;">
+    <span style="font-size:13px; font-weight:700; min-width:80px;">Parity 30/4:</span>
+    <div class="progress" style="flex:1;"><div class="progress-fill" style="width:78%; background:#00b182;"></div></div>
+    <span style="font-size:14px; font-weight:700;">78%</span>
+  </div>
+  <div style="font-size:11px; color:#888; margin-top:4px;">11/14 features. Thiếu: Auto-pay (Q3), Multi-bank (ongoing), Loyalty (Q4).</div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════ -->
+<h2>8. Verdict</h2>
+
+<div class="verdict">
+  <h3>30/4: 3 thay đổi lớn, phần còn lại giữ nguyên</h3>
+  <ol>
+    <li><strong>Bottom Nav: "Chuyển tiền" → "Tài chính"</strong> — tạo chỗ cho Sinh lời + Đầu tư + Tín dụng + BH. Chuyển tiền gộp vào Home quick action.</li>
+    <li><strong>Home restructure:</strong> Thêm Sinh lời card + Service grid mở rộng + Banner đầu tư BĐS. Giữ Wallet card + Quick actions.</li>
+    <li><strong>VAS redesign:</strong> 8 flows mới (đã có wireframes). Search + auto-fetch + 1-tap pay + camera scan.</li>
+  </ol>
+  <p style="margin-top:16px;"><strong>Metric target 30/4:</strong></p>
+  <ul>
+    <li>Thanh toán parity: 30% → <strong>78%</strong> vs MoMo</li>
+    <li>Tab Tài chính ready cho Sinh lời (live) + Đầu tư (Q3) + Tín dụng (Q4)</li>
+    <li>App architecture scale-ready cho 4 product lines mà không cần redesign nav</li>
+  </ul>
+</div>
+
+<div style="font-size:11px; color:#999; text-align:center; margin-top:48px;">
+  V-Smart Pay App Architecture 2026 &middot; Vi — Design Lead &middot; 21/03/2026<br>
+  Sources: KHHĐ 2026 (Fintech) &middot; Production UI v1.0.6 &middot; MoMo/ZaloPay/VNPAY benchmark &middot; VSP UX Knowledge Base
+</div>
+
+</body>
+</html>

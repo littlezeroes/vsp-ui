@@ -5,7 +5,7 @@ import { useRouter, useParams, useSearchParams } from "next/navigation"
 import { CheckCircle, Clock, XCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { ItemList, ItemListItem } from "@/components/ui/item-list"
-import { formatVND } from "../../data"
+import { formatVND, MOCK_BALANCE, MOCK_USER } from "../../data"
 
 /* ── S10: Ket qua giao dich — BIDV deposit-result pattern ──────── */
 export default function ResultTxPage() {
@@ -29,11 +29,22 @@ function ResultTxContent() {
   const isPending = status === "processing"
   const isFailed = !isSuccess && !isPending
 
+  // Calculated balances after tx
+  const newSinhloiBalance = isDeposit
+    ? MOCK_BALANCE.balance + amount
+    : MOCK_BALANCE.balance - amount
+  const newWalletBalance = isDeposit
+    ? MOCK_USER.walletBalance - amount
+    : MOCK_USER.walletBalance + amount
+
   const getTitle = () => {
     switch (status) {
-      case "success": return "Giao dich thanh cong"
-      case "processing": return "Dang xu ly"
-      default: return "Giao dich that bai"
+      case "success":
+        return isDeposit ? "Nap tien thanh cong!" : "Rut tien thanh cong!"
+      case "processing":
+        return "Dang xu ly"
+      default:
+        return isDeposit ? "Nap tien that bai" : "Rut tien that bai"
     }
   }
 
@@ -41,6 +52,18 @@ function ResultTxContent() {
     if (isSuccess) return <CheckCircle size={48} className="text-success" />
     if (isPending) return <Clock size={48} className="text-warning" />
     return <XCircle size={48} className="text-danger" />
+  }
+
+  const getDescription = () => {
+    if (isPending) {
+      return isDeposit
+        ? "Giao dich nap tien dang duoc xu ly. Kiem tra lai trong lich su giao dich."
+        : "Giao dich rut tien dang duoc xu ly. Kiem tra lai trong lich su giao dich."
+    }
+    if (isFailed) {
+      return "Vui long thu lai hoac lien he CSKH."
+    }
+    return undefined
   }
 
   return (
@@ -68,14 +91,9 @@ function ResultTxContent() {
                 {formatVND(amount)}
               </p>
             )}
-            {isPending && (
+            {getDescription() && (
               <p className="text-sm font-normal leading-5 text-foreground-secondary mt-[4px]">
-                GD da duoc tiep nhan va cho xu ly. Vui long kiem tra lai trong it phut.
-              </p>
-            )}
-            {isFailed && (
-              <p className="text-sm font-normal leading-5 text-foreground-secondary mt-[4px]">
-                Vui long thu lai hoac lien he CSKH.
+                {getDescription()}
               </p>
             )}
           </div>
@@ -87,9 +105,37 @@ function ResultTxContent() {
                 <ItemListItem label="Thoi gian" metadata={timestamp} divider />
                 <ItemListItem label="Ma giao dich" metadata={txnId} divider />
                 <ItemListItem label="Dich vu" metadata={serviceTitle} divider />
-                <ItemListItem label="Nguon thanh toan" metadata="Vi V-Smart Pay" divider />
+                <ItemListItem
+                  label={isDeposit ? "Tu" : "Tu"}
+                  metadata={isDeposit ? "Vi V-Smart Pay" : "Vi sinh loi"}
+                  divider
+                />
+                <ItemListItem
+                  label={isDeposit ? "Den" : "Ve"}
+                  metadata={isDeposit ? "Vi sinh loi" : "Vi V-Smart Pay"}
+                  divider
+                />
                 <ItemListItem label="So tien" metadata={formatVND(amount)} divider />
-                <ItemListItem label="Phi" metadata="Mien phi" />
+                <ItemListItem label="Phi" metadata="Mien phi" divider />
+                {isSuccess && isDeposit && (
+                  <ItemListItem
+                    label="So du sinh loi moi"
+                    metadata={`${newSinhloiBalance.toLocaleString("vi-VN")}d`}
+                  />
+                )}
+                {isSuccess && !isDeposit && (
+                  <>
+                    <ItemListItem
+                      label="So du SL con lai"
+                      metadata={`${newSinhloiBalance.toLocaleString("vi-VN")}d`}
+                      divider
+                    />
+                    <ItemListItem
+                      label="So du vi moi"
+                      metadata={`${newWalletBalance.toLocaleString("vi-VN")}d`}
+                    />
+                  </>
+                )}
               </ItemList>
             </div>
           )}
@@ -106,19 +152,66 @@ function ResultTxContent() {
             variant="primary"
             size="48"
             className="w-full"
-            onClick={() => router.push(`/sinhloi/confirm-tx?type=${type}&amount=${amount}`)}
+            onClick={() => router.push(`/sinhloi/deposit-withdraw?tab=${type}`)}
           >
             Thu lai
           </Button>
         )}
-        <Button
-          variant={isFailed ? "secondary" : "primary"}
-          size="48"
-          className="w-full"
-          onClick={() => router.push("/sinhloi/dashboard")}
-        >
-          Trang chu sinh loi
-        </Button>
+
+        {isPending && (
+          <>
+            <Button
+              variant="primary"
+              size="48"
+              className="w-full"
+              onClick={() => router.push("/sinhloi/dashboard")}
+            >
+              Trang chu sinh loi
+            </Button>
+            <Button
+              variant="secondary"
+              size="48"
+              className="w-full"
+              onClick={() => router.push("/sinhloi/history")}
+            >
+              Xem lich su
+            </Button>
+          </>
+        )}
+
+        {isSuccess && (
+          <>
+            <Button
+              variant="primary"
+              size="48"
+              className="w-full"
+              onClick={() => router.push("/sinhloi/dashboard")}
+            >
+              Trang chu sinh loi
+            </Button>
+            {isDeposit && (
+              <Button
+                variant="secondary"
+                size="48"
+                className="w-full"
+                onClick={() => router.push("/sinhloi/deposit-withdraw?tab=deposit")}
+              >
+                Nap them
+              </Button>
+            )}
+          </>
+        )}
+
+        {isFailed && (
+          <Button
+            variant="secondary"
+            size="48"
+            className="w-full"
+            onClick={() => router.push("/sinhloi/dashboard")}
+          >
+            Trang chu sinh loi
+          </Button>
+        )}
       </div>
 
       {/* Home indicator */}

@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VSP IA 2026 — Deep Dive (3 Phases)</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:Georgia,'Times New Roman',serif; background:#fff; color:#111; line-height:1.8; max-width:960px; margin:0 auto; padding:48px 24px 120px; font-size:15px; }
+  h1 { font-family:-apple-system,sans-serif; font-size:24px; font-weight:800; margin-bottom:4px; }
+  .meta { font-size:13px; color:#888; margin-bottom:40px; font-family:-apple-system,sans-serif; }
+  h2 { font-family:-apple-system,sans-serif; font-size:20px; font-weight:700; margin:56px 0 16px; padding-bottom:6px; border-bottom:2px solid #111; }
+  h3 { font-family:-apple-system,sans-serif; font-size:16px; font-weight:700; margin:28px 0 10px; }
+  h4 { font-family:-apple-system,sans-serif; font-size:13px; font-weight:700; margin:20px 0 8px; text-transform:uppercase; letter-spacing:0.5px; color:#888; }
+  p { margin-bottom:14px; }
+  ul, ol { margin:8px 0 14px 24px; }
+  li { margin-bottom:6px; }
+  blockquote { border-left:3px solid #ccc; padding:8px 16px; margin:14px 0; font-style:italic; color:#555; }
+  pre { font-family:'SF Mono','Fira Code',monospace; font-size:12px; background:#f8f8f8; padding:16px 20px; margin:14px 0; border-left:3px solid #ddd; white-space:pre-wrap; line-height:1.7; overflow-x:auto; }
+  table { width:100%; border-collapse:collapse; margin:16px 0; font-size:13px; font-family:-apple-system,sans-serif; }
+  th { text-align:left; padding:8px; border-bottom:2px solid #111; font-weight:700; font-size:11px; text-transform:uppercase; }
+  td { padding:8px; border-bottom:1px solid #eee; vertical-align:top; }
+  strong { font-weight:700; }
+  .footnote { font-size:12px; color:#888; margin-top:48px; padding-top:12px; border-top:1px solid #eee; font-family:-apple-system,sans-serif; }
+  .agent-tag { font-family:-apple-system,sans-serif; font-size:11px; font-weight:700; display:inline-block; padding:2px 8px; border-radius:4px; margin-bottom:8px; }
+  .nate { background:#e8f0fe; color:#1a73e8; }
+  .duc { background:#fce8e6; color:#d93025; }
+  .summary-box { background:#f8f8f8; border:1px solid #ddd; border-radius:8px; padding:16px 20px; margin:16px 0; font-family:-apple-system,sans-serif; font-size:13px; }
+
+  /* Lofi iframes */
+  .lofi-row { display:flex; gap:20px; overflow-x:auto; padding:12px 0; }
+  .lofi-col { flex:0 0 auto; text-align:center; font-family:-apple-system,sans-serif; }
+  .lofi-col .label { font-size:12px; font-weight:700; margin-bottom:6px; }
+  .lofi-frame { width:195px; height:422px; border-radius:24px; border:2px solid #ddd; overflow:hidden; background:#fff; }
+  .lofi-frame iframe { width:390px; height:844px; border:none; transform:scale(0.5); transform-origin:top left; pointer-events:none; }
+</style>
+</head>
+<body>
+
+<h1>VSP Information Architecture 2026 — Deep Dive</h1>
+<div class="meta">Vi — Design Lead · Team: 🔍 Nate (Research) · 👹 Đức (Review) · 21/03/2026</div>
+
+<div class="summary-box">
+  <strong>Tóm tắt:</strong> Document này đào sâu 3 phases của IA evolution, dựa trên phân tích của Nate (UX Researcher) và review adversarial của Đức (Senior Reviewer). Mỗi phase có: analysis → review → lofi wireframe → decisions.
+  <br><br>
+  <strong>3 Phases:</strong><br>
+  Phase 1 (30/4): Chuyển tiền → Thanh toán<br>
+  Phase 2 (Q3): Giao dịch → Tài chính<br>
+  Phase 3 (Q4): Tài khoản → Ưu đãi
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<h2>Phase 1 (30/4) — Chuyển tiền → Thanh toán</h2>
+
+<h3>🔍 Nate — Analysis</h3>
+<div class="agent-tag nate">UX RESEARCHER</div>
+
+<h4>User Flow</h4>
+<p>Home → Tab TT → category pill → chọn DV (list row) → chọn NCC → nhập mã KH → auto-fetch bill → confirm → biometric → result. <strong>5-7 taps.</strong> Returning user với saved biller: <strong>3 taps</strong> (tab → saved → confirm).</p>
+
+<h4>Mental Model Validation</h4>
+<p>"Tiền di chuyển" (Home: Nạp/Rút/Chuyển/Nhận) vs "Trả cho dịch vụ" (Tab TT). Tách rõ, không overlap. Chuyển tiền qua NH = "gửi cho ai đó" (mode 1) → đúng ở Home.</p>
+<p>User kêu chuyển tiền khó tìm → đưa lên Home quick action = solved. Thêm recent recipients (2-3 avatars) dưới quick actions cho returning users.</p>
+
+<h4>Content Check 30/4</h4>
+<table>
+  <tr><th>Ready 30/4</th><th>Chưa ready</th></tr>
+  <tr><td>Điện · Nước · Internet · Nạp ĐT · Mua thẻ<br>XanhSM · VHR · VinPearl · VinFast<br>Saved billers · Voucher</td><td>Data (22/5) · TT tài chính (22/5)<br>Học phí (30/6) · Vé phim (30/6)<br>Auto-pay (30/6) · Vinschool/VinUni (30/6)</td></tr>
+</table>
+<p><strong>~10 services ready.</strong> Items chưa ready → icon mờ + "Sắp có" (không ẩn).</p>
+
+<h4>Key Decisions</h4>
+<ul>
+  <li><strong>HST = LIST (không phải grid)</strong> — brand recognition cần logo lớn + description per partner. Grid 4 items quá nhỏ, không nổi bật. DV categories (Điện/Nước) = grid vì generic, chỉ cần icon + label.</li>
+  <li><strong>Saved billers = TRƯỚC grid</strong> (đổi thứ tự: Search → Urgent banner → <strong>Đã lưu</strong> → Grid → Nạp nhanh → Gần đây). Lý do: 80% user returning muốn trả bill đã có, không phải đăng ký mới.</li>
+  <li><strong>Category grid:</strong> Điện / Nước / Internet / Nạp ĐT / Thẻ cào / Gói data / Khoản vay / Khác. Đổi "Tài chính" → "Khoản vay" (rõ hơn). Giữ tách 3 entries di động (mỗi flow input khác nhau — gộp = thêm 1 tap).</li>
+  <li><strong>Label ambiguity fix:</strong> Home quick action = "Nạp ví" (không phải "Nạp"). Tab TT = "Nạp điện thoại" (không phải "Nạp tiền"). Tránh user confuse giữa nạp ví vs nạp ĐT.</li>
+  <li><strong>Search scope:</strong> Categories + NCC cross-category + HST partners + Saved billers. KHÔNG search mã KH (vô nghĩa ngoài context NCC). Saved billers lên trước trong kết quả.</li>
+  <li><strong>Quick actions PHẢI above the fold</strong> — fixed row dưới wallet card, không scroll mất. Nếu Home content push xuống → "Chuyển" biến mất → user mất.</li>
+</ul>
+
+<h4>Top 5 Risks</h4>
+<table>
+  <tr><th>Risk</th><th>Severity</th><th>Mitigation</th></tr>
+  <tr><td>User mất tab "Chuyển tiền"</td><td>HIGH</td><td>Coach marks + inline guidance + quick action above fold</td></tr>
+  <tr><td>"Nạp" ambiguous (ví vs ĐT)</td><td>HIGH</td><td>Đổi label: "Nạp ví" (Home) vs "Nạp điện thoại" (Tab TT)</td></tr>
+  <tr><td>HST chỉ 4 items 30/4</td><td>MEDIUM</td><td>Dùng LIST thay grid — 4 items với logo lớn vẫn đẹp</td></tr>
+  <tr><td>Bill stale khi quay lại confirm</td><td>MEDIUM</td><td>Auto re-fetch bill khi focus lại confirm screen</td></tr>
+  <tr><td>First-time user Tab TT trống</td><td>MEDIUM</td><td>Empty state guidance + popular services suggestion</td></tr>
+</table>
+
+<h4>Lofi Wireframe — Phase 1</h4>
+<div class="lofi-row">
+  <div class="lofi-col">
+    <div class="label">Home 30/4</div>
+    <div class="lofi-frame"><iframe src="http://localhost:3000/architecture/lofi-p1"></iframe></div>
+  </div>
+  <div class="lofi-col">
+    <div class="label">Tab Thanh toán</div>
+    <div class="lofi-frame"><iframe src="http://localhost:3000/architecture/lofi-p1-tt"></iframe></div>
+  </div>
+</div>
+
+<h3 id="duc-p1">👹 Đức — Review Phase 1</h3>
+<div class="agent-tag duc">SENIOR REVIEWER — 7/10 PASS WITH FIXES</div>
+
+<p><strong>Issue 1: Muscle memory conflict.</strong> Tab Thanh toán nằm đúng vị trí tab Chuyển tiền cũ (tab 2). User tap theo habit → vào Thanh toán thay vì Chuyển tiền. Coach mark 1 lần không đủ — user sẽ quên sau 2 ngày.</p>
+<p><em>Cách sửa:</em> Tab Thanh toán lần đầu mở → inline banner top: "Bạn muốn chuyển tiền? Tap 'Chuyển' trên Trang chủ ↗" + deep link. Banner tự ẩn sau 7 ngày hoặc sau khi user tap "Đã hiểu".</p>
+
+<p><strong>Issue 2: Saved billers empty cho first-time user.</strong> Section "Đã lưu" ở top = perfect cho returning. Nhưng first-time user mở Tab TT → thấy section trống → bad first impression.</p>
+<p><em>Cách sửa:</em> First-time: ẩn section "Đã lưu", grid categories lên top. Returning (≥1 saved): "Đã lưu" lên top, grid xuống dưới. Layout dynamic theo state.</p>
+
+<p><strong>Issue 3: "Di động" category chưa cover mua thẻ game.</strong> Grid có "Nạp ĐT / Thẻ cào / Gói data" — nhưng thẻ game (Garena, Google Play) nằm đâu?</p>
+<p><em>Cách sửa:</em> Slot "Khác" hoặc gộp "Thẻ cào" → "Mua thẻ" (bao gồm thẻ ĐT + thẻ game).</p>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<h2>Phase 2 (Q3) — Giao dịch → Tài chính</h2>
+
+<h3>🔍 Nate — Analysis</h3>
+<div class="agent-tag nate">UX RESEARCHER</div>
+
+<h4>Financial Hub Structure</h4>
+<p><strong>Hero:</strong> Tổng tài sản = assets thật (Ví + SL + BĐS + CCQ). BH hiện riêng "Đang bảo vệ: X sản phẩm" — BH không phải tài sản. BNPL hiện "Dư nợ: X" — liability, không cộng vào tổng.</p>
+<p><strong>Ordering:</strong> Dynamic by AUM (product user có nhiều tiền nhất → đầu tiên). Default user mới: SL → BH → BĐS → CCQ → BNPL → Vay VinFast. Không cần sub-nav — scroll vertical đủ.</p>
+<p><strong>Section grouping:</strong> "Tích luỹ" (SL, CCQ) / "Đầu tư" (BĐS) / "Bảo vệ" (BH) / "Tín dụng" (BNPL, Vay)</p>
+
+<h4>GD Merge vào Home</h4>
+<p>Wallet Card + "GD gần đây" 3 items luôn visible trên Home. Tap wallet / "Xem tất cả" → fullscreen GD với search + filter pills (7 categories) + grouped by date. Tap count = bằng tab GD cũ.</p>
+
+<h4>Key Findings</h4>
+<ul>
+  <li><strong>Portfolio 2 levels:</strong> Glanceable (hero card, không chart) → Tap → Full screen (chart + breakdown). Chart chỉ khi ≥2 products.</li>
+  <li><strong>Cross-sell:</strong> KHÔNG trong product detail. Max 2 discovery cards ở bottom tab level. Dismissible.</li>
+  <li><strong>Graduation:</strong> Big bang — tất cả user đổi cùng lúc per segment. Không 2 UI song song (QA nightmare).</li>
+  <li><strong>Widget tap → product detail page</strong> (push navigation từ Home). Không tab switch.</li>
+  <li><strong>"Tài chính" tên đúng</strong> — MoMo/ZaloPay đã train mental model VN. Section titles bên trong phân loại rõ.</li>
+  <li><strong>Habit break mất tab GD = MEDIUM-HIGH.</strong> Mitigation: Home GD section visible, wallet affordance, transition BottomSheet 1 lần.</li>
+</ul>
+
+<h4>Edge Cases</h4>
+<table>
+  <tr><th>Case</th><th>Xử lý</th></tr>
+  <tr><td>User 0 products</td><td>Discovery mode — hiện "Khám phá" cards, không empty state</td></tr>
+  <tr><td>BH hết hạn</td><td>Warning card amber + CTA "Gia hạn"</td></tr>
+  <tr><td>BNPL quá hạn</td><td>Danger card + badge đỏ trên tab icon</td></tr>
+  <tr><td>BĐS pending settlement</td><td>"Đang xử lý", không hiện value = 0</td></tr>
+  <tr><td>CCQ NAV</td><td>Note "Giá trị cập nhật T-1"</td></tr>
+</table>
+
+<h4>Lofi Wireframe — Phase 2</h4>
+<div class="lofi-row">
+  <div class="lofi-col">
+    <div class="label">Tab Tài chính</div>
+    <div class="lofi-frame"><iframe src="http://localhost:3000/architecture/lofi-p2-tc"></iframe></div>
+  </div>
+</div>
+
+<h3 id="duc-p2">👹 Đức — Review Phase 2</h3>
+<div class="agent-tag duc">SENIOR REVIEWER — 6/10 PASS WITH FIXES</div>
+
+<p><strong>Issue 1: Mất tab GD = user VN hoảng.</strong> Severity MEDIUM-HIGH nhưng mitigation (1 lần BottomSheet) quá nhẹ. User VN check GD SAU MỖI giao dịch — đây là habit hàng ngày, không phải hàng tuần.</p>
+<p><em>Cách sửa:</em> Home "GD gần đây" section phải LUÔN visible (không bị push xuống bởi widgets). Wallet card phải có số GD hôm nay visible ("3 GD hôm nay"). Transition BottomSheet không đủ — cần inline guide TRONG Home liên tục 14 ngày.</p>
+
+<p><strong>Issue 2: Hero "Tổng tài sản" show số nhỏ cho user mới.</strong> User mới chỉ có 14.328đ trong ví, chưa có SL/BĐS. Tổng tài sản = 14.328đ hiện lớn trên hero card → feels lame, turn off.</p>
+<p><em>Cách sửa:</em> User có &lt;1 product active → hero card chuyển sang discovery mode: "Bắt đầu hành trình tài chính" + product cards. Không show tổng tài sản khi số = balance ví.</p>
+
+<p><strong>Issue 3: Widget → Tab handoff chưa chốt.</strong> Nate để 3 options (push from Home / tab switch / modal) mà không recommend 1. PO không phải UX designer — đừng đẩy decision cho PO.</p>
+<p><em>Cách sửa:</em> Chốt: tap widget → push navigation (present product detail page from Home context). Back = quay Home. Đơn giản nhất, user hiểu nhất.</p>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<h2>Phase 3 (Q4) — Tài khoản → Ưu đãi</h2>
+
+<h3>🔍 Nate — Analysis</h3>
+<div class="agent-tag nate">UX RESEARCHER</div>
+
+<h4>Tab Structure</h4>
+<p><strong>Hero:</strong> V-Point balance card (điểm + "Đổi quà") — anchor. Dưới: Hot deal (1 featured) → Category pills → Deal list → Referral card.</p>
+<p><strong>Ordering:</strong> V-Point (sở hữu) → Featured deal (urgency) → Browse (discovery) → Referral (acquisition).</p>
+
+<h4>V-Point UX</h4>
+<p>Tích: tự động khi thanh toán, toast "Bạn nhận 25 V-Point ✓". Dùng: toggle "Dùng V-Point" ở checkout. Đổi: tab Ưu đãi → "Đổi quà" → chọn → confirm. Edge: điểm 0 → CTA "Thanh toán để tích điểm".</p>
+
+<h4>Avatar Pattern — Risk Assessment</h4>
+<p>Tài khoản → avatar góc phải (Cash App). Tap count: "Liên kết NH" = 2 taps (avatar → LKNH). Trước = 2 taps (tab TK → LKNH). <strong>Bằng nhau.</strong> Risk = discoverability, không phải accessibility. Mitigation: badge notification trên avatar, tooltip lần đầu.</p>
+
+<h4>Key Findings</h4>
+<ul>
+  <li><strong>Ưu đãi vs Thanh toán overlap:</strong> Tab Ưu đãi = browse + save. Tab TT = use. Không cross-navigate. User save deal → checkout tự apply.</li>
+  <li><strong>Engagement loop:</strong> Earn V-Point → check → gần đủ → dùng VSP thêm → earn → loop. Cần earn rate đủ nhanh (~100 VP/giao dịch).</li>
+  <li><strong>Categories:</strong> Tất cả / Vingroup / Ăn uống / Di chuyển / Mua sắm / Du lịch. "Vingroup" riêng = USP.</li>
+  <li><strong>Deals curation:</strong> Q4 = manual. 2027 = personalized (HST usage + transaction history + location).</li>
+  <li><strong>Revenue:</strong> V-Point breakage ~200M/năm + Partner commission ~250M/tháng. Self-sustaining nếu ≥50K active deal users.</li>
+</ul>
+
+<h4>Lofi Wireframe — Phase 3</h4>
+<div class="lofi-row">
+  <div class="lofi-col">
+    <div class="label">Tab Ưu đãi</div>
+    <div class="lofi-frame"><iframe src="http://localhost:3000/architecture/lofi-p3-ud"></iframe></div>
+  </div>
+</div>
+
+<h3 id="duc-p3">👹 Đức — Review Phase 3</h3>
+<div class="agent-tag duc">SENIOR REVIEWER — 4/10 REWORK</div>
+
+<p><strong>Issue 1: Avatar thay tab Tài khoản = cultural mismatch.</strong> 100% app VN (MoMo, ZaloPay, VNPay, Viettel Money) đều có tab Tài khoản ở bottom nav. Cash App pattern là US — user VN chưa có learned behavior này. Đây không phải "habit break nhẹ" — đây là phá convention toàn thị trường.</p>
+<p><em>Cách sửa:</em> KHÔNG move Tài khoản lên avatar ở Q4. Giữ tab Tài khoản. Nếu muốn thêm Ưu đãi → tìm cách khác (xem verdict bên dưới).</p>
+
+<p><strong>Issue 2: Dead tab risk.</strong> Tab Ưu đãi phụ thuộc deals quality + V-Point earn rate — cả 2 do business team quyết, UX không control. Nếu deals lặp, V-Point earn chậm → tab trở thành dead space → user skip → MAU không tăng mà còn gây ấn tượng "app trống".</p>
+<p><em>Cách sửa:</em> Không tạo tab riêng cho content mà team không control. Ưu đãi = section trên Home (widget) hoặc entry point trong Tab Thanh toán ("Dùng ưu đãi khi thanh toán").</p>
+
+<p><strong>Issue 3: Voucher cross-tab flow thiếu auto-suggest.</strong> User save deal ở tab Ưu đãi → checkout ở tab TT → deal tự apply. Nhưng ngược lại? User ở tab TT checkout XanhSM → KHÔNG biết có deal XanhSM -50% → miss. Phải auto-suggest deals relevant tại checkout.</p>
+
+<h3>👹 Đức — Verdict Toàn Strategy</h3>
+<div class="agent-tag duc">OVERALL ASSESSMENT</div>
+
+<blockquote><strong>"Tab bar thay đổi 3 lần trong 6 tháng. App tài chính = trust = stability. Mày là user, mày có tin app mà cứ thay đổi liên tục không?"</strong></blockquote>
+
+<p><strong>Đề xuất: Lock tab bar từ Phase 1.</strong></p>
+
+<p>Thay vì đổi tab 3 lần, chọn tab bar CUỐI CÙNG ngay Phase 1 và chỉ thay đổi CONTENT bên trong:</p>
+
+<pre>Phase 1 (30/4):  Trang chủ — Thanh toán — QR — Tài chính — Tài khoản
+                 Tab Tài chính: chỉ có SL teaser + BH teaser (ít nhưng OK)
+                 Tab Tài khoản: giữ nguyên
+
+Phase 2 (Q3):    CÙNG TAB BAR
+                 Tab Tài chính: += BĐS + CCQ + BNPL (fill dần)
+
+Phase 3 (Q4):    CÙNG TAB BAR
+                 Ưu đãi = section trong Home widgets hoặc entry trong Thanh toán
+                 Tab Tài khoản: += V-Point section</pre>
+
+<p><strong>Trade-off:</strong> Tab Tài chính 30/4 hơi ít content (chỉ BH + BĐS teaser + SL teaser). Nhưng STABLE > FULL. User trust app không đổi layout &gt; user thấy tab đầy content.</p>
+
+<h4>5 Edge Cases Cross-Phase Nate Bỏ Sót</h4>
+<ol>
+  <li><strong>Multi-device rollout:</strong> User dùng 2 device → 1 cái update Phase 2, 1 cái vẫn Phase 1 → confuse.</li>
+  <li><strong>Force update skip:</strong> User skip update → vẫn ở Phase 1 khi Phase 2 đã launch → backend API mismatch?</li>
+  <li><strong>Accessibility user lớn tuổi:</strong> Vinhomes có nhiều cư dân &gt;50 tuổi. Đổi tab bar = họ gọi con cháu hỏi. Frequency: cao.</li>
+  <li><strong>Offline mode:</strong> Mất mạng giữa tab switch → tab mới load trống → user nghĩ app hỏng.</li>
+  <li><strong>Deep link version-aware:</strong> Link chia sẻ "vsppay://finance/sinhloi" → user ở Phase 1 chưa có tab Tài chính → 404? Redirect đâu?</li>
+</ol>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<h2>PO Decisions Needed</h2>
+
+<div class="summary-box">
+  <strong>Phase 1:</strong>
+  <ol>
+    <li>Category pills: "Di động" hay "Nạp tiền"? "Khoản vay" hay "Tài chính"?</li>
+    <li>HST chưa tích hợp: ẩn hay hiện icon mờ "Sắp có"?</li>
+  </ol>
+  <strong>Phase 2:</strong>
+  <ol start="3">
+    <li>Tổng tài sản: BH value tính vào không? (Recommend: không)</li>
+    <li>BNPL dư nợ: hiện trong tổng hay tách? (Recommend: tách — liability ≠ asset)</li>
+    <li>GD fullscreen: tap wallet → push hay inline expand? (Recommend: push)</li>
+  </ol>
+  <strong>Phase 3:</strong>
+  <ol start="6">
+    <li>V-Point earn rate: bao nhiêu VP/giao dịch?</li>
+    <li>V-Point tier system (Đồng/Bạc/Vàng): có hay không ở Q4?</li>
+    <li>Vingroup deals: category riêng hay gộp chung?</li>
+  </ol>
+</div>
+
+<div class="footnote">
+  V-Smart Pay — IA Deep Dive 2026 · Vi — Design Lead<br>
+  Team: 🔍 Nate (Research) · 👹 Đức (Review) · 🎨 Ivy (Design) · 📋 Khoa (QA)<br>
+  21/03/2026 · Sources: KHHĐ Fintech 2026 · Production v1.0.6 · Cash App · OKX · Revolut
+</div>
+
+</body>
+</html>

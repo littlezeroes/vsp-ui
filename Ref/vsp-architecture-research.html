@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VSP Architecture Research — Revolut vs ZaloPay vs VSP</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:-apple-system,'Segoe UI',sans-serif; background:#fff; color:#111; line-height:1.6; max-width:960px; margin:0 auto; padding:40px 24px 120px; }
+  h1 { font-size:28px; font-weight:800; margin-bottom:4px; letter-spacing:-0.5px; }
+  .sub { font-size:13px; color:#888; margin-bottom:32px; }
+  h2 { font-size:20px; font-weight:700; margin:48px 0 16px; padding-bottom:6px; border-bottom:2px solid #111; }
+  h3 { font-size:16px; font-weight:700; margin:28px 0 10px; }
+  h4 { font-size:12px; font-weight:700; margin:20px 0 8px; text-transform:uppercase; letter-spacing:0.5px; color:#888; }
+  p { font-size:14px; color:#444; margin-bottom:12px; }
+  table { width:100%; border-collapse:collapse; margin:12px 0; font-size:13px; }
+  th { text-align:left; padding:8px 10px; background:#111; color:#fff; font-weight:600; font-size:11px; }
+  td { padding:8px 10px; border-bottom:1px solid #f0f0f0; vertical-align:top; }
+  tr:nth-child(even) td { background:#fafafa; }
+  .tag { display:inline-block; font-size:9px; font-weight:700; padding:2px 6px; border-radius:4px; }
+  .tag-green { background:#e8f8f0; color:#00b182; }
+  .tag-blue { background:#EAF4FF; color:#2196F3; }
+  .tag-yellow { background:#fff8e1; color:#e67e22; }
+  .tag-red { background:#fde8e8; color:#c0392b; }
+  .tag-gray { background:#f0f0f0; color:#888; }
+  .tag-black { background:#111; color:#fff; }
+  .tag-purple { background:#f3e8ff; color:#7c3aed; }
+  .card { background:#fafafa; border-radius:12px; padding:16px 20px; margin-bottom:12px; }
+  .card-title { font-size:13px; font-weight:700; margin-bottom:6px; }
+  .card p { margin-bottom:6px; font-size:13px; }
+  .cols-2 { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .cols-3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; }
+  @media (max-width:600px) { .cols-2,.cols-3 { grid-template-columns:1fr; } }
+  .anno { background:#FFFDE7; border-left:3px solid #f5a623; padding:8px 12px; margin:12px 0; border-radius:0 6px 6px 0; font-size:11px; color:#666; }
+  .anno strong { color:#111; }
+  .flow { background:#fafafa; border-radius:12px; padding:16px 20px; margin:12px 0; font-family:'SF Mono','Fira Code',monospace; font-size:12px; line-height:2; white-space:pre-wrap; border:1px solid #eee; }
+  .verdict { background:#111; color:#fff; border-radius:16px; padding:28px; margin:24px 0; }
+  .verdict h3 { color:#fff; margin-top:0; }
+  .verdict p { color:rgba(255,255,255,0.7); }
+  .verdict li { color:rgba(255,255,255,0.85); margin-bottom:6px; font-size:13px; }
+  .verdict strong { color:#fff; }
+  .vs { display:grid; grid-template-columns:1fr 1fr 1fr; gap:0; margin:12px 0; }
+  .vs-col { padding:12px; font-size:12px; }
+  .vs-col:nth-child(1) { background:#f0f0f0; border-radius:12px 0 0 12px; }
+  .vs-col:nth-child(2) { background:#e8f8f0; }
+  .vs-col:nth-child(3) { background:#EAF4FF; border-radius:0 12px 12px 0; }
+  .vs-col strong { display:block; margin-bottom:8px; font-size:13px; }
+  .vs-col ul { list-style:none; padding:0; }
+  .vs-col li { margin-bottom:4px; padding-left:12px; position:relative; }
+  .vs-col li::before { content:"·"; position:absolute; left:0; font-weight:bold; }
+  .timeline { position:relative; padding-left:24px; }
+  .timeline::before { content:""; position:absolute; left:8px; top:0; bottom:0; width:2px; background:#e0e0e0; }
+  .tl-item { position:relative; margin-bottom:20px; }
+  .tl-item::before { content:""; position:absolute; left:-20px; top:4px; width:12px; height:12px; border-radius:50%; border:2px solid #e0e0e0; background:#fff; }
+  .tl-item.active::before { background:#00b182; border-color:#00b182; }
+  .tl-item.future::before { background:#fff; border-color:#2196F3; border-style:dashed; }
+  .tl-label { font-size:11px; font-weight:700; color:#888; text-transform:uppercase; letter-spacing:0.5px; }
+  .tl-title { font-size:14px; font-weight:700; margin:4px 0; }
+  .tl-desc { font-size:12px; color:#666; }
+</style>
+</head>
+<body>
+
+<h1>VSP Architecture Research</h1>
+<p class="sub">Vi — Design Lead · 21/03/2026 · Revolut vs ZaloPay benchmark → VSP Roadmap</p>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<h2>1. Revolut — Financial OS Model</h2>
+
+<h3>1.1 Bottom Nav (5 tabs)</h3>
+<table>
+  <tr><th>Tab</th><th>Chức năng</th><th>Insight</th></tr>
+  <tr><td><strong>Home</strong></td><td>Balance hero (40px), quick actions (4 circles), widgets user-customizable, recent transactions</td><td>Balance là hero lớn nhất. Home = personal dashboard, user tự chọn hiện gì.</td></tr>
+  <tr><td><strong>Transfer</strong></td><td>Send/receive, payments, bill splitting</td><td>Core use case giữ riêng tab — origin story của Revolut</td></tr>
+  <tr><td><strong>Hub</strong></td><td>ALL products on 1 page, grouped by category (Essentials / Wealth / Lifestyle)</td><td><strong>Key pattern:</strong> Hub = feature catalog. Mọi sản phẩm mới vào Hub trước.</td></tr>
+  <tr><td><strong>Wealth</strong></td><td>Stocks, crypto, commodities, savings vaults, robo-advisor</td><td>Promoted lên tab riêng vì là revenue driver lớn</td></tr>
+  <tr><td><strong>Profile</strong></td><td>Settings, security, account</td><td>Standard</td></tr>
+</table>
+
+<h3>1.2 Revolut Scaling Formula</h3>
+<div class="flow"><strong>Progressive Promotion Ladder:</strong>
+
+1. Sản phẩm mới → vào <strong>Hub</strong> (catalog) dưới category phù hợp
+2. Sản phẩm có traction → lên <strong>Home</strong> dạng promotional card / widget
+3. Sản phẩm thành core → promote lên <strong>Bottom nav tab</strong>
+4. Sản phẩm thành business → spin ra <strong>Standalone app</strong> (Revolut X, Revolut Invest)
+
+<strong>3-layer architecture:</strong>
+Layer 1: Home (personalized) — user chọn hiện gì, pin/unpin
+Layer 2: Hub (full catalog) — tất cả products, grouped + searchable
+Layer 3: Dedicated tabs — chỉ cho high-value verticals (Wealth, Transfer)</div>
+
+<div class="anno"><strong>Insight cho VSP:</strong> Revolut KHÔNG dùng service grid (icon grid MoMo-style). Thay vào đó dùng product cards + widgets. Lý do: khi có >10 products, icon grid trở nên overwhelming. Cards cho phép hierarchy rõ hơn (primary/secondary/coming soon).</div>
+
+<h3>1.3 Revolut Product Timeline</h3>
+<table>
+  <tr><th>Năm</th><th>Products</th><th>Phase</th></tr>
+  <tr><td>2015</td><td>FX exchange, multi-currency</td><td><span class="tag tag-green">Core</span></td></tr>
+  <tr><td>2016-17</td><td>Prepaid cards, 29 currencies</td><td><span class="tag tag-green">Core</span></td></tr>
+  <tr><td>2018</td><td>Crypto, stocks, savings vaults</td><td><span class="tag tag-blue">Wealth vertical</span></td></tr>
+  <tr><td>2019</td><td>Business, insurance, Junior</td><td><span class="tag tag-yellow">Expand</span></td></tr>
+  <tr><td>2020-21</td><td>Hub/Control Center, smart search, pin/unpin</td><td><span class="tag tag-purple">IA rebuild for scale</span></td></tr>
+  <tr><td>2022</td><td>Hotels, cashback, eSIM</td><td><span class="tag tag-yellow">Lifestyle vertical</span></td></tr>
+  <tr><td>2023</td><td>Revolut 10: widgets, themes, customization (35M users)</td><td><span class="tag tag-purple">Personalization</span></td></tr>
+  <tr><td>2024</td><td>Revolut X (crypto), Revolut Invest (wealth) — standalone apps</td><td><span class="tag tag-red">Spin-off</span></td></tr>
+</table>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<h2>2. ZaloPay — Super App Model</h2>
+
+<h3>2.1 Bottom Nav (5 tabs)</h3>
+<table>
+  <tr><th>Tab</th><th>Chức năng</th><th>Insight</th></tr>
+  <tr><td><strong>Trang chủ</strong></td><td>Balance, service grid (12-16 icons), banners, recent transactions</td><td>MoMo-style launchpad. Home = gateway to everything.</td></tr>
+  <tr><td><strong>Ưu đãi</strong></td><td>Deals, cashback, vouchers, partner promos</td><td><strong>Retention driver:</strong> tab riêng cho deals = MAU booster</td></tr>
+  <tr><td><strong>QR</strong> (center)</td><td>Scan + show QR</td><td>Central action — giống VSP</td></tr>
+  <tr><td><strong>Giao dịch</strong></td><td>Lịch sử GD grouped by date</td><td>Standard</td></tr>
+  <tr><td><strong>Tôi</strong></td><td>Profile, liên kết NH, bảo mật, cài đặt</td><td>Standard</td></tr>
+</table>
+
+<h3>2.2 ZaloPay Home Layout</h3>
+<div class="flow"><strong>ZALOPAY HOME (scroll vertical)</strong>
+
+NavBar: Avatar + "Xin chào" + Search + Notification
+Balance Card: Số dư ví + ẩn/hiện
+Quick Actions: Nạp tiền · Chuyển tiền · Nhận tiền · QR thanh toán
+
+Service Grid (3×4 icons):
+  [Nạp ĐT] [Điện] [Nước] [Internet]
+  [Truyền hình] [Di chuyển] [Vé tàu] [Tài chính]
+  [Bảo hiểm] [Mua sắm] [Giải trí] [Tất cả DV]
+
+ZaloPay Invest Banner:
+  "Tích luỹ sinh lời 7%/năm — Bắt đầu từ 50.000đ"
+
+Promo Banners: Carousel (deals, partner, events)
+GD gần đây: 3 items + "Xem tất cả"</div>
+
+<h3>2.3 ZaloPay Financial Products</h3>
+<table>
+  <tr><th>Product</th><th>Vị trí trong app</th><th>Entry point</th></tr>
+  <tr><td><strong>Tích luỹ sinh lời</strong></td><td>Home banner + Service grid "Tài chính"</td><td>Banner card trên Home + icon trong grid</td></tr>
+  <tr><td><strong>Bảo hiểm</strong></td><td>Service grid icon</td><td>Icon trong grid → sub-page</td></tr>
+  <tr><td><strong>Vay tiền</strong></td><td>Service grid "Tài chính" sub-page</td><td>Nằm trong sub-page, không trên Home</td></tr>
+  <tr><td><strong>Đầu tư quỹ</strong></td><td>Service grid "Tài chính" sub-page</td><td>Deep — cần 2 taps</td></tr>
+</table>
+
+<div class="anno"><strong>Insight:</strong> ZaloPay KHÔNG có tab "Tài chính" riêng. Financial products nằm trong service grid → sub-page "Tài chính". Điểm yếu: products bị chôn sâu 2-3 taps. Khi muốn push tài chính, phải dùng banner trên Home.</div>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<h2>3. So sánh 3 Models</h2>
+
+<div class="vs">
+  <div class="vs-col">
+    <strong>🔵 Revolut<br>Financial OS</strong>
+    <ul>
+      <li>Products as cards</li>
+      <li>Hub = full catalog</li>
+      <li>Wealth tab riêng</li>
+      <li>User tự customize Home</li>
+      <li>Clean, minimal</li>
+      <li>Scale: 30+ products OK</li>
+    </ul>
+  </div>
+  <div class="vs-col">
+    <strong>🟢 ZaloPay<br>Super App</strong>
+    <ul>
+      <li>Service grid (icons)</li>
+      <li>Tab Ưu đãi (deals)</li>
+      <li>No financial tab</li>
+      <li>Grid scale bằng thêm icon</li>
+      <li>Familiar cho VN users</li>
+      <li>Products bị chôn sâu</li>
+    </ul>
+  </div>
+  <div class="vs-col">
+    <strong>🟡 VSP<br>Hybrid?</strong>
+    <ul>
+      <li>Hiện tại = basic wallet</li>
+      <li>Cần scale lên 4 verticals</li>
+      <li>User VN quen icon grid</li>
+      <li>Nhưng ko muốn MoMo clone</li>
+      <li>Financial products = key diff</li>
+      <li>→ <strong>Revolut approach</strong></li>
+    </ul>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<h2>4. VSP Decision: Revolut Financial OS</h2>
+
+<h3>4.1 Tại sao chọn Revolut model, không ZaloPay?</h3>
+
+<table>
+  <tr><th>Tiêu chí</th><th>ZaloPay (Grid)</th><th>Revolut (Cards)</th><th>VSP chọn</th></tr>
+  <tr>
+    <td><strong>Financial products visibility</strong></td>
+    <td>Chôn trong grid → sub-page. Cần banner để push.</td>
+    <td>Product cards ngay Home + Wealth tab riêng</td>
+    <td><span class="tag tag-blue">Revolut</span> — VSP cần push Sinh lời + Đầu tư</td>
+  </tr>
+  <tr>
+    <td><strong>Scale 4 verticals</strong></td>
+    <td>Thêm icon vào grid → grid 4×5 → overwhelming</td>
+    <td>Hub catalog + promote system. Clean ở mọi scale.</td>
+    <td><span class="tag tag-blue">Revolut</span> — clean khi add Tín dụng + BH</td>
+  </tr>
+  <tr>
+    <td><strong>Differentiation</strong></td>
+    <td>Giống MoMo / VNPay → không có brand identity</td>
+    <td>Khác biệt hoàn toàn. Premium feel.</td>
+    <td><span class="tag tag-blue">Revolut</span> — VSP cần khác MoMo</td>
+  </tr>
+  <tr>
+    <td><strong>VN user familiarity</strong></td>
+    <td>Quen thuộc — MoMo/ZaloPay/VNPay đều dùng grid</td>
+    <td>Mới lạ — cần onboarding</td>
+    <td><span class="tag tag-yellow">Trade-off</span> — chấp nhận curve learning nhỏ</td>
+  </tr>
+  <tr>
+    <td><strong>Development cost</strong></td>
+    <td>Grid đơn giản, thêm icon dễ</td>
+    <td>Cards phức tạp hơn nhưng reusable</td>
+    <td><span class="tag tag-blue">Revolut</span> — card component = 1 lần build, reuse mãi</td>
+  </tr>
+</table>
+
+<h3>4.2 VSP Bottom Nav — Final Decision</h3>
+
+<div class="flow"><strong>VSP Bottom Nav (5 tabs) — Revolut-inspired:</strong>
+
+🏠 Trang chủ  |  💰 Tài chính  |  📱 QR (center)  |  🕐 Giao dịch  |  👤 Tài khoản
+
+<strong>Mapping to Revolut:</strong>
+  Revolut Home     → VSP Trang chủ (balance, quick actions, product cards, GD)
+  Revolut Wealth   → VSP Tài chính (tổng tài sản, sinh lời, đầu tư, BNPL, BH)
+  Revolut Transfer → VSP QR (combine scan + show + chuyển tiền quick)
+  Revolut Hub      → KHÔNG CẦN ở 30/4 (VSP chưa có 30+ products)
+  Revolut Profile  → VSP Tài khoản
+
+<strong>Khi nào cần Hub?</strong>
+  Khi VSP có >15 services (dự kiến Q4 2026 hoặc 2027).
+  Lúc đó: Giao dịch → merge vào Home, Hub lên thay tab Giao dịch.</div>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<h2>5. VSP Phased Roadmap — Research-Backed</h2>
+
+<h3>5.1 Timeline</h3>
+
+<div class="timeline">
+  <div class="tl-item active">
+    <div class="tl-label">30/4/2026 — <span class="tag tag-black">P0</span></div>
+    <div class="tl-title">Foundation: Financial OS Shell</div>
+    <div class="tl-desc">
+      <strong>Bottom Nav:</strong> Chuyển tiền → Tài chính<br>
+      <strong>Home v2:</strong> Wallet card + Quick actions (Nạp/Rút, Chuyển, Nhận, Thanh toán) + Sinh lời card + BĐS banner + GD gần đây<br>
+      <strong>Tab Tài chính:</strong> Tổng tài sản + Sinh lời (link sinhloi-v2) + Đầu tư BĐS teaser<br>
+      <strong>VAS:</strong> Redesign 8 flows (đã có wireframes)<br>
+      <strong>Thanh toán HĐ:</strong> Entry từ Quick actions "Thanh toán", KHÔNG từ service grid
+    </div>
+  </div>
+
+  <div class="tl-item future">
+    <div class="tl-label">Q3 2026 (Jul-Sep) — <span class="tag tag-blue">P1</span></div>
+    <div class="tl-title">Wealth Vertical: Đầu tư BĐS Live</div>
+    <div class="tl-desc">
+      <strong>Đầu tư BĐS:</strong> Full RWA flows (wireframes done) → live trong Tab Tài chính<br>
+      <strong>Tab Tài chính:</strong> Portfolio view (tổng tài sản = ví + sinh lời + BĐS), performance chart<br>
+      <strong>VAS Phase 2:</strong> Auto-pay, nhắc nợ, nạp tự động<br>
+      <strong>HST:</strong> Duhat, XanhSM entry points trên Home (product cards, không grid)
+    </div>
+  </div>
+
+  <div class="tl-item future">
+    <div class="tl-label">Q4 2026 (Oct-Dec) — <span class="tag tag-yellow">P2</span></div>
+    <div class="tl-title">Credit + Insurance Verticals</div>
+    <div class="tl-desc">
+      <strong>Ví trả sau (BNPL):</strong> Credit scoring + V1 trong Tab Tài chính<br>
+      <strong>Bảo hiểm:</strong> BH xe VinFast, BH du lịch VinPearl → product cards trong Tài chính<br>
+      <strong>Ưu đãi:</strong> Loyalty / cashback — KHÔNG tạo tab riêng, integrate vào Home cards<br>
+      <strong>Tab Tài chính:</strong> Full 4 verticals (Sinh lời, Đầu tư, Tín dụng, BH)
+    </div>
+  </div>
+
+  <div class="tl-item future">
+    <div class="tl-label">2027 — <span class="tag tag-gray">P3</span></div>
+    <div class="tl-title">Personalization + Hub (nếu cần)</div>
+    <div class="tl-desc">
+      <strong>Home widgets:</strong> User tự pin/unpin features (Revolut pattern)<br>
+      <strong>Hub tab:</strong> Nếu >15 services → thêm Hub catalog, merge Giao dịch vào Home<br>
+      <strong>Smart search:</strong> Search across all products + transactions<br>
+      <strong>Power user tools:</strong> Standalone wealth app (nếu AUM đủ lớn)
+    </div>
+  </div>
+</div>
+
+<h3>5.2 Revolut Principles Applied to VSP</h3>
+
+<table>
+  <tr><th>Revolut Principle</th><th>VSP Application</th><th>Phase</th></tr>
+  <tr>
+    <td><strong>Balance as hero</strong></td>
+    <td>Wallet card = largest element trên Home. Tổng tài sản = hero trên Tài chính.</td>
+    <td><span class="tag tag-black">30/4</span></td>
+  </tr>
+  <tr>
+    <td><strong>Products as cards</strong></td>
+    <td>Sinh lời, BĐS, BNPL, BH = cards. KHÔNG dùng icon grid.</td>
+    <td><span class="tag tag-black">30/4</span></td>
+  </tr>
+  <tr>
+    <td><strong>Progressive promotion</strong></td>
+    <td>New product → card trong Tài chính → promote lên Home card khi mature</td>
+    <td><span class="tag tag-blue">Q3+</span></td>
+  </tr>
+  <tr>
+    <td><strong>Dedicated tab for high-value</strong></td>
+    <td>Tab Tài chính = VSP's "Wealth tab" — revenue driver, first-class citizen</td>
+    <td><span class="tag tag-black">30/4</span></td>
+  </tr>
+  <tr>
+    <td><strong>Hub khi scale lớn</strong></td>
+    <td>Chưa cần. Khi >15 services → thêm Hub, merge Giao dịch vào Home</td>
+    <td><span class="tag tag-gray">2027</span></td>
+  </tr>
+  <tr>
+    <td><strong>Pin/unpin personalization</strong></td>
+    <td>User tự chọn hiện card nào trên Home. Avoid cluttered dashboard.</td>
+    <td><span class="tag tag-gray">2027</span></td>
+  </tr>
+</table>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<h2>6. Screen Inventory — Updated</h2>
+
+<h3>6.1 Scope 30/4 (chỉ build cái có)</h3>
+
+<table>
+  <tr><th>Screen</th><th>Type</th><th>Nội dung</th></tr>
+  <tr>
+    <td><strong>Home v2</strong></td>
+    <td><span class="tag tag-red">Redesign</span></td>
+    <td>Wallet card + Quick actions (4) + Sinh lời card (2 states: chưa/đã kích hoạt) + BĐS banner + Thanh toán HĐ card + GD gần đây</td>
+  </tr>
+  <tr>
+    <td><strong>Tab Tài chính</strong></td>
+    <td><span class="tag tag-red">New</span></td>
+    <td>Tổng tài sản card + Sinh lời card (LIVE) + Đầu tư BĐS card (teaser) + Tổng quan (2-col metrics)</td>
+  </tr>
+  <tr>
+    <td><strong>Bottom Nav</strong></td>
+    <td><span class="tag tag-yellow">Change</span></td>
+    <td>Chuyển tiền → Tài chính. Clickable navigation giữa Home ↔ Tài chính.</td>
+  </tr>
+  <tr>
+    <td><strong>VAS flows</strong></td>
+    <td><span class="tag tag-red">Redesign</span></td>
+    <td>8 flows (đã có wireframes riêng). Entry từ Quick action "Thanh toán".</td>
+  </tr>
+</table>
+
+<h3>6.2 KHÔNG build 30/4</h3>
+<table>
+  <tr><th>Screen</th><th>Lý do</th><th>Khi nào</th></tr>
+  <tr><td>Ví trả sau</td><td>Chưa có backend/product</td><td>Q4 2026</td></tr>
+  <tr><td>Bảo hiểm</td><td>Chưa có product</td><td>Q4 2026</td></tr>
+  <tr><td>Hub/Catalog</td><td>VSP chưa có >15 services</td><td>2027</td></tr>
+  <tr><td>Home widgets</td><td>Cần mature product ecosystem trước</td><td>2027</td></tr>
+  <tr><td>Tab Ưu đãi</td><td>Chưa có loyalty program</td><td>Q4 2026</td></tr>
+</table>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<h2>7. Verdict</h2>
+
+<div class="verdict">
+  <h3>VSP = Revolut for Vietnam, không phải MoMo clone</h3>
+  <ul>
+    <li><strong>30/4:</strong> Ship Financial OS shell — Home v2 (product cards) + Tab Tài chính (Sinh lời + BĐS teaser) + New bottom nav. Chỉ show cái đã có.</li>
+    <li><strong>Q3:</strong> Fill Tài chính tab — BĐS live, portfolio view, HST cards trên Home.</li>
+    <li><strong>Q4:</strong> Full 4 verticals — BNPL + BH vào Tài chính tab. Loyalty integrate Home cards.</li>
+    <li><strong>2027:</strong> Personalization layer — widgets, pin/unpin, Hub (nếu >15 services), smart search.</li>
+  </ul>
+  <p style="margin-top:16px;"><strong>Core principle:</strong> Chỉ show sản phẩm đã có. Không placeholder "Sắp ra mắt". Khi product ready → add card. Cards scale vô hạn mà không break IA.</p>
+</div>
+
+<div style="font-size:11px; color:#999; text-align:center; margin-top:48px;">
+  VSP Architecture Research · Vi — Design Lead · 21/03/2026<br>
+  Sources: Revolut 10 analysis, ZaloPay production app, MoMo/VNPay benchmark, VSP KHHĐ 2026
+</div>
+
+</body>
+</html>

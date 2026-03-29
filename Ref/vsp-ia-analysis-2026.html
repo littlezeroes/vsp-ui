@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VSP — Phân tích IA 2026 (Review Copy)</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:Georgia,'Times New Roman',serif; background:#fff; color:#111; line-height:1.8; max-width:720px; margin:0 auto; padding:48px 24px 120px; font-size:15px; }
+  h1 { font-family:-apple-system,sans-serif; font-size:24px; font-weight:800; margin-bottom:4px; }
+  .meta { font-size:13px; color:#888; margin-bottom:40px; font-family:-apple-system,sans-serif; }
+  h2 { font-family:-apple-system,sans-serif; font-size:18px; font-weight:700; margin:48px 0 12px; padding-bottom:4px; border-bottom:1px solid #ddd; }
+  h3 { font-family:-apple-system,sans-serif; font-size:15px; font-weight:700; margin:28px 0 8px; }
+  p { margin-bottom:14px; }
+  ol, ul { margin:8px 0 14px 24px; }
+  li { margin-bottom:6px; }
+  blockquote { border-left:3px solid #ccc; padding:8px 16px; margin:14px 0; font-style:italic; color:#555; }
+  pre { font-family:'SF Mono','Fira Code',monospace; font-size:13px; background:#f8f8f8; padding:16px 20px; margin:14px 0; border-left:3px solid #ddd; white-space:pre-wrap; line-height:1.8; }
+  table { width:100%; border-collapse:collapse; margin:16px 0; font-size:13px; font-family:-apple-system,sans-serif; }
+  th { text-align:left; padding:8px; border-bottom:2px solid #111; font-weight:700; font-size:11px; text-transform:uppercase; }
+  td { padding:8px; border-bottom:1px solid #eee; vertical-align:top; }
+  strong { font-weight:700; }
+  .footnote { font-size:12px; color:#888; margin-top:40px; padding-top:12px; border-top:1px solid #eee; font-family:-apple-system,sans-serif; }
+  .ia { padding:4px 10px; margin:3px 0; border-radius:6px; font-size:12px; font-weight:600; display:inline-block; font-family:-apple-system,sans-serif; }
+  .ia-0 { background:#111; color:#fff; font-size:14px; }
+  .ia-1 { background:#333; color:#fff; }
+  .ia-2 { background:#f0f0f0; color:#333; margin-left:24px; }
+  .ia-3 { background:#fff; border:1px solid #ddd; color:#888; margin-left:48px; font-weight:400; }
+  .tag { font-size:10px; color:#888; margin-left:6px; }
+  .ctx { background:#f0f8ff; border:1px solid #ccc; border-radius:8px; padding:16px; margin:16px 0; font-family:-apple-system,sans-serif; font-size:13px; }
+  .ctx strong { color:#111; }
+</style>
+</head>
+<body>
+
+<div class="ctx">
+  <strong>Context cho reviewer:</strong><br>
+  Đây là document phân tích Information Architecture cho app V-Smart Pay (ví điện tử VN, thuộc Vingroup).<br><br>
+  <strong>Hiện trạng:</strong> App v1.0.6 — payment wallet thuần. 5 tabs: Trang chủ | Chuyển tiền | QR | Giao dịch | Tài khoản. ~12 features.<br><br>
+  <strong>KHHĐ 2026:</strong> Thêm ~50 features trong 4 mảng: Thanh toán mở rộng (VAS, HST Vingroup, vé), Tiết kiệm & Đầu tư (sinh lời, chứng chỉ quỹ, BĐS mã hoá), Tín dụng (BNPL), Bảo hiểm (xe, du lịch, sức khỏe). App chưa mass launch.<br><br>
+  <strong>Yêu cầu:</strong> Đề xuất cấu trúc IA — bottom nav, mỗi tab chứa gì, scale thế nào từ 30/4 → cuối năm. Dựa trên user needs, mental model, product readiness (KHHĐ timeline thật), business metrics.<br><br>
+  <strong>Reference apps:</strong> Cash App, OKX, Revolut, Monzo, ZaloPay, MoMo.<br><br>
+  <strong>Xin review:</strong> Logic phân tích có chặt chẽ không? Quyết định IA có hợp lý? Có blind spot nào? Triết lý "Financial OS" có đúng hướng?
+</div>
+
+<h1>Phân tích Information Architecture — V-Smart Pay 2026</h1>
+<div class="meta">Vi — Design Lead · 21/03/2026 · KHHĐ Fintech 2026 · Production v1.0.6</div>
+
+<!-- ═══════════════════ 1 ═══════════════════ -->
+<h2>1. Triết lý thiết kế</h2>
+
+<h3>Financial OS</h3>
+
+<p>VSP không phải ví điện tử (quá nhỏ), không phải super app (quá hype), không phải ngân hàng số (quá regulated). VSP là <strong>hệ điều hành tài chính</strong> — nơi mọi hoạt động tiền bạc trong đời sống VN chạy qua: trả tiền điện, chuyển cho bạn, mua BH xe, đầu tư BĐS, nhận cashback VinPearl.</p>
+
+<p>OS = nền tảng, không phải app đơn lẻ. OS = modular — thêm module mà không redesign core. OS = user controls — user chọn hiện gì, dùng gì, bỏ qua gì.</p>
+
+<h3>5 nguyên tắc</h3>
+
+<ol>
+  <li><strong>Modular, không monolith.</strong> Mỗi tab = 1 module độc lập. Thêm/bỏ module không ảnh hưởng core. Module mới xuất hiện khi đủ weight (products ready + user need proven). Không tạo tab trống.</li>
+  <li><strong>User là admin.</strong> Home = desktop, user chọn widgets. Không phải billboard quảng cáo. Mỗi tính năng xuất hiện qua hành vi — show sinh lời widget khi balance > 5M liên tục 3 ngày. Vingroup ecosystem data = chìa khoá mở.</li>
+  <li><strong>Mỗi module, 1 job.</strong> Thanh toán = trả tiền. Tài chính = grow. Ưu đãi = save. Nếu 1 module làm 2 việc → tách. Home show STATUS, tab enable ACTION — không duplicate.</li>
+  <li><strong>Backward compatible.</strong> Đổi nav không bao giờ tăng tap count cho action cũ. Chuyển tiền từ tab → Home quick action = vẫn 1 tap. Lịch sử GD từ tab → Home wallet area = vẫn 1 tap.</li>
+  <li><strong>Tiền của user, quyền của user.</strong> Settings/bảo mật luôn findable trong ≤2 taps. Balance luôn visible. Lịch sử GD luôn accessible. App tài chính mà giấu controls = mất trust.</li>
+</ol>
+
+<!-- ═══════════════════ 2 ═══════════════════ -->
+<h2>2. User & Mental Model</h2>
+
+<h3>Hai personas</h3>
+
+<p><strong>HST persona</strong> — cư dân Vinhomes, chủ xe VinFast, KH VinPearl. Dùng VSP vì ecosystem. Jobs: thanh toán dịch vụ tập đoàn, mua BH xe, đầu tư BĐS Vinhomes. AUM potential cao — đã trust Vingroup với tài sản lớn.</p>
+
+<p><strong>General persona</strong> — user phổ thông VN, đang dùng MoMo/ZaloPay. Jobs: chuyển tiền, thanh toán HĐ, nạp ĐT. Kỳ vọng: nhanh, quen, không phải học lại.</p>
+
+<h3>Mental model: 3 modes</h3>
+
+<ol>
+  <li><strong>"Tiền di chuyển"</strong> — nạp, rút, chuyển, nhận. Quick actions, 1-2 tap. → <em>Home quick actions</em></li>
+  <li><strong>"Tiền trả cho ai đó"</strong> — hóa đơn, dịch vụ, vé, HST. Cần chọn NCC, nhập mã. Flow dài hơn. → <em>Tab Thanh toán</em></li>
+  <li><strong>"Tiền sinh ra tiền / bảo vệ tài sản"</strong> — sinh lời, đầu tư, BH, tín dụng. Mindset khác hoàn toàn. → <em>Tab Tài chính</em></li>
+</ol>
+
+<blockquote>User than phiền chuyển tiền khó tìm → vì nó là action (mode 1) nhưng bị gán vào tab riêng. Giải pháp: đưa lên Home quick actions cạnh Nạp/Rút.</blockquote>
+
+<!-- ═══════════════════ 3 ═══════════════════ -->
+<h2>3. Phân tích 5 tabs hiện tại</h2>
+
+<pre>v1.0.6: Trang chủ — Chuyển tiền — QR — Giao dịch — Tài khoản</pre>
+
+<p><strong>Trang chủ</strong> — gateway. Giữ. Cần evolve thành widget-based.</p>
+
+<p><strong>Chuyển tiền</strong> — 1 action chiếm 1 tab. Nạp/Rút/Nhận = icons trên Home, tại sao Chuyển tiền được tab riêng? User kêu khó tìm vì mental model sai. <strong>→ Giải phóng slot. Chuyển tiền lên Home quick actions.</strong></p>
+
+<p><strong>QR</strong> — center tab. Standard. Giữ.</p>
+
+<p><strong>Giao dịch</strong> — lịch sử GD. User VN check thường xuyên. <strong>Giữ tạm, merge Q3</strong> khi cần slot cho Tài chính.</p>
+
+<p><strong>Tài khoản</strong> — profile, bảo mật. User mở 1 tháng/lần. <strong>Giữ tạm, move Q4</strong> lên avatar góc phải.</p>
+
+<blockquote>4/5 tabs hoạt động tốt. Tab Chuyển tiền duy nhất cần thay — chiếm slot cho action thay vì category.</blockquote>
+
+<!-- ═══════════════════ 4 ═══════════════════ -->
+<h2>4. ~50 features mới — group theo mental model</h2>
+
+<h3>Group A: "Tiền trả cho ai đó" — Thanh toán</h3>
+<p>~20 loại dịch vụ: Hóa đơn (điện, nước, net, data, học phí, phim), HST PnL (XanhSM, VHR, VinPearl, VinFast, Vinschool, VinUni, Vincom...), Nạp ĐT, mua thẻ, vé xe/tàu, saved billers, auto-pay, V-Point thanh toán. <strong>Đủ content cho 1 tab ngay 30/4.</strong></p>
+
+<h3>Group B: "Tiền sinh ra tiền" — Tài chính</h3>
+<p>6 product lines: Sinh lời tự động (30/6), Chứng chỉ quỹ (30/9), BĐS mã hoá (30/4→4/12), BH 4 loại (20/4→30/6), BNPL (30/9), Vay VinFast (31/5). <strong>30/4 chỉ có BH + BĐS basic → chưa đủ thành tab. Q3 mới đủ.</strong></p>
+
+<h3>Group C: "Tiết kiệm khi chi tiêu" — Ưu đãi</h3>
+<p>Voucher (30/4), V-Point (30/9), HST deals, referral rewards. <strong>30/4 chỉ có voucher basic. Q4 mới đủ.</strong></p>
+
+<blockquote>Mỗi group trở thành tab KHI ĐỦ WEIGHT. Thanh toán đủ 30/4. Tài chính đủ Q3. Ưu đãi đủ Q4.</blockquote>
+
+<!-- ═══════════════════ 5 ═══════════════════ -->
+<h2>5. Cấu trúc đề xuất — 3 phases</h2>
+
+<pre>Phase 1 (30/4):   Trang chủ — Thanh toán — QR — Giao dịch — Tài khoản
+                  CT → TT. Chuyển tiền lên Home quick actions.
+                  SL + BH = cards trên Home (chưa đủ thành tab).
+
+Phase 2 (Q3):     Trang chủ — Thanh toán — QR — Tài chính — Tài khoản
+                  GD → TC. GD merge vào Home wallet area.
+                  SL + BĐS + BH + CCQ + BNPL = đủ weight cho tab.
+
+Phase 3 (Q4):     Trang chủ — Thanh toán — QR — Tài chính — Ưu đãi
+                  TK → ƯĐ. TK lên avatar góc phải (Cash App).
+                  V-Point + Voucher + HST deals = đủ cho tab.</pre>
+
+<p><strong>Mỗi phase đổi đúng 1 tab.</strong> App chưa mass launch nên acceptable.</p>
+
+<!-- ═══════════════════ 6 ═══════════════════ -->
+<h2>6. Phase 1: 30/4 — Tab Thanh toán</h2>
+
+<p><strong>Tại sao:</strong> KHHĐ ship ~20 loại dịch vụ trước 30/4. Hiện tại chôn trong 1 banner + 1 sub-page. Không đủ chỗ. Tab Chuyển tiền lãng phí slot → giải phóng cho Thanh toán.</p>
+
+<p><strong>Home Phase 1:</strong></p>
+<div style="margin-left:0"><span class="ia ia-0">🏠 Trang chủ</span></div>
+<div style="margin-left:24px"><span class="ia ia-2">Wallet Card (balance, ẩn/hiện)</span></div>
+<div style="margin-left:24px"><span class="ia ia-2">Quick Actions: Nạp · Rút · Chuyển · Nhận</span><span class="tag">thêm Chuyển tiền</span></div>
+<div style="margin-left:24px"><span class="ia ia-2">Sinh lời Card (teaser → sub-page)</span><span class="tag">chưa đủ thành tab</span></div>
+<div style="margin-left:24px"><span class="ia ia-2">BH xe máy/ô tô Card</span><span class="tag">20/4</span></div>
+<div style="margin-left:24px"><span class="ia ia-2">GD gần đây</span></div>
+
+<p><strong>Tab Thanh toán Phase 1:</strong></p>
+<div style="margin-left:0"><span class="ia ia-0">💳 Thanh toán</span></div>
+<div style="margin-left:24px"><span class="ia ia-1">Hóa đơn tiện ích</span></div>
+<div style="margin-left:48px"><span class="ia ia-2">Điện · Nước · Internet · Nạp ĐT · Mua thẻ</span><span class="tag">30/4</span></div>
+<div style="margin-left:48px"><span class="ia ia-2">Data · Thanh toán tài chính (khoản vay)</span><span class="tag">22/5</span></div>
+<div style="margin-left:48px"><span class="ia ia-2">Học phí · Vé xem phim</span><span class="tag">30/6</span></div>
+<div style="margin-left:24px"><span class="ia ia-1">Hệ sinh thái Vingroup</span><span class="tag">phased T3→T8</span></div>
+<div style="margin-left:48px"><span class="ia ia-3">XanhSM (T3) · VHR · VinPearl · VinFast (T4) · Vinschool · VinUni (T6)...</span></div>
+<div style="margin-left:24px"><span class="ia ia-2">Saved billers</span><span class="tag">20/4</span></div>
+<div style="margin-left:24px"><span class="ia ia-2">Auto-pay & nhắc lịch</span><span class="tag">30/6</span></div>
+
+<h3>Wireframe — Phase 1 (30/4)</h3>
+<pre>
+ HOME                              TAB THANH TOÁN
+ ┌──────────────────────┐          ┌──────────────────────┐
+ │ 👤               🔔  │          │ Thanh toán           │
+ │                      │          │                      │
+ │ ┌──────────────────┐ │          │ 🔍 Tìm dịch vụ...   │
+ │ │ Ví V-Smart Pay   │ │          │                      │
+ │ │ 14.328 đ     👁  │ │          │ [Tất cả][HĐ][HST][Vé]│
+ │ └──────────────────┘ │          │                      │
+ │                      │          │ HÓA ĐƠN TIỆN ÍCH    │
+ │ [Nạp][Rút][CT][Nhận] │          │ ⚡ Điện         ›    │
+ │                      │          │ 💧 Nước         ›    │
+ │ ┌──────────────────┐ │          │ 📶 Internet     ›    │
+ │ │ 💰 Sinh lời      │ │          │ 📱 Nạp ĐT      ›    │
+ │ │ 5.5%/năm    ›    │ │          │                      │
+ │ └──────────────────┘ │          │ HỆ SINH THÁI         │
+ │ ┌──────────────────┐ │          │ ┌──┐┌──┐┌──┐┌──┐    │
+ │ │ 🛡 BH xe TNDS   │ │          │ │Xa││VH││VP││VF│    │
+ │ │ Mua từ 66K  ›    │ │          │ │SM││  ││  ││  │    │
+ │ └──────────────────┘ │          │ └──┘└──┘└──┘└──┘    │
+ │                      │          │ ┌──┐┌──┐┌──┐┌──┐    │
+ │ GD gần đây    Tất cả│          │ │VS││VU││VC││VM│    │
+ │ → CONG TY... -38K   │          │ └──┘└──┘└──┘└──┘    │
+ │ → HO THI... -100K   │          │                      │
+ │                      │          │ VÉ & DỊCH VỤ         │
+ │                      │          │ 🎬 Vé xem phim  ›    │
+ │                      │          │ 🚂 Vé xe & tàu  ›    │
+ │                      │          │                      │
+ │ [TC][TT●][QR][GD][TK]│          │ [TC][TT●][QR][GD][TK]│
+ └──────────────────────┘          └──────────────────────┘
+</pre>
+
+<p><strong>Tại sao không gộp Chuyển tiền P2P vào tab Thanh toán?</strong> Mental model khác. Chuyển tiền cho bạn = "tiền di chuyển" (mode 1). Trả hóa đơn = "trả cho dịch vụ" (mode 2). Giữ tách.</p>
+
+<!-- ═══════════════════ 7 ═══════════════════ -->
+<h2>7. Phase 2: Q3 — Tab Tài chính</h2>
+
+<p><strong>Tại sao Q3 không 30/4:</strong> 30/4 chỉ có BH (2 loại) + BĐS basic — chưa đủ "Trung tâm Tài chính". Q3 có: Sinh lời full (30/6), BH 4 loại (30/6), BĐS trao đổi (17/7), CCQ (30/9), BNPL (30/9). 6 product lines. Đủ weight.</p>
+
+<p><strong>Tab Tài chính = Financial Hub:</strong></p>
+<div style="margin-left:0"><span class="ia ia-0">💰 Tài chính</span></div>
+<div style="margin-left:24px"><span class="ia ia-2">Tổng tài sản (ví + SL + đầu tư)</span></div>
+<div style="margin-left:24px"><span class="ia ia-2">Sinh lời tự động</span><span class="tag">30/6</span></div>
+<div style="margin-left:48px"><span class="ia ia-3">Kích hoạt · Nạp/Rút · Dashboard · Lịch sử · Huỷ</span></div>
+<div style="margin-left:24px"><span class="ia ia-2">Đầu tư BĐS mã hoá</span><span class="tag">30/4 basic → 4/12 full</span></div>
+<div style="margin-left:48px"><span class="ia ia-3">Dự án · Chi tiết · Đặt mua · Settlement · Trao đổi · CEX</span></div>
+<div style="margin-left:24px"><span class="ia ia-2">Bảo hiểm</span><span class="tag">20/4 → 30/6</span></div>
+<div style="margin-left:48px"><span class="ia ia-3">Xe máy · Ô tô · Du lịch · Sức khỏe — Mua · Quản lý HĐ</span></div>
+<div style="margin-left:24px"><span class="ia ia-2">Chứng chỉ quỹ</span><span class="tag">30/9</span></div>
+<div style="margin-left:48px"><span class="ia ia-3">Mở TK · Mua · Bán · Portfolio · Hồ sơ</span></div>
+<div style="margin-left:24px"><span class="ia ia-2">Ví trả sau (BNPL)</span><span class="tag">30/9</span></div>
+<div style="margin-left:48px"><span class="ia ia-3">Đăng ký · Thanh toán · Quản lý dư nợ</span></div>
+<div style="margin-left:24px"><span class="ia ia-2">Vay trả góp xe VinFast</span><span class="tag">31/5</span></div>
+
+<h3>Wireframe — Phase 2 (Q3)</h3>
+<pre>
+ HOME                              TAB TÀI CHÍNH
+ ┌──────────────────────┐          ┌──────────────────────┐
+ │ 👤               🔔  │          │ Tài chính            │
+ │                      │          │                      │
+ │ ┌──────────────────┐ │          │ ┌──────────────────┐ │
+ │ │ Ví V-Smart Pay   │ │          │ │ Tổng tài sản     │ │
+ │ │ 14.328 đ     👁  │ │          │ │ 5.014.328 đ      │ │
+ │ │ Tap → Lịch sử GD │ │          │ │ Ví 14K · SL 5M   │ │
+ │ └──────────────────┘ │          │ └──────────────────┘ │
+ │                      │          │                      │
+ │ [Nạp][Rút][CT][Nhận] │          │ ┌──────────────────┐ │
+ │                      │          │ │ 💰 Sinh lời      │ │
+ │ WIDGETS (70%)        │          │ │ 5.000.000đ       │ │
+ │ ┌──────────────────┐ │          │ │ +12.500đ 5.5%/năm│ │
+ │ │ 💰 SL: 5M +45K  │ │          │ └──────────────────┘ │
+ │ │ 🛡 BH: 2 HĐ     │ │          │ ┌──────────────────┐ │
+ │ │ Xem chi tiết ›   │ │          │ │ 🏠 BĐS mã hoá   │ │
+ │ └──────────────────┘ │          │ │ Vinhomes GP      │ │
+ │                      │          │ └──────────────────┘ │
+ │ GD gần đây    Tất cả│          │ 🛡 Bảo hiểm     ›   │
+ │ → CONG TY... -38K   │          │ 4 loại · 2 HĐ active│
+ │ → HO THI... -100K   │          │                      │
+ │                      │          │ 📊 Chứng chỉ quỹ ›  │
+ │ PROMO (30%) 1 max    │          │ Mua · Bán · Portfolio│
+ │ ┌──────────────────┐ │          │                      │
+ │ │ CCQ từ 50K  ✕    │ │          │ 💳 Ví trả sau    ›  │
+ │ └──────────────────┘ │          │ BNPL · Hạn mức      │
+ │                      │          │                      │
+ │ [TC][TT][QR][TC●][TK]│          │ [TC][TT][QR][TC●][TK]│
+ └──────────────────────┘          └──────────────────────┘
+</pre>
+
+<p><strong>GD merge vào đâu:</strong> Wallet area trên Home. Tap Wallet Card → full history với filter. Lịch sử = context của ví, không phải destination độc lập.</p>
+
+<p><strong>Metric:</strong> AUM. Tab riêng = user thấy mỗi lần mở → deposit nhiều hơn. Revenue driver lâu dài: payments acquires, finance monetizes.</p>
+
+<!-- ═══════════════════ 8 ═══════════════════ -->
+<h2>8. Phase 3: Q4 — Tab Ưu đãi</h2>
+
+<p><strong>Tại sao Q4:</strong> V-Point ship 30/9. Voucher basic 30/4 nhưng chưa đủ thành tab. Q4 có: V-Point, Voucher, HST deals, referral, cashback. Đủ content.</p>
+
+<h3>Wireframe — Phase 3 (Q4)</h3>
+<pre>
+ HOME                              TAB ƯU ĐÃI
+ ┌──────────────────────┐          ┌──────────────────────┐
+ │            [🔔] [👤] │ ← avatar │ Ưu đãi               │
+ │                      │          │                      │
+ │ ┌──────────────────┐ │          │ ┌──────────────────┐ │
+ │ │ 14.328 đ     👁  │ │          │ │ 🏆 V-Point       │ │
+ │ │ Tap → Lịch sử GD │ │          │ │ 1.250 điểm   ›   │ │
+ │ └──────────────────┘ │          │ └──────────────────┘ │
+ │                      │          │                      │
+ │ [Nạp][Rút][CT][Nhận] │          │ ┌──────────────────┐ │
+ │                      │          │ │ 🔥 XanhSM -50%   │ │
+ │ WIDGETS              │          │ │ HSD: 30/12/2026  │ │
+ │ ┌──────────────────┐ │          │ │ [Lấy ngay]       │ │
+ │ │ 💰 SL: 12.5M     │ │          │ └──────────────────┘ │
+ │ │ +45K hôm nay     │ │          │                      │
+ │ └──────────────────┘ │          │ [Tất cả][Ăn][Đi][Mua]│
+ │ ┌──────────────────┐ │          │                      │
+ │ │ 🛡 BH: 2 HĐ     │ │          │ 🎁 VinPearl -30%  › │
+ │ └──────────────────┘ │          │ 🏠 Vinhomes 2%    › │
+ │                      │          │ 🚗 XanhSM 20K     › │
+ │ GD gần đây    Tất cả│          │ ☕ Highland -15%   › │
+ │ → CONG TY... -38K   │          │                      │
+ │                      │          │ ┌──────────────────┐ │
+ │ PROMO (1 max)        │          │ │ 👥 Giới thiệu bạn│ │
+ │ ┌──────────────────┐ │          │ │ Nhận 50K/người › │ │
+ │ │ ✕ contextual     │ │          │ └──────────────────┘ │
+ │ └──────────────────┘ │          │                      │
+ │                      │          │                      │
+ │ [TC][TT][QR][TC][ƯĐ●]│          │ [TC][TT][QR][TC][ƯĐ●]│
+ └──────────────────────┘          └──────────────────────┘
+</pre>
+
+<p><strong>Tài khoản đi đâu:</strong> Avatar góc phải trên Home (Cash App pattern). Tap → Profile, NH, Bảo mật. User mở 1 tháng/lần — không xứng chiếm tab. Risk: user VN chưa quen. Cần feature flag per segment.</p>
+
+<p><strong>Metric:</strong> MAU retention + partner revenue (commission 3-8%, V-Point float 15-20% breakage).</p>
+
+<!-- ═══════════════════ 9 ═══════════════════ -->
+<h2>9. Home — Widget Architecture</h2>
+
+<p><strong>Nguyên tắc 70/30:</strong> 70% above-fold = utility (balance, quick actions, GD). 30% max = promo (1 card, contextual, dismissible). MoMo = cautionary tale: 70% promo → banner blindness → engagement drop 40%.</p>
+
+<pre>Home Layout:
+┌─────────────────────────────┐
+│ Balance + Hide/Show         │  ← fixed
+│ Quick Actions (4 icons)     │  ← user reorder
+├─────────────────────────────┤
+│ UTILITY (70%)               │
+│ • GD gần đây (3 items)     │
+│ • Upcoming bills (if any)  │
+│ • SL/BH status (if active) │
+├─────────────────────────────┤
+│ PROMO (30%)                 │
+│ • 1 card max, dismissible   │
+│ • "Khám phá thêm" link     │
+└─────────────────────────────┘</pre>
+
+<p><strong>Rule:</strong> Home widgets show STATUS, tabs enable ACTION. Widget = glance ("SL: 12.5M +45K"). Tap → tab Tài chính cho full action (nạp/rút/mua/bán). Không duplicate functionality.</p>
+
+<!-- ═══════════════════ 10 ═══════════════════ -->
+<h2>10. Metrics</h2>
+
+<p><strong>North Star: MATU</strong> (Monthly Active Transacting Users) — unique users hoàn thành ≥1 giao dịch/tháng. Không phải MAU (vanity) hay TPV (whale-skewed).</p>
+
+<table>
+  <tr><th>Tab</th><th>Revenue driver</th><th>Metric</th><th>Target</th></tr>
+  <tr><td><strong>Home</strong></td><td>Cross-sell</td><td>Widget Tap-Through Rate</td><td>>15% sessions</td></tr>
+  <tr><td><strong>Thanh toán</strong></td><td>Transaction fees</td><td>Transactions/User/Month</td><td>4+ GD/user/tháng</td></tr>
+  <tr><td><strong>Tài chính</strong></td><td>AUM + BH premium + BNPL</td><td>AUM growth MoM</td><td>20% MoM 6 tháng đầu</td></tr>
+  <tr><td><strong>Ưu đãi</strong></td><td>Partner commission + V-Point</td><td>Revenue/Active User</td><td>50K/user/tháng</td></tr>
+</table>
+
+<pre>Revenue trajectory:
+2026 H1:  95% Payments
+2026 H2:  70% Payments / 25% Finance / 5% Deals
+2027 H1:  50% Payments / 35% Finance / 15% Deals
+2027 H2:  40% Payments / 40% Finance / 20% Deals
+→ Finance overtakes Payments cuối 2027</pre>
+
+<!-- ═══════════════════ 11 ═══════════════════ -->
+<h2>11. Chiến lược triển khai — Soft Launch & Graduate</h2>
+
+<p>App chưa mass launch = early adopters, forgiving. <strong>Roll forward, không rollback.</strong></p>
+
+<ol>
+  <li><strong>Feature flag per segment.</strong> Nav mới ship cho Vingroup employees trước (2-4 tuần) → Vinhomes residents → general. Test segment gần nhất, loyal nhất.</li>
+  <li><strong>Behavioral graduation cho Phase 2.</strong> User đã dùng SL/BH/BĐS → thấy tab Tài chính. User chưa dùng → vẫn thấy tab Giao dịch. Khi 80% graduate → xoá GD cho tất cả. Nav change = formalization hành vi đã có.</li>
+  <li><strong>"Cái mới" badge, không onboarding flow.</strong> Dot indicator + 1-line tooltip. Không coach marks, không guided tour. User VN skip hết (completion <15%). Rage tap detector: tap vị trí cũ >3 lần → tooltip.</li>
+</ol>
+
+<p><strong>1 metric duy nhất:</strong> Core Task Completion Rate. Drop >10% trong 7 ngày → investigate, fix forward. Không rollback.</p>
+
+<!-- ═══════════════════ Summary ═══════════════════ -->
+<h2>Tổng kết</h2>
+
+<pre>Đề xuất IA — Financial OS:
+
+Phase 1 (30/4): Trang chủ — Thanh toán — QR — Giao dịch — Tài khoản
+Phase 2 (Q3):   Trang chủ — Thanh toán — QR — Tài chính — Tài khoản
+Phase 3 (Q4):   Trang chủ — Thanh toán — QR — Tài chính — Ưu đãi
+
+Home:       Wallet + Quick Actions (Nạp·Rút·Chuyển·Nhận) + Widgets (70/30)
+Thanh toán: Hóa đơn + HST + Vé + Tài chính — "tiền trả cho ai đó"
+Tài chính:  Tổng TS + SL + BĐS + BH + CCQ + BNPL — "tiền sinh ra tiền"
+Ưu đãi:    V-Point + Voucher + Deals + Referral — "tiết kiệm khi chi tiêu"
+Tài khoản:  → Avatar góc phải (Phase 3)</pre>
+
+<p><strong>Reasoning:</strong></p>
+<ul>
+  <li><strong>Mental model:</strong> 3 modes (di chuyển / trả / grow) → 3 destinations (Home / Thanh toán / Tài chính).</li>
+  <li><strong>Product readiness:</strong> Mỗi tab xuất hiện khi đủ content. Không tab trống.</li>
+  <li><strong>Metric:</strong> Thanh toán → TPV. Tài chính → AUM. Ưu đãi → MAU retention.</li>
+  <li><strong>Scale:</strong> Modular — thêm product = thêm card trong tab. Không redesign nav.</li>
+  <li><strong>Habit break:</strong> Mỗi phase đổi 1 tab. Backward compatible (tap count không tăng).</li>
+  <li><strong>HST persona:</strong> BH VinFast + BĐS Vinhomes first-class trong Tài chính. HST deals trong Ưu đãi.</li>
+  <li><strong>General persona:</strong> "App không chỉ thanh toán — quản lý tài chính". Differentiation vs MoMo/ZaloPay.</li>
+</ul>
+
+<div class="footnote">
+  V-Smart Pay — Phân tích IA 2026 · Vi — Design Lead · 21/03/2026<br>
+  Sources: KHHĐ Fintech 2026 (Excel) · Production v1.0.6 · Cash App · OKX · Revolut · Monzo · ZaloPay · MoMo
+</div>
+
+</body>
+</html>

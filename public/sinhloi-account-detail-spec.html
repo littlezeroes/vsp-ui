@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sinh lời — Account Detail Redesign Spec</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:-apple-system,'Helvetica Neue',sans-serif; background:#fff; color:#111; max-width:720px; margin:0 auto; padding:48px 24px 80px; -webkit-font-smoothing:antialiased; }
+  h1 { font-size:28px; font-weight:800; letter-spacing:-0.4px; margin-bottom:4px; }
+  .sub { font-size:14px; color:#888; margin-bottom:40px; }
+  h2 { font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:1.5px; color:#999; margin:40px 0 16px; }
+  h3 { font-size:17px; font-weight:700; margin:24px 0 8px; }
+  p, li { font-size:15px; line-height:1.65; color:#333; }
+  ul { padding-left:20px; margin:8px 0 16px; }
+  li { margin-bottom:4px; }
+  strong { color:#111; }
+  .card { background:#fafafa; border-radius:16px; padding:20px; margin:12px 0; }
+  .card p { font-size:14px; }
+  .dark-card { background:#111; color:#fff; border-radius:16px; padding:20px; margin:12px 0; }
+  .dark-card p { color:#ccc; font-size:14px; }
+  .dark-card strong { color:#fff; }
+  .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:12px 0; }
+  .grid3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; margin:12px 0; }
+  .badge { display:inline-block; font-size:10px; font-weight:700; background:#111; color:#fff; padding:2px 8px; border-radius:4px; margin-left:6px; }
+  .badge.ref { background:#888; }
+  .divider { height:1px; background:#eee; margin:32px 0; }
+  .compare { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin:16px 0; }
+  .compare > div { padding:16px; border-radius:12px; }
+  .compare .before { background:#fff3f3; }
+  .compare .after { background:#f0fff0; }
+  .compare p { font-size:13px; }
+  .compare h4 { font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:1px; margin-bottom:8px; }
+  table { width:100%; border-collapse:collapse; margin:12px 0; font-size:14px; }
+  th { text-align:left; padding:8px 12px; background:#f5f5f5; font-weight:700; font-size:12px; text-transform:uppercase; letter-spacing:0.5px; color:#888; }
+  td { padding:8px 12px; border-top:1px solid #f0f0f0; vertical-align:top; }
+  .wireframe-container { margin:16px 0; text-align:center; }
+  .wireframe-container iframe { border:none; border-radius:16px; box-shadow:0 4px 24px rgba(0,0,0,0.08); }
+  code { font-size:13px; background:#f5f5f5; padding:2px 6px; border-radius:4px; }
+  .footnote { font-size:12px; color:#999; margin-top:40px; text-align:center; }
+</style>
+</head>
+<body>
+
+<h1>Sinh lời — Account Detail Redesign</h1>
+<p class="sub">Research & Analysis · "The Monochromatic Curator" approach · by Huy Kieu © 2026</p>
+
+<!-- ── 1. REFERENCE ANALYSIS ──────────────────────── -->
+<h2>📋 1. Reference Analysis</h2>
+
+<h3>Source: Stitch "Architectural Pro" Design System</h3>
+<p>3 screens (Home, History, Settings) + 1 DESIGN.md defining a monochromatic, "Soft Minimalism" aesthetic. Key philosophy: <strong>transform a transactional app into a curated experience</strong>.</p>
+
+<div class="dark-card">
+  <p><strong>Creative North Star:</strong> "The Monochromatic Curator" — strict B&W palette, no accent colors, extreme radii, intentional white space as structural element.</p>
+</div>
+
+<h3>6 Design Principles Extracted</h3>
+<table>
+  <tr><th>#</th><th>Principle</th><th>Reference Implementation</th></tr>
+  <tr>
+    <td>1</td>
+    <td><strong>No-Line Rule</strong></td>
+    <td>Zero <code>1px border</code> dividers. Visual boundaries via background color shifts only.</td>
+  </tr>
+  <tr>
+    <td>2</td>
+    <td><strong>Tonal Layering</strong></td>
+    <td>Depth through stacked surface tiers (#fff on #f3f3f4), not drop shadows.</td>
+  </tr>
+  <tr>
+    <td>3</td>
+    <td><strong>Centered Hero</strong></td>
+    <td>Balance = center-aligned, oversized typography (text-5xl), tiny uppercase label above.</td>
+  </tr>
+  <tr>
+    <td>4</td>
+    <td><strong>Square Streak Dots</strong></td>
+    <td>7-day grid uses <code>rounded-md</code> squares, not circles. Architectural feel.</td>
+  </tr>
+  <tr>
+    <td>5</td>
+    <td><strong>Card Nesting</strong></td>
+    <td>Each list item = separate card (bg-white on bg-surface). No divider lines between items.</td>
+  </tr>
+  <tr>
+    <td>6</td>
+    <td><strong>Uppercase Micro-Labels</strong></td>
+    <td>Section headers: <code>text-[10px] font-bold uppercase tracking-[0.2em]</code>. Whisper hierarchy.</td>
+  </tr>
+</table>
+
+<!-- ── 2. GAP ANALYSIS ────────────────────────────── -->
+<h2>📊 2. Gap Analysis — Before vs After</h2>
+
+<div class="compare">
+  <div class="before">
+    <h4>❌ Trước (v1)</h4>
+    <p>Balance left-aligned trong bg-secondary card</p>
+    <p>Streak dots = circles (rounded-full)</p>
+    <p><code>h-[1px] bg-border</code> chia sections trong card</p>
+    <p>Breakdown rows = flat list, no card wrapping</p>
+    <p>Màu sắc: text-success, text-danger, text-warning, text-info</p>
+    <p>Settings toggles inline trong account detail</p>
+    <p>CTA "Nạp/Rút" không có trên page này</p>
+  </div>
+  <div class="after">
+    <h4>✅ Sau (v2 — Architectural)</h4>
+    <p>Balance centered, text-[36px] extrabold, tiny uppercase label</p>
+    <p>Streak dots = squares (rounded-[8px])</p>
+    <p>No-Line Rule — spacing + tonal shift only</p>
+    <p>Breakdown rows = individual bg-secondary cards</p>
+    <p>Monochromatic only: foreground / foreground-secondary</p>
+    <p>Settings moved out — link to /sinhloi/settings</p>
+    <p>Full-width NẠP / RÚT pill right after balance</p>
+  </div>
+</div>
+
+<!-- ── 3. STRUCTURAL MAPPING ──────────────────────── -->
+<h2>🏗 3. Structure Mapping — Reference → VSP</h2>
+
+<table>
+  <tr><th>Zone</th><th>Reference (Stitch)</th><th>VSP Redesign</th></tr>
+  <tr>
+    <td><strong>Header</strong></td>
+    <td>Avatar + Brand + Notification bell</td>
+    <td>Back chevron + "Sinh loi" large title + Settings gear. <em>VSP Header component.</em></td>
+  </tr>
+  <tr>
+    <td><strong>Hero</strong></td>
+    <td>Centered "TỔNG SỐ DƯ" + 128.450.000đ</td>
+    <td>Centered "TONG SO DU" + balance + eye toggle + rate.</td>
+  </tr>
+  <tr>
+    <td><strong>Primary CTA</strong></td>
+    <td>Full-width black pill "NẠP / RÚT"</td>
+    <td>Full-width <code>bg-foreground</code> pill "NAP / RUT" with ArrowUpDown icon.</td>
+  </tr>
+  <tr>
+    <td><strong>Dark Monolith</strong></td>
+    <td>Streak warning card (bg-black, squares, SAVE CTA)</td>
+    <td>Profit + Streak card (bg-foreground). Monthly profit + payout date + 7 square dots + year summary row.</td>
+  </tr>
+  <tr>
+    <td><strong>List Items</strong></td>
+    <td>"HỖ TRỢ & THÔNG TIN" — TÌM HIỂU + FAQ as separate white cards</td>
+    <td>"CHI TIET TAI KHOAN" — 3 breakdown rows as separate bg-secondary cards. "HO TRO & THONG TIN" — 3 cards.</td>
+  </tr>
+  <tr>
+    <td><strong>Bottom Nav</strong></td>
+    <td>Floating glassmorphism pill (Home/History/Settings)</td>
+    <td>Not applicable — VSP uses standard iOS home indicator. Navigation via Header back button.</td>
+  </tr>
+</table>
+
+<!-- ── 4. DESIGN DECISIONS ────────────────────────── -->
+<h2>⚖️ 4. Design Decisions</h2>
+
+<h3>Adopted (từ Reference)</h3>
+<div class="card">
+  <p><strong>1. Centered Balance Hero</strong> — Số tiền lớn nhất page, centered, uppercase micro-label phía trên. Lý do: focal point rõ ràng, user mở page = thấy số ngay.</p>
+</div>
+<div class="card">
+  <p><strong>2. Square Streak Dots</strong> — <code>rounded-[8px]</code> thay vì <code>rounded-full</code>. Lý do: cảm giác "architectural" phù hợp với fintech premium. Phân biệt với Duolingo (vốn dùng circles).</p>
+</div>
+<div class="card">
+  <p><strong>3. No-Line Rule</strong> — Bỏ toàn bộ <code>h-[1px] bg-border</code> chia section trong card. Dùng spacing + tonal shift. Lý do: cleaner, modern, đúng philosophy "white space as border".</p>
+</div>
+<div class="card">
+  <p><strong>4. Card Nesting</strong> — Mỗi breakdown row = 1 card riêng biệt (bg-secondary, rounded-[20px]). Không group trong 1 card lớn. Lý do: dễ scan, mỗi item có action riêng (navigate to filter).</p>
+</div>
+<div class="card">
+  <p><strong>5. Uppercase Section Headers</strong> — <code>text-[10px] font-bold uppercase tracking-[0.2em]</code>. Whisper hierarchy — nhỏ nhưng rõ. Lý do: tạo rhythm cho page dài, không overwhelm.</p>
+</div>
+
+<h3>Adapted (thay đổi cho VSP)</h3>
+<div class="card">
+  <p><strong>1. Dark Monolith = Profit + Streak combined</strong> — Reference dùng dark card cho streak warning. VSP dùng dark card gộp: monthly profit + payout date + 7-day streak + year summary. Lý do: Sinh lời không có "warning" — interest luôn tăng. Gộp để giảm scroll.</p>
+</div>
+<div class="card">
+  <p><strong>2. No Floating Bottom Nav</strong> — Reference có glassmorphism pill nav. VSP giữ iOS home indicator chuẩn + Header back button. Lý do: account-detail là sub-page, không cần tab navigation.</p>
+</div>
+<div class="card">
+  <p><strong>3. Icon squares (rounded-[10px])</strong> — Reference dùng rounded-md cho icon containers. VSP dùng <code>rounded-[10px]</code> trên icon wrapper trong list items. Lý do: consistent với square streak dots, nhưng vẫn softer edge.</p>
+</div>
+
+<h3>Rejected</h3>
+<div class="card">
+  <p><strong>1. Manrope font</strong> — VSP dùng system font (-apple-system). Không đổi typeface cho 1 screen.</p>
+</div>
+<div class="card">
+  <p><strong>2. Glassmorphism (backdrop-blur)</strong> — VSP design system không có glassmorphism token. Đơn giản hơn = reliable hơn cross-device.</p>
+</div>
+<div class="card">
+  <p><strong>3. "SAVE YOUR STREAK" CTA inside card</strong> — Sinh lời là passive balance (interest luôn accrues). Không có action để "save" streak. Removed gamification per product direction.</p>
+</div>
+<div class="card">
+  <p><strong>4. Ghost borders (outline-variant at 20% opacity)</strong> — VSP dùng tonal layering qua bg-secondary / bg-background. Không cần thêm ghost border layer.</p>
+</div>
+
+<!-- ── 5. INFORMATION ARCHITECTURE ────────────────── -->
+<h2>📐 5. Information Architecture</h2>
+
+<p>Page flow (top → bottom):</p>
+
+<table>
+  <tr><th>#</th><th>Zone</th><th>Content</th><th>Interaction</th></tr>
+  <tr><td>1</td><td>Header</td><td>← Back · "Sinh loi" · ⚙️</td><td>Back = pop, Gear = /settings</td></tr>
+  <tr><td>2</td><td>Hero</td><td>TONG SO DU · balance · rate</td><td>Eye toggle hide/show</td></tr>
+  <tr><td>3</td><td>CTA</td><td>NAP / RUT (full-width black pill)</td><td>→ /sinhloi/deposit</td></tr>
+  <tr><td>4</td><td>Dark Monolith</td><td>Monthly profit + payout · 7 square dots · year row</td><td>Year row → BottomSheet month grid</td></tr>
+  <tr><td>5</td><td>Breakdown</td><td>Đã nạp · Tiền lời · Rút & TT</td><td>Each → /sinhloi/history?filter=X</td></tr>
+  <tr><td>6</td><td>Support</td><td>Tìm hiểu · Thời điểm trả · FAQ</td><td>First 2 → BottomSheet, FAQ → /sinhloi/faq</td></tr>
+</table>
+
+<p style="margin-top:12px;"><strong>Total interactions:</strong> 6 tappable zones + 1 toggle + 3 bottom sheets. Zero scrollable carousels.</p>
+
+<!-- ── 6. TOKEN COMPLIANCE ────────────────────────── -->
+<h2>🎨 6. Token Compliance</h2>
+
+<table>
+  <tr><th>Token Category</th><th>Values Used</th></tr>
+  <tr><td>Colors</td><td><code>bg-foreground</code>, <code>bg-background</code>, <code>bg-secondary</code>, <code>text-foreground</code>, <code>text-background</code>, <code>text-foreground-secondary</code></td></tr>
+  <tr><td>Spacing</td><td><code>px-[22px]</code> content column, <code>pt-[32px]</code> section gaps, <code>gap-[8px]</code> between cards</td></tr>
+  <tr><td>Radius</td><td><code>rounded-[28px]</code> dark card, <code>rounded-[20px]</code> list cards, <code>rounded-[16px]</code> month cells, <code>rounded-[10px]</code> icon wrappers, <code>rounded-[8px]</code> streak squares, <code>rounded-full</code> CTA button</td></tr>
+  <tr><td>Typography</td><td><code>text-[36px] font-extrabold</code> balance, <code>text-[22px] font-extrabold</code> profit, <code>text-[14px] font-semibold</code> list items, <code>text-[10px] uppercase tracking-[0.2em]</code> section headers</td></tr>
+  <tr><td>Banned tokens</td><td>✅ No <code>text-muted-foreground</code>, no <code>text-success/danger/warning/info</code>, no hardcoded colors, no <code>border-b</code> sections</td></tr>
+</table>
+
+<!-- ── 7. WIREFRAME ────────────────────────────────── -->
+<h2>📱 7. Live Wireframe</h2>
+
+<div class="wireframe-container">
+  <iframe src="/sinhloi/account-detail" width="390" height="844" style="border-radius:40px; border:8px solid #111;"></iframe>
+</div>
+
+<!-- ── 8. BOTTOM SHEETS ───────────────────────────── -->
+<h2>📄 8. Bottom Sheets (3)</h2>
+
+<div class="grid3">
+  <div class="card">
+    <p><strong>Year Sheet</strong></p>
+    <p style="font-size:12px; color:#888;">Centered year label + total → 3×4 month grid. Current month = bg-foreground inverted.</p>
+  </div>
+  <div class="card">
+    <p><strong>Profit Formula</strong></p>
+    <p style="font-size:12px; color:#888;">Step 1-4 explanation with numbered badges (rounded-[6px] squares, not circles).</p>
+  </div>
+  <div class="card">
+    <p><strong>Payout Timeline</strong></p>
+    <p style="font-size:12px; color:#888;">3-node timeline (27/02 → 26/03 → 27/03) with dashed connector.</p>
+  </div>
+</div>
+
+<!-- ── 9. METRICS ─────────────────────────────────── -->
+<h2>📈 9. Success Metrics</h2>
+
+<table>
+  <tr><th>Metric</th><th>Baseline (v1)</th><th>Target (v2)</th></tr>
+  <tr><td>Scroll depth to Support section</td><td>~45% users</td><td>65%+ (shorter page)</td></tr>
+  <tr><td>Tap rate on Year row</td><td>N/A (was accordion)</td><td>20%+ (curiosity driver)</td></tr>
+  <tr><td>Time to first NẠP / RÚT tap</td><td>N/A (button was on dashboard only)</td><td>&lt; 5s from page load</td></tr>
+  <tr><td>Education sheet open rate</td><td>~8%</td><td>15%+ (clearer entry points)</td></tr>
+</table>
+
+<div class="divider"></div>
+
+<p class="footnote">V-Smart Pay · Sinh lời Account Detail Spec v2.0 · Architectural Redesign · 2026</p>
+
+</body>
+</html>

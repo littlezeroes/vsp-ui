@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sinh lời — User Flow Map</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:-apple-system,'Helvetica Neue',sans-serif; background:#fff; color:#111; max-width:800px; margin:0 auto; padding:48px 24px 80px; -webkit-font-smoothing:antialiased; }
+  h1 { font-size:28px; font-weight:800; letter-spacing:-0.4px; margin-bottom:4px; }
+  .sub { font-size:14px; color:#888; margin-bottom:40px; }
+  h2 { font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:1.5px; color:#999; margin:40px 0 16px; }
+  h3 { font-size:17px; font-weight:700; margin:24px 0 8px; }
+  p, li { font-size:15px; line-height:1.65; color:#333; }
+  ul { padding-left:20px; margin:8px 0 16px; }
+  li { margin-bottom:4px; }
+  strong { color:#111; }
+  table { width:100%; border-collapse:collapse; margin:12px 0; font-size:14px; }
+  th { text-align:left; padding:8px 12px; background:#f5f5f5; font-weight:700; font-size:12px; text-transform:uppercase; letter-spacing:0.5px; color:#888; }
+  td { padding:8px 12px; border-top:1px solid #f0f0f0; vertical-align:top; }
+  code { font-size:13px; background:#f5f5f5; padding:2px 6px; border-radius:4px; }
+  .card { background:#fafafa; border-radius:16px; padding:20px; margin:12px 0; }
+  .card p { font-size:14px; }
+  .dark-card { background:#111; color:#fff; border-radius:16px; padding:20px; margin:12px 0; }
+  .dark-card p { color:#ccc; font-size:14px; }
+  .dark-card strong { color:#fff; }
+  .flow-box { border:2px solid #111; border-radius:12px; padding:16px 20px; margin:8px 0; position:relative; }
+  .flow-box.dark { background:#111; color:#fff; border-color:#111; }
+  .flow-box.dark p { color:#ccc; }
+  .flow-box.dark strong { color:#fff; }
+  .flow-box.success { border-color:#22c55e; }
+  .flow-box.fail { border-color:#ef4444; }
+  .flow-box.decision { border-color:#888; border-style:dashed; }
+  .flow-box .tag { display:inline-block; font-size:10px; font-weight:700; background:#111; color:#fff; padding:2px 8px; border-radius:4px; margin-right:6px; }
+  .flow-box .tag.route { background:#666; }
+  .arrow { text-align:center; font-size:20px; color:#ccc; margin:4px 0; }
+  .arrow-label { text-align:center; font-size:11px; color:#999; margin:-4px 0 4px; }
+  .branch { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:8px 0; }
+  .divider { height:1px; background:#eee; margin:32px 0; }
+  .stat { display:inline-block; background:#f5f5f5; border-radius:8px; padding:8px 16px; margin:4px 8px 4px 0; }
+  .stat strong { font-size:20px; }
+  .stat span { font-size:12px; color:#888; display:block; }
+  .footnote { font-size:12px; color:#999; margin-top:40px; text-align:center; }
+  .epic-header { background:#111; color:#fff; border-radius:12px; padding:16px 20px; margin:24px 0 12px; display:flex; align-items:center; justify-content:space-between; }
+  .epic-header h3 { color:#fff; margin:0; font-size:16px; }
+  .epic-header .count { font-size:12px; opacity:0.5; }
+  .screen-row { display:grid; grid-template-columns:80px 1fr 140px; gap:12px; padding:10px 0; border-top:1px solid #f0f0f0; align-items:center; }
+  .screen-row:first-child { border-top:none; }
+  .screen-row .id { font-size:13px; font-weight:700; font-family:monospace; }
+  .screen-row .name { font-size:14px; }
+  .screen-row .route { font-size:12px; color:#888; font-family:monospace; }
+</style>
+</head>
+<body>
+
+<h1>Sinh lời — User Flow Map</h1>
+<p class="sub">7 epics · 22 screens · 51 states · Complete user journey mapping · by Huy Kieu © 2026</p>
+
+<!-- STATS -->
+<div>
+  <div class="stat"><strong>7</strong><span>Epics</span></div>
+  <div class="stat"><strong>22</strong><span>Screens</span></div>
+  <div class="stat"><strong>51</strong><span>States</span></div>
+  <div class="stat"><strong>3</strong><span>Auth gates</span></div>
+  <div class="stat"><strong>5</strong><span>Result screens</span></div>
+</div>
+
+<!-- ── SCREEN INVENTORY ──────────────────────────── -->
+<h2>📋 1. Screen Inventory</h2>
+
+<table>
+  <tr><th>ID</th><th>Screen</th><th>Route</th><th>States</th></tr>
+  <tr><td><code>S1</code></td><td>Product Page (Giới thiệu)</td><td><code>/sinhloi/intro</code></td><td>4 (default, chưa eKYC, error, rate-changed)</td></tr>
+  <tr><td><code>S2</code></td><td>Xác nhận kích hoạt</td><td><code>/sinhloi/activate</code></td><td>3 (default, loading, error)</td></tr>
+  <tr><td><code>S3</code></td><td>Nhập OTP</td><td><code>/sinhloi/otp</code></td><td>4 (empty, typing, error, expired)</td></tr>
+  <tr><td><code>S4</code></td><td>Kết quả kích hoạt</td><td><code>/sinhloi/result-activate</code></td><td>4 (success, failed, timeout, pending)</td></tr>
+  <tr><td><code>S5</code></td><td>Dashboard</td><td><code>/sinhloi/dashboard</code></td><td>3 (có số dư, chưa có GD, ẩn số)</td></tr>
+  <tr><td><code>S5b</code></td><td>Dashboard — Tab Quản lý</td><td><code>/sinhloi/dashboard</code></td><td>2 (default, expand)</td></tr>
+  <tr><td><code>S7</code></td><td>Nạp/Rút tiền</td><td><code>/sinhloi/deposit-withdraw</code></td><td>4 (nạp default, nạp max, rút default, rút max)</td></tr>
+  <tr><td><code>S8</code></td><td>Xác nhận giao dịch</td><td><code>/sinhloi/confirm-tx</code></td><td>3 (nạp, rút, loading)</td></tr>
+  <tr><td><code>S9</code></td><td>Auth PIN/Biometric</td><td><code>/sinhloi/auth</code></td><td>4 (biometric, PIN empty, PIN typing, PIN error)</td></tr>
+  <tr><td><code>S10</code></td><td>Kết quả giao dịch</td><td><code>/sinhloi/result-tx/[type]</code></td><td>4 (nạp OK, nạp fail, rút OK, rút fail)</td></tr>
+  <tr><td><code>S11</code></td><td>Lịch sử giao dịch</td><td><code>/sinhloi/history</code></td><td>3 (all, filter, empty)</td></tr>
+  <tr><td><code>S12</code></td><td>Chi tiết giao dịch</td><td><code>/sinhloi/history/[id]</code></td><td>3 (success, failed, not found)</td></tr>
+  <tr><td><code>S14</code></td><td>Điều khoản & Hợp đồng</td><td><code>/sinhloi/terms</code></td><td>1</td></tr>
+  <tr><td><code>S15</code></td><td>Xác nhận huỷ</td><td><code>/sinhloi/cancel</code></td><td>2 (default, loading)</td></tr>
+  <tr><td><code>S16</code></td><td>Kết quả huỷ</td><td><code>/sinhloi/result-cancel</code></td><td>3 (success có số dư, success không số dư, failed)</td></tr>
+  <tr><td><code>S17</code></td><td>Nâng cấp lãi suất</td><td><code>/sinhloi/upgrade</code></td><td>1</td></tr>
+  <tr><td><code>S18</code></td><td>Hạng thành viên</td><td><code>/sinhloi/membership</code></td><td>1</td></tr>
+  <tr><td><code>S19</code></td><td>Chi tiết tài khoản</td><td><code>/sinhloi/account-detail</code></td><td>2 (show, hidden) + 3 sheets</td></tr>
+  <tr><td><code>S20</code></td><td>Cài đặt</td><td><code>/sinhloi/settings</code></td><td>1 (3 toggles)</td></tr>
+  <tr><td><code>S21</code></td><td>FAQ</td><td><code>/sinhloi/faq</code></td><td>1 (6 categories, accordion)</td></tr>
+  <tr><td><code>S22</code></td><td>Lợi nhuận tháng</td><td><code>/sinhloi/profit</code></td><td>1</td></tr>
+</table>
+
+<!-- ── MASTER FLOW ────────────────────────────────── -->
+<h2>🗺 2. Master User Flow</h2>
+
+<p>Toàn bộ hành trình user từ khi chạm "Sinh lời" trên Home đến khi huỷ tính năng.</p>
+
+<div class="flow-box dark">
+  <p><strong>Entry Point</strong> — Home → Widget Sinh lời hoặc Tab Tài chính</p>
+</div>
+<div class="arrow">↓</div>
+
+<!-- EPIC 1 -->
+<div class="epic-header">
+  <h3>Epic 1 — Kích hoạt</h3>
+  <span class="count">S1 → S2 → S3 → S4 · 15 states</span>
+</div>
+
+<div class="flow-box">
+  <span class="tag">S1</span> <strong>Product Page</strong>
+  <p>Giới thiệu sản phẩm: lãi suất, cách hoạt động, tính thử lợi nhuận (slider). CTA: "Kích hoạt sinh lời"</p>
+</div>
+<div class="arrow">↓</div>
+<div class="flow-box decision">
+  <p><strong>Đã eKYC?</strong></p>
+</div>
+<div class="branch">
+  <div>
+    <div class="arrow-label">Chưa →</div>
+    <div class="flow-box" style="border-color:#f59e0b;">
+      <p>Chuyển sang luồng eKYC → quay lại S1</p>
+    </div>
+  </div>
+  <div>
+    <div class="arrow-label">Rồi ↓</div>
+    <div class="flow-box">
+      <span class="tag">S2</span> <strong>Xác nhận kích hoạt</strong>
+      <p>Thông tin user + đồng ý điều khoản</p>
+    </div>
+  </div>
+</div>
+<div class="arrow">↓</div>
+<div class="flow-box">
+  <span class="tag">S3</span> <strong>Nhập OTP</strong>
+  <p>6 số từ SMS. Max 5 lần thử.</p>
+</div>
+<div class="arrow">↓</div>
+<div class="flow-box decision">
+  <p><strong>OTP đúng?</strong></p>
+</div>
+<div class="branch">
+  <div>
+    <div class="flow-box success">
+      <span class="tag">S4</span> <strong>THÀNH CÔNG</strong>
+      <p>→ Dashboard</p>
+    </div>
+  </div>
+  <div>
+    <div class="flow-box fail">
+      <span class="tag">S4</span> <strong>THẤT BẠI</strong>
+      <p>Hết lần thử → hiện lỗi</p>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- EPIC 2 -->
+<div class="epic-header">
+  <h3>Epic 2 — Dashboard</h3>
+  <span class="count">S5 · 5 states</span>
+</div>
+
+<div class="flow-box dark">
+  <span class="tag">S5</span> <strong>Dashboard</strong>
+  <p>Số dư + Lợi nhuận hôm qua + Lãi suất. Hub trung tâm cho mọi hành động.</p>
+</div>
+
+<div class="card">
+  <p><strong>Actions từ Dashboard:</strong></p>
+  <p>• Nạp tiền → <code>Epic 3</code></p>
+  <p>• Rút tiền → <code>Epic 3</code> (check số dư > 0)</p>
+  <p>• Xem lịch sử → <code>Epic 4</code></p>
+  <p>• Tắt sinh lời → <code>Epic 5</code></p>
+  <p>• Xem điều khoản → <code>S14</code></p>
+  <p>• Chi tiết tài khoản → <code>S19</code></p>
+  <p>• Cài đặt → <code>S20</code></p>
+</div>
+
+<div class="divider"></div>
+
+<!-- EPIC 3 -->
+<div class="epic-header">
+  <h3>Epic 3 — Nạp / Rút tiền</h3>
+  <span class="count">S7 → S8 → S9 → S10 · 15 states</span>
+</div>
+
+<div class="flow-box">
+  <span class="tag">S7</span> <strong>Nhập số tiền</strong>
+  <p>Nạp hoặc Rút. Quick amount chips. Validate min/max.</p>
+</div>
+<div class="arrow">↓</div>
+<div class="flow-box decision">
+  <p><strong>Số tiền hợp lệ?</strong></p>
+</div>
+<div class="arrow-label">Yes ↓</div>
+<div class="flow-box">
+  <span class="tag">S8</span> <strong>Xác nhận giao dịch</strong>
+  <p>Số tiền + Phí (nếu có) + Nguồn/Đích</p>
+</div>
+<div class="arrow">↓</div>
+<div class="flow-box">
+  <span class="tag">S9</span> <strong>Xác thực</strong>
+  <p>Chọn phương thức: Face/Touch ID hoặc nhập PIN 6 số</p>
+</div>
+<div class="arrow">↓</div>
+<div class="flow-box decision">
+  <p><strong>Xác thực OK?</strong></p>
+</div>
+<div class="branch">
+  <div>
+    <div class="flow-box success">
+      <span class="tag">S10</span> <strong>THÀNH CÔNG</strong>
+      <p>Nạp/Rút OK → quay Dashboard</p>
+    </div>
+  </div>
+  <div>
+    <div class="flow-box fail">
+      <span class="tag">S10</span> <strong>THẤT BẠI</strong>
+      <p>Sai PIN quá nhiều → khoá TK</p>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- EPIC 4 -->
+<div class="epic-header">
+  <h3>Epic 4 — Lịch sử giao dịch</h3>
+  <span class="count">S11 · S12 · 6 states</span>
+</div>
+
+<div class="flow-box">
+  <span class="tag">S11</span> <strong>Danh sách giao dịch</strong>
+  <p>Filter: Tất cả / Nạp / Rút / Tiền lời. Pull-to-refresh.</p>
+</div>
+<div class="arrow">↓ chọn 1 GD</div>
+<div class="flow-box">
+  <span class="tag">S12</span> <strong>Chi tiết giao dịch</strong>
+  <p>Số tiền, ngày, trạng thái, mã GD. States: success / failed / not found.</p>
+</div>
+<div class="arrow">↓ quay lại</div>
+<div class="flow-box" style="border-style:dashed; border-color:#888;">
+  <p>→ Dashboard</p>
+</div>
+
+<div class="divider"></div>
+
+<!-- EPIC 5 -->
+<div class="epic-header">
+  <h3>Epic 5 — Huỷ sinh lời</h3>
+  <span class="count">S14 → S15 → S3 → S16 · 5 states</span>
+</div>
+
+<div class="flow-box">
+  <span class="tag">S15</span> <strong>Xác nhận huỷ</strong>
+  <p>Hiển thị: số dư hiện tại + lãi dự kiến bị mất. CTA: "Giữ tính năng" / "Tắt sinh lời"</p>
+</div>
+<div class="arrow">↓ Tắt sinh lời</div>
+<div class="flow-box">
+  <span class="tag">S3</span> <strong>Nhập OTP</strong>
+  <p>Reuse OTP screen từ Epic 1</p>
+</div>
+<div class="arrow">↓</div>
+<div class="flow-box decision">
+  <p><strong>Có số dư?</strong></p>
+</div>
+<div class="branch">
+  <div>
+    <div class="flow-box success">
+      <span class="tag">S16</span> <strong>HUỶ OK + hoàn tiền</strong>
+      <p>Trả số dư + lãi về Ví V-Smart Pay</p>
+    </div>
+  </div>
+  <div>
+    <div class="flow-box success">
+      <span class="tag">S16</span> <strong>HUỶ OK (không hoàn)</strong>
+      <p>Số dư = 0 → không cần hoàn</p>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- EPIC 6 -->
+<div class="epic-header">
+  <h3>Epic 6 — Gamification & Hạng</h3>
+  <span class="count">S17 · S18 · S19 · 3 states</span>
+</div>
+
+<div class="card">
+  <p><strong>Lưu ý:</strong> Epic này chỉ là visualization, không thêm tính năng mới. S19 (Chi tiết tài khoản) đã được redesign theo "Architectural Pro" approach.</p>
+</div>
+
+<div class="flow-box">
+  <span class="tag">S17</span> <strong>Nâng cấp lãi suất</strong>
+  <p>Tier hiện tại + Nhiệm vụ unlock: Thanh toán 3 lần (→ 4.6%) · Nạp 5tr (→ 4.8%) · Mời 2 bạn (→ 5.0%)</p>
+</div>
+<div class="flow-box">
+  <span class="tag">S18</span> <strong>Hạng thành viên</strong>
+  <p>Bạc · Vàng · Kim cương. Hiển thị quyền lợi từng hạng.</p>
+</div>
+<div class="flow-box dark">
+  <span class="tag" style="background:#fff; color:#111;">S19</span> <strong>Chi tiết tài khoản</strong>
+  <p>Centered balance hero · Dark monolith (profit + streak squares + year) · Thống kê · Breakdown cards · Hỗ trợ cards. 3 bottom sheets.</p>
+</div>
+
+<div class="divider"></div>
+
+<!-- EPIC 7 -->
+<div class="epic-header">
+  <h3>Epic 7 — Cài đặt & FAQ</h3>
+  <span class="count">S20 · S21 · 2 states</span>
+</div>
+
+<div class="flow-box">
+  <span class="tag">S20</span> <strong>Cài đặt</strong>
+  <p>3 toggles: Nhận tiền tự động vào SDSL · Ưu tiên thanh toán bằng SDSL · Hiển thị thông tin</p>
+</div>
+<div class="flow-box">
+  <span class="tag">S21</span> <strong>FAQ</strong>
+  <p>6 chủ đề: Bắt đầu · Quản lý · Nạp tiền · Rút & TT · Tiền lời · An toàn. Accordion Q&A.</p>
+</div>
+
+<div class="divider"></div>
+
+<!-- ── NAVIGATION MAP ─────────────────────────────── -->
+<h2>🔗 3. Navigation Map</h2>
+
+<p>Mọi luồng đều hub-and-spoke với Dashboard (S5) làm trung tâm.</p>
+
+<table>
+  <tr><th>From</th><th>Action</th><th>To</th></tr>
+  <tr><td>Home</td><td>Tap Sinh lời widget</td><td>S1 (chưa kích hoạt) hoặc S5 (đã kích hoạt)</td></tr>
+  <tr><td>S1</td><td>Kích hoạt</td><td>S2 → S3 → S4 → S5</td></tr>
+  <tr><td>S5</td><td>Nạp tiền</td><td>S7 → S8 → S9 → S10 → S5</td></tr>
+  <tr><td>S5</td><td>Rút tiền</td><td>S7 → S8 → S9 → S10 → S5</td></tr>
+  <tr><td>S5</td><td>Lịch sử</td><td>S11 → S12 → S5</td></tr>
+  <tr><td>S5</td><td>Tắt sinh lời</td><td>S15 → S3 → S16 → Home</td></tr>
+  <tr><td>S5</td><td>Chi tiết TK</td><td>S19 (+ 3 sheets)</td></tr>
+  <tr><td>S5</td><td>Cài đặt</td><td>S20</td></tr>
+  <tr><td>S19</td><td>Nạp/Rút</td><td>S7 (shortcut)</td></tr>
+  <tr><td>S19</td><td>Đã nạp / Tiền lời / Rút</td><td>S11 (filtered)</td></tr>
+  <tr><td>S19</td><td>FAQ</td><td>S21</td></tr>
+  <tr><td>S19</td><td>Năm 2026</td><td>Bottom sheet (month grid)</td></tr>
+  <tr><td>S20</td><td>Điều khoản</td><td>S14</td></tr>
+</table>
+
+<!-- ── ENTRY / EXIT POINTS ────────────────────────── -->
+<h2>🚪 4. Entry & Exit Points</h2>
+
+<h3>Entry points (vào Sinh lời)</h3>
+<div class="card">
+  <p>1. <strong>Home → Widget Sinh lời</strong> (GĐ1 — primary)</p>
+  <p>2. <strong>Tab Tài chính → Swipe card Sinh lời</strong> (GĐ2+)</p>
+  <p>3. <strong>Deep link</strong> từ push notification (trả lãi tháng)</p>
+</div>
+
+<h3>Exit points (rời Sinh lời)</h3>
+<div class="card">
+  <p>1. <strong>Back button</strong> → quay Home / Tab trước đó</p>
+  <p>2. <strong>S4/S10/S16 thành công</strong> → CTA "Về trang chủ"</p>
+  <p>3. <strong>Huỷ sinh lời (S16)</strong> → Trang chủ (feature bị xoá khỏi nav)</p>
+</div>
+
+<!-- ── AUTH GATES ─────────────────────────────────── -->
+<h2>🔐 5. Auth Gates</h2>
+
+<table>
+  <tr><th>Gate</th><th>Trigger</th><th>Method</th></tr>
+  <tr><td><strong>eKYC check</strong></td><td>S1 → S2 (kích hoạt)</td><td>Chuyển sang luồng eKYC nếu chưa verify</td></tr>
+  <tr><td><strong>OTP</strong></td><td>S2 → S3 (kích hoạt) · S15 → S3 (huỷ)</td><td>SMS 6 số, max 5 lần, 60s resend</td></tr>
+  <tr><td><strong>PIN/Biometric</strong></td><td>S8 → S9 (mọi giao dịch nạp/rút)</td><td>Face/Touch ID hoặc PIN 6 số</td></tr>
+</table>
+
+<!-- ── ERROR STATES ───────────────────────────────── -->
+<h2>⚠️ 6. Error & Edge Cases</h2>
+
+<table>
+  <tr><th>Case</th><th>Screen</th><th>Handling</th></tr>
+  <tr><td>Chưa eKYC</td><td>S1</td><td>CTA disabled + banner "Hoàn tất xác thực để kích hoạt"</td></tr>
+  <tr><td>Lãi suất thay đổi</td><td>S1</td><td>Banner thông báo lãi suất mới, cập nhật slider</td></tr>
+  <tr><td>OTP sai 5 lần</td><td>S3</td><td>Lock + S4 THẤT BẠI</td></tr>
+  <tr><td>Số dư = 0, bấm Rút</td><td>S5</td><td>Dialog "Chưa có số dư"</td></tr>
+  <tr><td>Nạp vượt max (100tr)</td><td>S7</td><td>Inline error, CTA disabled</td></tr>
+  <tr><td>Rút vượt hạn mức (30tr/ngày)</td><td>S7</td><td>Inline error "Vượt hạn mức rút"</td></tr>
+  <tr><td>PIN sai nhiều lần</td><td>S9</td><td>Khoá tài khoản → S10 THẤT BẠI</td></tr>
+  <tr><td>Network error</td><td>S8, S9</td><td>Retry dialog + "Thử lại"</td></tr>
+  <tr><td>Huỷ khi có số dư</td><td>S16</td><td>Tự động hoàn số dư + lãi → Ví V-Smart Pay</td></tr>
+  <tr><td>Huỷ khi số dư = 0</td><td>S16</td><td>Huỷ ngay, không cần hoàn tiền</td></tr>
+</table>
+
+<div class="divider"></div>
+
+<!-- ── LIVE STATES BROWSER ────────────────────────── -->
+<h2>📱 7. Live States Browser</h2>
+
+<div style="text-align:center; margin:16px 0;">
+  <iframe src="/sinhloi" width="100%" height="844" style="border:none; border-radius:16px; box-shadow:0 4px 24px rgba(0,0,0,0.08);"></iframe>
+</div>
+
+<p class="footnote">V-Smart Pay · Sinh lời User Flow Map v1.0 · 2026</p>
+
+</body>
+</html>

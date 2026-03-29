@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import InspectTab from './tabs/InspectTab';
 import ReviewTab from './tabs/ReviewTab';
 
@@ -11,6 +11,21 @@ const TABS: { id: TabId; label: string }[] = [
 
 export default function App() {
   const [active, setActive] = useState<TabId>('review');
+  const [screenName, setScreenName] = useState<string>('VSP AI Review');
+
+  useEffect(() => {
+    const handler = (event: MessageEvent<{ pluginMessage?: unknown }>) => {
+      const msg = event.data?.pluginMessage as { type?: string; data?: { selectionNames?: string[] }; error?: string } | undefined;
+      if (!msg || msg.type !== 'selection-result') return;
+      if (msg.data?.selectionNames?.length) {
+        setScreenName(msg.data.selectionNames.join(', '));
+      } else {
+        setScreenName('VSP AI Review');
+      }
+    };
+    window.addEventListener('message', handler);
+    return () => window.removeEventListener('message', handler);
+  }, []);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
@@ -26,8 +41,11 @@ export default function App() {
           color: '#1a1a1a',
           marginBottom: 10,
           letterSpacing: '-0.2px',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          whiteSpace: 'nowrap',
         }}>
-          VSP AI Review
+          {screenName}
         </div>
 
         {/* Tab bar */}

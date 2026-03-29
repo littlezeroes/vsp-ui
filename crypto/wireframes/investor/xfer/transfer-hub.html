@@ -674,6 +674,68 @@
       margin-bottom: 36px;
     }
     .arrow-connector svg { color: #555; }
+
+    /* ── Smart Input Detection ───────────────────── */
+    .smart-input {
+      margin: 16px var(--pad) 0;
+      padding: 14px 16px;
+      background: var(--bg);
+      border: 2px solid var(--text);
+      border-radius: var(--r12);
+      font-size: 16px;
+      font-weight: 500;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .smart-input .cursor {
+      display: inline-block;
+      width: 2px;
+      height: 20px;
+      background: var(--blue);
+      animation: blink 1s infinite;
+    }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+    .smart-detect {
+      margin: 6px var(--pad) 0;
+      padding: 8px 12px;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .smart-detect.detecting {
+      background: #EEF6FF;
+      color: var(--blue);
+    }
+    .smart-detect.found-p2p {
+      background: var(--red-light);
+      color: var(--red);
+    }
+    .smart-detect.found-bank {
+      background: #EEF2FF;
+      color: #4F46E5;
+    }
+    .smart-detect.found-name {
+      background: var(--green-light);
+      color: var(--green);
+    }
+    .smart-result {
+      margin: 4px var(--pad) 0;
+      padding: 12px 14px;
+      background: var(--bg-2);
+      border-radius: var(--r12);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .smart-result.highlighted {
+      background: var(--green-light);
+      border: 1.5px solid var(--green);
+    }
   </style>
 </head>
 <body>
@@ -682,11 +744,11 @@
      FLOW 1: P2P — NGƯỜI NHẬN CŨ (3 taps to send!)
      ════════════════════════════════════════════════════════════════════ -->
 
-<div class="flow-sep" style="margin-top: 0;">── FLOW P2P: NGƯỜI NHẬN CŨ ── 4 screens · 3 taps ──</div>
+<div class="flow-sep" style="margin-top: 0;">── ENTRY SCREEN: TABS + SMART SEARCH ──</div>
 
-<!-- S1.1: Entry — Recent/Saved -->
+<!-- S0a: Default — Tab "Đến ví" (default) -->
 <div class="phone">
-  <div class="state-tag">STEP 1</div>
+  <div class="state-tag">DEFAULT</div>
   <div class="island"></div>
   <div class="screen">
     <div class="navbar">
@@ -696,21 +758,20 @@
     </div>
     <div class="large-title">Chuyển tiền</div>
 
-    <!-- Search -->
-    <div class="search-bar">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-      Tìm tên, SĐT, số tài khoản
-    </div>
-
-    <!-- Tabs -->
+    <!-- Segmented tabs -->
     <div class="tab-toggle">
-      <div class="tab-item active">Tất cả</div>
-      <div class="tab-item">Ví VSP</div>
-      <div class="tab-item">Ngân hàng</div>
+      <div class="tab-item active">Đến ví</div>
+      <div class="tab-item">Đến ngân hàng</div>
     </div>
 
-    <!-- Recent -->
-    <div class="section-title">Gần đây</div>
+    <!-- Search bar — placeholder changes per tab -->
+    <div class="search-bar" style="margin-top: 12px;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+      Nhập SĐT hoặc tên người nhận
+    </div>
+
+    <!-- Saved P2P recipients -->
+    <div class="section-title">Đã lưu</div>
 
     <div class="recipient-row" style="background: var(--red-light); border-radius: var(--r12); margin: 0 var(--pad);">
       <div class="recipient-avatar">PN</div>
@@ -720,7 +781,7 @@
       </div>
       <div class="recipient-badge vsp">VSP</div>
     </div>
-    <div style="font-size:10px; color:var(--red); text-align:center; margin-top:4px; font-weight:600;">↑ TAP CHỌN = SKIP ĐẾN STEP 2</div>
+    <div style="font-size:10px; color:var(--red); text-align:center; margin-top:4px; font-weight:600;">↑ TAP = SKIP ĐẾN AMOUNT</div>
 
     <div class="recipient-row">
       <div class="recipient-avatar">ĐN</div>
@@ -730,6 +791,50 @@
       </div>
       <div class="recipient-badge vsp">VSP</div>
     </div>
+
+    <div class="recipient-row">
+      <div class="recipient-avatar">TL</div>
+      <div class="recipient-info">
+        <div class="recipient-name">Trần Lan</div>
+        <div class="recipient-sub">0912 345 678</div>
+      </div>
+      <div class="recipient-badge vsp">VSP</div>
+    </div>
+
+    <div style="padding: 12px var(--pad) 0;">
+      <div style="font-size: 12px; color: var(--text-3); text-align: center;">Chỉ hiện người nhận bạn đã lưu</div>
+    </div>
+
+    <div class="home-indicator"></div>
+  </div>
+  <div class="screen-label">S1 — Tab "Đến ví" (saved P2P)</div>
+</div>
+
+<!-- S0b: Tab "Đến ngân hàng" -->
+<div class="phone">
+  <div class="state-tag">TAB NH</div>
+  <div class="island"></div>
+  <div class="screen">
+    <div class="navbar">
+      <div class="btn-back">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+      </div>
+    </div>
+    <div class="large-title">Chuyển tiền</div>
+
+    <div class="tab-toggle">
+      <div class="tab-item">Đến ví</div>
+      <div class="tab-item active">Đến ngân hàng</div>
+    </div>
+
+    <!-- Placeholder changes -->
+    <div class="search-bar" style="margin-top: 12px;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+      Nhập STK hoặc tên người nhận
+    </div>
+
+    <!-- Saved Bank recipients -->
+    <div class="section-title">Đã lưu</div>
 
     <div class="recipient-row">
       <div class="recipient-avatar bank">TCB</div>
@@ -749,35 +854,303 @@
       <div class="recipient-badge">NH</div>
     </div>
 
-    <div class="divider" style="margin-top: 8px;"></div>
+    <div style="padding: 20px var(--pad) 0;">
+      <div style="font-size: 12px; color: var(--text-3); text-align: center;">Chỉ hiện người nhận bạn đã lưu</div>
+    </div>
 
-    <!-- Manual -->
-    <div class="section-title">Người nhận mới</div>
+    <div class="home-indicator"></div>
+  </div>
+  <div class="screen-label">S1 — Tab "Đến NH" (saved Bank)</div>
+</div>
 
-    <div class="manual-btn">
-      <div class="manual-icon">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text-2)" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+<!-- S0c: Tap search → smart input active, tabs hidden -->
+<div class="phone">
+  <div class="state-tag" style="background:var(--blue);">SEARCH</div>
+  <div class="island"></div>
+  <div class="screen">
+    <div class="navbar">
+      <div class="btn-back">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
       </div>
-      <div class="recipient-info">
-        <div class="recipient-name" style="color: var(--text-2);">Nhập số điện thoại</div>
-        <div class="recipient-sub">Chuyển đến ví VSP</div>
+      <div style="flex:1; font-size:14px; font-weight:600; color:var(--text);">Tìm người nhận</div>
+      <div style="font-size:14px; color:var(--blue); font-weight:600; cursor:pointer;">Hủy</div>
+    </div>
+
+    <!-- Smart Input — focused, accepts anything -->
+    <div class="smart-input">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+      <span style="color:var(--text-3);">SĐT, STK, hoặc tên</span><span class="cursor"></span>
+    </div>
+
+    <!-- Hint chips -->
+    <div style="display:flex; gap:8px; padding: 12px var(--pad); flex-wrap:wrap;">
+      <div style="padding:8px 14px; background:var(--red-light); border-radius:20px; font-size:12px; font-weight:600; color:var(--red); display:flex; align-items:center; gap:5px;">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72"/></svg>
+        SĐT → Ví VSP
+      </div>
+      <div style="padding:8px 14px; background:#EEF2FF; border-radius:20px; font-size:12px; font-weight:600; color:#4F46E5; display:flex; align-items:center; gap:5px;">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><path d="M1 10h22"/></svg>
+        STK → Ngân hàng
       </div>
     </div>
 
-    <div class="manual-btn">
-      <div class="manual-icon">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text-2)" stroke-width="2" stroke-linecap="round"><rect x="1" y="4" width="22" height="16" rx="2"/><path d="M1 10h22"/></svg>
+    <div style="font-size: 12px; color: var(--text-3); padding: 0 var(--pad); line-height: 1.6;">
+      Nhập bất kỳ — hệ thống tự nhận diện:<br>
+      <b style="color:var(--text-2);">0xx...</b> = SĐT → chuyển ví&nbsp;&nbsp;
+      <b style="color:var(--text-2);">khác</b> = STK → chuyển NH
+    </div>
+
+    <div class="home-indicator"></div>
+  </div>
+  <div class="screen-label">S1 — Tap search (smart input ready)</div>
+</div>
+
+<!-- S0d: Typing "098" → auto-detect SĐT, filter saved -->
+<div class="phone">
+  <div class="state-tag" style="background:var(--blue);">TYPING</div>
+  <div class="island"></div>
+  <div class="screen">
+    <div class="navbar">
+      <div class="btn-back">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
       </div>
+      <div style="flex:1; font-size:14px; font-weight:600; color:var(--text);">Tìm người nhận</div>
+      <div style="font-size:14px; color:var(--blue); font-weight:600;">Hủy</div>
+    </div>
+
+    <!-- Smart Input — typing SĐT -->
+    <div class="smart-input">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+      <span>098</span><span class="cursor"></span>
+    </div>
+
+    <!-- Auto-detect -->
+    <div class="smart-detect detecting">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72"/></svg>
+      Nhận diện: Số điện thoại → Ví VSP
+    </div>
+
+    <!-- Filtered saved -->
+    <div class="section-title">Đã lưu · khớp "098"</div>
+
+    <div class="recipient-row" style="background: var(--red-light); border-radius: var(--r12); margin: 0 var(--pad);">
+      <div class="recipient-avatar">PN</div>
       <div class="recipient-info">
-        <div class="recipient-name" style="color: var(--text-2);">Nhập số tài khoản</div>
-        <div class="recipient-sub">Chuyển đến ngân hàng</div>
+        <div class="recipient-name">Phạm Văn Nam</div>
+        <div class="recipient-sub"><b style="color:var(--red);">098</b>3 882 233</div>
+      </div>
+      <div class="recipient-badge vsp">VSP</div>
+    </div>
+
+    <div style="padding: 16px var(--pad) 0;">
+      <div style="font-size: 13px; color: var(--text-2);">Nhập đủ 10 số để tìm người mới</div>
+    </div>
+
+    <div class="home-indicator"></div>
+  </div>
+  <div class="screen-label">S1 — Search "098" → detect SĐT</div>
+</div>
+
+<!-- S0e: Full SĐT → resolved inline -->
+<div class="phone">
+  <div class="state-tag" style="background:var(--green);">RESOLVED</div>
+  <div class="island"></div>
+  <div class="screen">
+    <div class="navbar">
+      <div class="btn-back">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+      </div>
+      <div style="flex:1; font-size:14px; font-weight:600; color:var(--text);">Tìm người nhận</div>
+      <div style="font-size:14px; color:var(--blue); font-weight:600;">Hủy</div>
+    </div>
+
+    <!-- Resolved input -->
+    <div class="smart-input" style="border-color: var(--green);">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+      <span>0987 654 321</span>
+      <span style="margin-left:auto; color:var(--text-3); font-size:13px; cursor:pointer;">✕</span>
+    </div>
+
+    <div class="smart-detect found-p2p">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+      Tìm thấy ví VSP
+    </div>
+
+    <div class="smart-result highlighted">
+      <div class="recipient-avatar" style="background: var(--green-light); color: var(--green);">LH</div>
+      <div class="recipient-info">
+        <div class="recipient-name">LÊ VĂN HÙNG</div>
+        <div class="recipient-sub">0987 654 321 · Ví VSP</div>
+      </div>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+    </div>
+
+    <div class="toggle-row">
+      <span class="toggle-label" style="font-size:14px;">Lưu người nhận</span>
+      <div class="toggle"></div>
+    </div>
+
+    <div style="flex:1;"></div>
+    <div style="padding: 0 var(--pad) 16px;">
+      <div class="btn-primary" style="width:100%; text-align:center; padding:16px; background:var(--text); color:#fff; border-radius:var(--r12); font-size:16px; font-weight:600;">Tiếp tục</div>
+    </div>
+
+    <div class="home-indicator"></div>
+  </div>
+  <div class="screen-label">S1 — SĐT resolved → Tiếp tục</div>
+</div>
+
+<!-- S0f: STK → auto-detect bank → resolved -->
+<div class="phone">
+  <div class="state-tag" style="background:#4F46E5;">BANK</div>
+  <div class="island"></div>
+  <div class="screen">
+    <div class="navbar">
+      <div class="btn-back">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+      </div>
+      <div style="flex:1; font-size:14px; font-weight:600; color:var(--text);">Tìm người nhận</div>
+      <div style="font-size:14px; color:var(--blue); font-weight:600;">Hủy</div>
+    </div>
+
+    <!-- STK resolved -->
+    <div class="smart-input" style="border-color: #4F46E5;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4F46E5" stroke-width="2" stroke-linecap="round"><rect x="1" y="4" width="22" height="16" rx="2"/><path d="M1 10h22"/></svg>
+      <span>19038291832</span>
+      <span style="margin-left:auto; color:var(--text-3); font-size:13px; cursor:pointer;">✕</span>
+    </div>
+
+    <div class="smart-detect found-bank">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+      Nhận diện: STK → Techcombank
+    </div>
+
+    <div class="smart-result highlighted" style="border-color: #4F46E5; background: #EEF2FF;">
+      <div class="recipient-avatar bank" style="background: #1A1F71; color:#fff; font-size:10px;">TCB</div>
+      <div class="recipient-info">
+        <div class="recipient-name">NGUYEN VAN MANH</div>
+        <div class="recipient-sub">19038291832 · Techcombank</div>
+      </div>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4F46E5" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+    </div>
+
+    <div style="padding: 6px var(--pad); font-size: 11px; color: var(--text-2); display:flex; align-items:center; gap:6px;">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+      Bank tự nhận diện từ prefix STK. Tap ✎ để đổi ngân hàng.
+    </div>
+
+    <!-- Toggle save -->
+    <div class="toggle-row">
+      <span class="toggle-label" style="font-size:14px;">Lưu người nhận</span>
+      <div class="toggle"></div>
+    </div>
+
+    <!-- CTA -->
+    <div style="flex:1;"></div>
+    <div style="padding: 0 var(--pad) 16px;">
+      <div class="btn-primary" style="width:100%; text-align:center; padding:16px; background:var(--text); color:#fff; border-radius:var(--r12); font-size:16px; font-weight:600;">Tiếp tục</div>
+    </div>
+
+    <div class="home-indicator"></div>
+  </div>
+  <div class="screen-label">S1 — STK resolved → auto bank detect</div>
+</div>
+
+<!-- S0-typing-name: User types "Nam" → search across all saved -->
+<div class="phone">
+  <div class="state-tag" style="background:var(--blue);">SEARCH</div>
+  <div class="island"></div>
+  <div class="screen">
+    <div class="navbar">
+      <div class="btn-back">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+      </div>
+    </div>
+    <div class="large-title">Chuyển tiền</div>
+
+    <!-- Smart Input — typing name -->
+    <div class="smart-input">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+      <span>Nam</span><span class="cursor"></span>
+    </div>
+
+    <!-- Auto-detect badge -->
+    <div class="smart-detect detecting">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      Tìm trong danh sách đã lưu...
+    </div>
+
+    <!-- Results — mixed from both P2P + Bank -->
+    <div class="section-title">Kết quả · 2 người nhận</div>
+
+    <div class="recipient-row">
+      <div class="recipient-avatar">PN</div>
+      <div class="recipient-info">
+        <div class="recipient-name">Phạm Văn <b style="color:var(--red);">Nam</b></div>
+        <div class="recipient-sub">0983 882 233</div>
+      </div>
+      <div class="recipient-badge vsp">VSP</div>
+    </div>
+
+    <div class="recipient-row">
+      <div class="recipient-avatar">ĐN</div>
+      <div class="recipient-info">
+        <div class="recipient-name">Đào Văn <b style="color:var(--red);">Nam</b></div>
+        <div class="recipient-sub">0901 232 512</div>
+      </div>
+      <div class="recipient-badge vsp">VSP</div>
+    </div>
+
+    <div class="home-indicator"></div>
+  </div>
+  <div class="screen-label">S1 — Search "Nam" → filter saved</div>
+</div>
+
+<!-- S0-empty: Empty state for new user -->
+<div class="phone">
+  <div class="state-tag" style="background:var(--text-2);">EMPTY</div>
+  <div class="island"></div>
+  <div class="screen">
+    <div class="navbar">
+      <div class="btn-back">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+      </div>
+    </div>
+    <div class="large-title">Chuyển tiền</div>
+
+    <!-- Smart Input — placeholder -->
+    <div class="search-bar" style="margin-top: 12px;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+      SĐT, STK, hoặc tên người nhận
+    </div>
+
+    <!-- Empty State -->
+    <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; padding: 48px var(--pad) 0; text-align:center;">
+      <div style="width:64px; height:64px; border-radius:50%; background:var(--bg-2); display:flex; align-items:center; justify-content:center; margin-bottom:16px;">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--text-3)" stroke-width="1.5" stroke-linecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      </div>
+      <div style="font-size:16px; font-weight:600; color:var(--text); margin-bottom:6px;">Chưa có người nhận nào</div>
+      <div style="font-size:13px; color:var(--text-2); line-height:1.5; max-width:260px;">Nhập SĐT hoặc STK ở trên.<br>Bật "Lưu người nhận" sau khi chuyển để hiện ở đây.</div>
+    </div>
+
+    <!-- Helper chips -->
+    <div style="display:flex; gap:8px; padding: 24px var(--pad) 0; justify-content:center;">
+      <div style="padding:10px 16px; background:var(--bg-2); border-radius:var(--r12); font-size:13px; font-weight:600; color:var(--text-2); display:flex; align-items:center; gap:6px;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72"/></svg>
+        Nhập SĐT
+      </div>
+      <div style="padding:10px 16px; background:var(--bg-2); border-radius:var(--r12); font-size:13px; font-weight:600; color:var(--text-2); display:flex; align-items:center; gap:6px;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><path d="M1 10h22"/></svg>
+        Nhập STK
       </div>
     </div>
 
     <div class="home-indicator"></div>
   </div>
-  <div class="screen-label">S1 — Entry (chọn / nhập)</div>
+  <div class="screen-label">S1 — Empty state (user mới)</div>
 </div>
+
+<div class="flow-sep">── FLOW P2P: NGƯỜI NHẬN ĐÃ LƯU ── 3 screens · 3 taps ──</div>
 
 <!-- S1.2: Amount — Swap Style -->
 <div class="phone">
@@ -1023,61 +1396,8 @@
 
 <div class="flow-sep">── FLOW BANK: NGƯỜI NHẬN MỚI ── 5 screens · 6 taps ──</div>
 
-<!-- S2.1: Entry (same as S1.1) — tap "Nhập số tài khoản" -->
-<div class="phone">
-  <div class="state-tag">STEP 1</div>
-  <div class="island"></div>
-  <div class="screen">
-    <div class="navbar">
-      <div class="btn-back">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
-      </div>
-    </div>
-    <div class="large-title">Chuyển tiền</div>
-    <div class="search-bar">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-      Tìm tên, SĐT, số tài khoản
-    </div>
-    <div class="tab-toggle">
-      <div class="tab-item active">Tất cả</div>
-      <div class="tab-item">Ví VSP</div>
-      <div class="tab-item">Ngân hàng</div>
-    </div>
-
-    <div class="section-title">Gần đây</div>
-    <div class="recipient-row">
-      <div class="recipient-avatar">PN</div>
-      <div class="recipient-info"><div class="recipient-name">Phạm Văn Nam</div><div class="recipient-sub">0983 882 233</div></div>
-      <div class="recipient-badge vsp">VSP</div>
-    </div>
-    <div class="recipient-row">
-      <div class="recipient-avatar bank">TCB</div>
-      <div class="recipient-info"><div class="recipient-name">Nguyễn Văn Mạnh</div><div class="recipient-sub">8288 812 121 · Techcombank</div></div>
-      <div class="recipient-badge">NH</div>
-    </div>
-
-    <div class="divider" style="margin-top: 8px;"></div>
-    <div class="section-title">Người nhận mới</div>
-
-    <div class="manual-btn">
-      <div class="manual-icon">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text-2)" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-      </div>
-      <div class="recipient-info"><div class="recipient-name" style="color: var(--text-2);">Nhập số điện thoại</div><div class="recipient-sub">Chuyển đến ví VSP</div></div>
-    </div>
-
-    <div class="manual-btn" style="background: var(--bg-2); border-radius: var(--r12); margin: 0 var(--pad);">
-      <div class="manual-icon" style="border-color: var(--text);">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text)" stroke-width="2" stroke-linecap="round"><rect x="1" y="4" width="22" height="16" rx="2"/><path d="M1 10h22"/></svg>
-      </div>
-      <div class="recipient-info"><div class="recipient-name">Nhập số tài khoản</div><div class="recipient-sub">Chuyển đến ngân hàng</div></div>
-    </div>
-    <div style="font-size:10px; color:var(--red); text-align:center; margin-top:4px; font-weight:600;">↑ TAP = MỞ SHEET NHẬP TAY</div>
-
-    <div class="home-indicator"></div>
-  </div>
-  <div class="screen-label">S1 — Entry (tap nhập tay)</div>
-</div>
+<!-- NOTE: Entry = same S1 above. User types STK → auto-detect bank → "Tiếp tục" → Amount screen -->
+<!-- Below shows the alternative: STK that needs manual bank pick (auto-detect fails) -->
 
 <!-- S2.2: Sheet — Nhập thông tin NH (empty) -->
 <div class="phone">
